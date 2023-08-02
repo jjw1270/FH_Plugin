@@ -2,20 +2,41 @@
 
 
 #include "Item_PlayableCharacter.h"
-
+//Temp
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+//Enhanced Input
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-
-#include "InteractionInterface.h"
-
+//Interfaces
+#include "ItemInterface.h"
+//Components
 #include "Components/CapsuleComponent.h"
 
 // Sets default values
 AItem_PlayableCharacter::AItem_PlayableCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Don't rotate when the controller rotates. Let that just affect the camera.
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
+	// Create a camera boom
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character
+	CameraBoom->TargetOffset = FVector(0.f, 0.f, 100.f);
+
+	// Create a follow camera
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+
+	InteractCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("InteractCollision"));
+	InteractCollision->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -47,9 +68,51 @@ void AItem_PlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
+		//Moving
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AItem_PlayableCharacter::Move);
+
+		//Looking
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AItem_PlayableCharacter::Look);
+
 		//Interaction
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AItem_PlayableCharacter::Interaction);
 
+	}
+}
+
+void AItem_PlayableCharacter::Move(const FInputActionValue& Value)
+{
+	// input is a Vector2D
+	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		// find out which way is forward
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		// get right vector 
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// add movement 
+		AddMovementInput(ForwardDirection, MovementVector.Y);
+		AddMovementInput(RightDirection, MovementVector.X);
+	}
+}
+
+void AItem_PlayableCharacter::Look(const FInputActionValue& Value)
+{
+	// input is a Vector2D
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		// add yaw and pitch input to controller
+		AddControllerYawInput(LookAxisVector.X);
+		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
 
@@ -62,36 +125,35 @@ void AItem_PlayableCharacter::Interaction(const FInputActionValue& Value)
 	}
 
 	TArray<AActor*> OverlappingActors;
-	GetCapsuleComponent()->GetOverlappingActors(OverlappingActors);
+	InteractCollision->GetOverlappingActors(OverlappingActors);
 
-	double NearestLength = 99999999.0f;
-	IInteractionInterface* NearestInteractiveInterfaceObj = nullptr;
+	// Find Nearest InterfaceObj
+	double NearestLength = 9999.0f;
 
-	// Find NearestInteractiveInterfaceObj
-	for (AActor* Target : OverlappingActors)
+	for (AActor* Actor : OverlappingActors)
 	{
-		IInteractionInterface* TargetInterfaceObj = Cast<IInteractionInterface>(Target);
-		if (!TargetInterfaceObj)
-		{
-			continue;
-		}
-
-		double distance = FVector::Dist(Target->GetActorLocation(), GetActorLocation());
+		double distance = FVector::Dist(Actor->GetActorLocation(), GetActorLocation());
 		if (NearestLength < distance)
 		{
 			continue;
 		}
 
-		NearestLength = distance;
-
-		NearestInteractiveInterfaceObj = TargetInterfaceObj;
-		InteractingActor = Target;
+		// Check If Actor Inherits any Interfaces
+		if (Cast<IItemInterface>(Actor))  // ... || Cast<IAInterface>(Actor) || Cast<IBInterface>(Actor))
+		{
+			NearestLength = distance;
+			InteractingActor = Actor;
+		}
 	}
 
-	if (!NearestInteractiveInterfaceObj)
+	if (IItemInterface* NearestItemInterfaceObj = Cast<IItemInterface>(InteractingActor))
 	{
-		return;
+		NearestItemInterfaceObj->Execute_EventLoot(InteractingActor, this);
+	}
+	else
+	{
+		// Other Interface Events
 	}
 
-	NearestInteractiveInterfaceObj->Execute_EventInteraction(InteractingActor, this);
+	return;
 }
