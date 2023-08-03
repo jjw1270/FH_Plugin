@@ -36,7 +36,7 @@ struct FConsumableItemData : public FTableRowBase
 {
     GENERATED_BODY()
 
-    public:
+public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 ItemID;
 
@@ -83,7 +83,7 @@ struct FEquipmentItemData : public FTableRowBase
 {
     GENERATED_BODY()
 
-    public:
+public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 ItemID;
 
@@ -126,9 +126,9 @@ struct FDropWeightByItem
 {
     GENERATED_BODY()
 
-    public:
+public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString Name;
+    int32 ItemID;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 DropWeight;
@@ -139,7 +139,7 @@ struct FItemDropData : public FTableRowBase
 {
     GENERATED_BODY()
 
-    public:
+public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 DungeonID;
 
@@ -147,5 +147,5 @@ struct FItemDropData : public FTableRowBase
     FString DungeonName;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<FDropWeightByItem> DropWeightsByItem;
+    TArray<FDropWeightByItem> DropWeightByItemArray;
 };

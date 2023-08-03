@@ -31,12 +31,19 @@ AItem_PlayableCharacter::AItem_PlayableCharacter()
 	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character
 	CameraBoom->TargetOffset = FVector(0.f, 0.f, 100.f);
 
+	CameraBoom->bUsePawnControlRotation = true;
+
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	// Interact Collision
 	InteractCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("InteractCollision"));
 	InteractCollision->SetupAttachment(RootComponent);
+	InteractCollision->SetCapsuleSize(60.f, 120.f);
+
 }
 
 // Called when the game starts or when spawned

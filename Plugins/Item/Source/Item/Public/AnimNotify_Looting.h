@@ -26,9 +26,9 @@ protected:
 	class UDataTable* ItemDropDataTable;
 	
 protected:
-	FString GetRandomItemNameOnItemDropTable();
+	int32 GetRandomItemOnItemDropTable();
 
-	struct FItemDropData* GetItemDropData(int32 DungeonID);
+	FItemDropData* GetItemDropData(const int32& DungeonID);
 
 	int32 GetTotalItemDropWeight(const TArray<FDropWeightByItem>& DropWeightsByItem);
 

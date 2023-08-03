@@ -4,6 +4,9 @@
 #include "AnimNotify_Looting.h"
 #include "Item_PlayableCharacter.h"
 
+#include "Item_FHPlayerController.h"
+#include "InventoryComponent.h"
+
 UAnimNotify_Looting::UAnimNotify_Looting()
 {
 	bShouldFireInEditor = false;
@@ -11,44 +14,39 @@ UAnimNotify_Looting::UAnimNotify_Looting()
 
 void UAnimNotify_Looting::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
-	FString LootItemName = GetRandomItemNameOnItemDropTable();
+	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(MeshComp->GetOwner()->GetInstigatorController());
+	ensureMsgf(PC, TEXT("PC is nullptr"));
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,
-		FString::Printf(TEXT("Loot Item = %s"), *LootItemName));
-
-	//Check Item Struct -> Consumalbe or Equipment
-	//Add Item To Inventory
-
-	/////////////////////
+	PC->GetInventoryComponent()->AddItemToInventory(GetRandomItemOnItemDropTable(), 1);
 
 	DestroyLootItem(MeshComp->GetOwner());
 }
 
-FString UAnimNotify_Looting::GetRandomItemNameOnItemDropTable()
+int32 UAnimNotify_Looting::GetRandomItemOnItemDropTable()
 {
 	FItemDropData* ItemDropTable = GetItemDropData(1);  //Should Set Params Later!
 	ensureMsgf(ItemDropTable, TEXT("ItemDropTable is nullptr"));
 
 	// Sort ItemTable by Weight
-	ItemDropTable->DropWeightsByItem.Sort([](const FDropWeightByItem& A, const FDropWeightByItem& B) { return A.DropWeight < B.DropWeight; });
+	ItemDropTable->DropWeightByItemArray.Sort([](const FDropWeightByItem& A, const FDropWeightByItem& B) { return A.DropWeight < B.DropWeight; });
 
 	// Random Item By Weights
-	int32 RandomInt = FMath::RandRange(1, GetTotalItemDropWeight(ItemDropTable->DropWeightsByItem));
+	int32 RandomInt = FMath::RandRange(1, GetTotalItemDropWeight(ItemDropTable->DropWeightByItemArray));
 
-	FString ItemName;
-	for (auto& DropWeightByItem : ItemDropTable->DropWeightsByItem)
+	int32 ItemID = 0;
+	for (auto& DropWeightByItem : ItemDropTable->DropWeightByItemArray)
 	{
-		ItemName = DropWeightByItem.Name;
+		ItemID = DropWeightByItem.ItemID;
 		if (RandomInt <= DropWeightByItem.DropWeight)
 		{
 			break;
 		}
 	}
 
-	return ItemName;
+	return ItemID;
 }
 
-FItemDropData* UAnimNotify_Looting::GetItemDropData(int32 DungeonID)
+FItemDropData* UAnimNotify_Looting::GetItemDropData(const int32& DungeonID)
 {
 	ensureMsgf(IsValid(ItemDropDataTable), TEXT("DT_ItemDropTableByDungeon is nullptr"));
 
