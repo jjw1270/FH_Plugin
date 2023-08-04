@@ -31,15 +31,21 @@ protected:
 	/** Inventory Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* InventoryAction;
-
-protected:
-	void InventoryUI();
-
 protected:
 	bool bIsInventoryUIOpen;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
 	class UInventoryComponent* InventoryComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory)
+	TSubclassOf<UUserWidget> InventoryWidgetClass;
+
+	UPROPERTY()
+	UUserWidget* InventoryWidget;
+
+protected:
+	void InventoryUI();
+
 
 public:
 	UFUNCTION(BlueprintCallable)

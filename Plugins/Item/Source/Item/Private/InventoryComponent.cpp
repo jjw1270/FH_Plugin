@@ -2,14 +2,13 @@
 
 
 #include "InventoryComponent.h"
+#include "Item_FHGameInstance.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
 	bWantsInitializeComponent = true;
 	PrimaryComponentTick.bCanEverTick = false;
-
-
 }
 
 // Called when the game starts
@@ -17,6 +16,8 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GameInstance = Cast<UItem_FHGameInstance>(GetOwner()->GetGameInstance());
+	ensureMsgf(GameInstance, TEXT("GameInstance is nullptr"));
 }
 
 void UInventoryComponent::InitializeComponent()
@@ -28,7 +29,7 @@ void UInventoryComponent::InitializeComponent()
 void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& Amount)
 {
 	// if Already Exist in Inventory, Add Amount
-	for (auto& InventoryItem : InventoryItemArray)
+	for (auto& InventoryItem : GameInstance->GetInventoryItemArray())
 	{
 		if (InventoryItem.ID == ItemID)
 		{
@@ -42,42 +43,15 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& A
 	}
 	
 	// else Make InventoryItem
-	EItemType Itemtype;
-	switch (ItemID/1000)
-	{
-	case 1:
-		Itemtype = EItemType::Consumable;
-		break;
-	case 2:
-		Itemtype = EItemType::Equipment;
-		break;
-	default:
-		Itemtype = EItemType::None;
-		break;
-	}
-
-	FInventoryItem NewInventoryItem = FInventoryItem(Itemtype, ItemID, Amount);
-	InventoryItemArray.Add(NewInventoryItem);
+	FInventoryItem InventoryItem = FInventoryItem(GetItemType(ItemID), ItemID, Amount);
+	
+	GameInstance->AddItemToInventory(InventoryItem);
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,
-	FString::Printf(TEXT("Loot Item ID = %d, Amount = %d"), NewInventoryItem.ID, NewInventoryItem.Amount));
+	FString::Printf(TEXT("Loot Item ID = %d, Amount = %d"), InventoryItem.ID, InventoryItem.Amount));
 
 	return;
 }
-
-int32 UInventoryComponent::GetItemAmountInInventory(const int32& ItemID)
-{
-	for (auto& InventoryItem : InventoryItemArray)
-	{
-		if (InventoryItem.ID == ItemID)
-		{
-			return InventoryItem.Amount;
-		}
-	}
-
-	return 0;
-}
-
 
 FConsumableItemData* UInventoryComponent::GetConsumableItemInfo(const int32& ItemID)
 {
@@ -91,4 +65,24 @@ FEquipmentItemData* UInventoryComponent::GetEquipmentItemInfo(const int32& ItemI
 	ensureMsgf(EquipmentItemDataTable, TEXT("EquipmentItemDataTable is nullptr"));
 
 	return EquipmentItemDataTable->FindRow<FEquipmentItemData>(*FString::FromInt(ItemID), TEXT(""), false);
+}
+
+EItemType UInventoryComponent::GetItemType(const int32 ItemID)
+{
+	EItemType Itemtype;
+
+	switch (ItemID / 1000)
+	{
+	case 1:
+		Itemtype = EItemType::Consumable;
+		break;
+	case 2:
+		Itemtype = EItemType::Equipment;
+		break;
+	default:
+		Itemtype = EItemType::None;
+		break;
+	}
+
+	return Itemtype;
 }

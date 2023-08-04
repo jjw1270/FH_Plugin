@@ -7,6 +7,10 @@
 //Enhanced Input
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+//UI
+#include "Blueprint/UserWidget.h"
+//temp
+#include "Item_FHGameInstance.h"
 
 AItem_FHPlayerController::AItem_FHPlayerController()
 {
@@ -22,6 +26,9 @@ void AItem_FHPlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(UIMappingContext, 0);
 	}
+
+	ensureMsgf(IsValid(InventoryWidgetClass), TEXT("InventoryWidgetClass is Not Valid"));
+	InventoryWidget = CreateWidget<UUserWidget>(GetWorld(), InventoryWidgetClass);
 }
 
 void AItem_FHPlayerController::SetupInputComponent()
@@ -40,13 +47,18 @@ void AItem_FHPlayerController::InventoryUI()
 	{
 		bIsInventoryUIOpen = true;
 		//Open Inventory UI
-		UE_LOG(LogTemp, Warning, TEXT("A"));
+		InventoryWidget->AddToViewport();
+		SetShowMouseCursor(true);
+		SetInputMode(FInputModeGameAndUI());
+
+		Cast<UItem_FHGameInstance>(GetGameInstance())->TEST();
 	}
 	else
 	{
 		bIsInventoryUIOpen = false;
 		//Close Inventory UI
-		UE_LOG(LogTemp, Warning, TEXT("B"));
-
+		InventoryWidget->RemoveFromParent();
+		SetShowMouseCursor(false);
+		SetInputMode(FInputModeGameOnly());
 	}
 }

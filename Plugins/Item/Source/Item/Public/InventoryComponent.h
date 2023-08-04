@@ -22,20 +22,25 @@ struct FInventoryItem
 	GENERATED_BODY()
 	
 public:
-	FInventoryItem() {};
+	FInventoryItem()
+	{
+		Type = EItemType::None;
+		ID = 0;
+		Amount = 0;
+	};
 
 	FInventoryItem(EItemType Type, int32 ID, int32 Amount)
 		: Type(Type), ID(ID), Amount(Amount) {};
 	
 public:
-	UPROPERTY(VisibleAnywhere)
-	EItemType Type;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	EItemType Type = EItemType::None;
 	
-	UPROPERTY(VisibleAnywhere)
-	int32 ID;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int32 ID = 0;
 
-	UPROPERTY(VisibleAnywhere)
-	int32 Amount;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int32 Amount = 0;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -44,7 +49,6 @@ class ITEM_API UInventoryComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UInventoryComponent();
 
 protected:
@@ -54,10 +58,6 @@ protected:
 	virtual void InitializeComponent() override;
 
 protected:
-	UPROPERTY(VisibleAnywhere)
-	TArray<FInventoryItem> InventoryItemArray;
-
-protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UDataTable* ConsumableItemDataTable;
 
@@ -65,15 +65,21 @@ protected:
 	class UDataTable* EquipmentItemDataTable;
 
 protected:
-	FConsumableItemData* GetConsumableItemInfo(const int32& ItemID);
+	UPROPERTY()
+	class UItem_FHGameInstance* GameInstance;
 
-	FEquipmentItemData* GetEquipmentItemInfo(const int32& ItemID);
+protected:
 
+	EItemType GetItemType(const int32 ItemID);
 
 public:
 	UFUNCTION(BlueprintCallable)
 	void AddItemToInventory(const int32& ItemID, const int32& Amount);
 
-	int32 GetItemAmountInInventory(const int32& ItemID);
+	UFUNCTION(BlueprintCallable)
+	FConsumableItemData* GetConsumableItemInfo(const int32& ItemID);
+
+	UFUNCTION(BlueprintCallable)
+	FEquipmentItemData* GetEquipmentItemInfo(const int32& ItemID);
 
 };
