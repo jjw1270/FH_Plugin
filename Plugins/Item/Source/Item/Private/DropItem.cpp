@@ -101,6 +101,9 @@ bool ADropItem::IsCanSeePlayer()
 
 void ADropItem::EventLoot_Implementation(ACharacter* OwnCharacter)
 {
+	// Hide UI Widget
+	LootWidgetComp->SetHiddenInGame(true);
+
 	// Set Onwer Character Rotation to Look at this Item
 	FVector TargetDir = (GetActorLocation() - OwnCharacter->GetActorLocation()).GetSafeNormal();
 	FRotator LookAtRot = FVector(TargetDir.X, TargetDir.Y, 0).Rotation();
