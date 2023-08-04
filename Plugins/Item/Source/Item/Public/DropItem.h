@@ -30,13 +30,23 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component)
 	TObjectPtr<class UBoxComponent> OverlapBoxCollision;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component)
+	TObjectPtr<class UWidgetComponent> LootWidgetComp;
+
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, Meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> LootingMontage;
 
+	FTimerHandle UpdateWidgetVisiblityTimerHandle;
+
+	APlayerController* PlayerController;
+
+	bool bWidgetVisibility;
+
 protected:
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+	void UpdateWidgetVisiblity();
+
+	bool IsCanSeePlayer();
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
