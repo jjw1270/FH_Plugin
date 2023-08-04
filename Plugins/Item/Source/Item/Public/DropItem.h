@@ -34,12 +34,15 @@ protected:
 	TObjectPtr<class UWidgetComponent> LootWidgetComp;
 
 private:
+	APlayerController* PlayerController;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, Meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> LootingMontage;
 
-	FTimerHandle UpdateWidgetVisiblityTimerHandle;
+	UPROPERTY(EditAnywhere, Category = Widget, Meta = (AllowPrivateAccess = true))
+	float WidgetVisiblityRange{ 1500.f };
 
-	APlayerController* PlayerController;
+	FTimerHandle UpdateWidgetVisiblityTimerHandle;
 
 	bool bWidgetVisibility;
 

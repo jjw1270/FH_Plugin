@@ -38,12 +38,15 @@ void AItem_FHPlayerController::InventoryUI()
 {
 	if (!bIsInventoryUIOpen)
 	{
+		bIsInventoryUIOpen = true;
 		//Open Inventory UI
-
+		UE_LOG(LogTemp, Warning, TEXT("A"));
 	}
 	else
 	{
+		bIsInventoryUIOpen = false;
 		//Close Inventory UI
+		UE_LOG(LogTemp, Warning, TEXT("B"));
 
 	}
 }

@@ -9,8 +9,6 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "DrawDebugHelpers.h"
-#include "Kismet/KismetSystemLibrary.h"
-
 
 // Sets default values
 ADropItem::ADropItem()
@@ -18,7 +16,6 @@ ADropItem::ADropItem()
 	RootSphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 	RootComponent = RootSphereCollision;
 	RootSphereCollision->SetSimulatePhysics(true);
-	RootSphereCollision->SetNotifyRigidBodyCollision(true);
 	RootSphereCollision->SetGenerateOverlapEvents(false);
 	RootSphereCollision->SetCollisionProfileName(FName("OverlapOnlyPawn"));
 	RootSphereCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -81,7 +78,10 @@ bool ADropItem::IsCanSeePlayer()
 	FHitResult Hit;
 
 	FVector StartPos = PlayerController->PlayerCameraManager->GetCameraLocation();
-	FVector EndPos = GetActorLocation();
+	// FVector EndPos = GetActorLocation();
+	FVector EndPos = StartPos + (GetActorLocation() - StartPos).GetSafeNormal() * WidgetVisiblityRange;
+
+	// DrawDebugLine(GetWorld(), StartPos, EndPos, FColor::Green, false, 3.f);
 
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(PlayerController->GetPawn());
