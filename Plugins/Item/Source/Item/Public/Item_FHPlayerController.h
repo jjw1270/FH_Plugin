@@ -34,21 +34,16 @@ protected:
 protected:
 	bool bIsInventoryUIOpen;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
-	class UInventoryComponent* InventoryComp;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory)
-	TSubclassOf<UUserWidget> InventoryWidgetClass;
+	TSubclassOf<class UInventoryWidget> InventoryWidgetClass;
 
 	UPROPERTY()
-	UUserWidget* InventoryWidget;
+	class UInventoryWidget* InventoryWidget;
 
-protected:
-	void InventoryUI();
-
+	FTimerHandle UpdateInventoryHandle;
 
 public:
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE class UInventoryComponent* GetInventoryComponent() const { return InventoryComp; }
+	void InventoryUI();
 
 };

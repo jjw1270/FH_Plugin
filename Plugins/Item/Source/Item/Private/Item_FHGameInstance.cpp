@@ -2,7 +2,7 @@
 
 
 #include "Item_FHGameInstance.h"
-#include "InventoryComponent.h"
+#include "ItemInterface.h"
 
 void UItem_FHGameInstance::Init()
 {
@@ -14,9 +14,36 @@ void UItem_FHGameInstance::Shutdown()
 	Super::Shutdown();
 }
 
-void UItem_FHGameInstance::AddItemToInventory(FInventoryItem Item)
+void UItem_FHGameInstance::AddItemToInventory(const int32& ItemID, const int32& Amount)
 {
-	InventoryItemArray.Add(Item);
+	EItemType ItemType = GetItemType(ItemID);
+
+	if (ItemType == EItemType::Consumable)
+	{
+		// if Already Exist in Inventory, Add Amount
+		for (auto& InventoryItem : InventoryItemArray)
+		{
+			if (InventoryItem.ID == ItemID)
+			{
+				InventoryItem.Amount += Amount;
+
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,
+					FString::Printf(TEXT("Loot Item ID = %d, Amount = %d"), InventoryItem.ID, InventoryItem.Amount));
+
+				return;
+			}
+		}
+	}
+
+	// else Make InventoryItem
+	FInventoryItem InventoryItem = FInventoryItem(ItemType, ItemID, Amount);
+
+	InventoryItemArray.Add(InventoryItem);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,
+		FString::Printf(TEXT("New Loot Item ID = %d, Amount = %d"), InventoryItem.ID, InventoryItem.Amount));
+
+	return;
 }
 
 TArray<FInventoryItem>& UItem_FHGameInstance::GetInventoryItemArray()
@@ -26,7 +53,12 @@ TArray<FInventoryItem>& UItem_FHGameInstance::GetInventoryItemArray()
 
 int32 UItem_FHGameInstance::GetItemAmountInInventory(const int32& ItemID)
 {
-	for (auto& InventoryItem : GetInventoryItemArray())
+	if (GetItemType(ItemID) == EItemType::Equipment)
+	{
+		return 1;
+	}
+
+	for (const auto& InventoryItem : InventoryItemArray)
 	{
 		if (InventoryItem.ID == ItemID)
 		{
@@ -37,10 +69,36 @@ int32 UItem_FHGameInstance::GetItemAmountInInventory(const int32& ItemID)
 	return 0;
 }
 
-void UItem_FHGameInstance::TEST()
+FConsumableItemData* UItem_FHGameInstance::GetConsumableItemInfo(const int32& ItemID)
 {
-	for (auto a : InventoryItemArray)
+	ensureMsgf(ConsumableItemDataTable, TEXT("ConsumableItemDataTable is nullptr"));
+
+	return ConsumableItemDataTable->FindRow<FConsumableItemData>(*FString::FromInt(ItemID), TEXT(""), false);
+}
+
+FEquipmentItemData* UItem_FHGameInstance::GetEquipmentItemInfo(const int32& ItemID)
+{
+	ensureMsgf(EquipmentItemDataTable, TEXT("EquipmentItemDataTable is nullptr"));
+
+	return EquipmentItemDataTable->FindRow<FEquipmentItemData>(*FString::FromInt(ItemID), TEXT(""), false);
+}
+
+EItemType UItem_FHGameInstance::GetItemType(const int32& ItemID)
+{
+	EItemType Itemtype;
+
+	switch (ItemID / 1000)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%d = %d"), a.ID, a.Amount);
+	case 1:
+		Itemtype = EItemType::Consumable;
+		break;
+	case 2:
+		Itemtype = EItemType::Equipment;
+		break;
+	default:
+		Itemtype = EItemType::None;
+		break;
 	}
+
+	return Itemtype;
 }

@@ -2,20 +2,15 @@
 
 
 #include "Item_FHPlayerController.h"
-//Actor Component
-#include "InventoryComponent.h"
+#include "Item_FHGameInstance.h"
 //Enhanced Input
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 //UI
-#include "Blueprint/UserWidget.h"
-//temp
-#include "Item_FHGameInstance.h"
+#include "InventoryWidget.h"
 
 AItem_FHPlayerController::AItem_FHPlayerController()
 {
-	InventoryComp = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComp"));
-
 }
 
 void AItem_FHPlayerController::BeginPlay()
@@ -28,7 +23,7 @@ void AItem_FHPlayerController::BeginPlay()
 	}
 
 	ensureMsgf(IsValid(InventoryWidgetClass), TEXT("InventoryWidgetClass is Not Valid"));
-	InventoryWidget = CreateWidget<UUserWidget>(GetWorld(), InventoryWidgetClass);
+	InventoryWidget = CreateWidget<UInventoryWidget>(GetWorld(), InventoryWidgetClass);
 }
 
 void AItem_FHPlayerController::SetupInputComponent()
@@ -43,6 +38,8 @@ void AItem_FHPlayerController::SetupInputComponent()
 
 void AItem_FHPlayerController::InventoryUI()
 {
+	ensureMsgf(IsValid(InventoryWidget), TEXT("InventoryWidget is Not Valid"));
+
 	if (!bIsInventoryUIOpen)
 	{
 		bIsInventoryUIOpen = true;
@@ -51,7 +48,7 @@ void AItem_FHPlayerController::InventoryUI()
 		SetShowMouseCursor(true);
 		SetInputMode(FInputModeGameAndUI());
 
-		Cast<UItem_FHGameInstance>(GetGameInstance())->TEST();
+		GetWorldTimerManager().SetTimer(UpdateInventoryHandle, [this](){ InventoryWidget->SetItemsToSlots(); }, 0.01f, true);
 	}
 	else
 	{
@@ -60,5 +57,10 @@ void AItem_FHPlayerController::InventoryUI()
 		InventoryWidget->RemoveFromParent();
 		SetShowMouseCursor(false);
 		SetInputMode(FInputModeGameOnly());
+
+		if (UpdateInventoryHandle.IsValid())
+		{
+			GetWorldTimerManager().ClearTimer(UpdateInventoryHandle);
+		}
 	}
 }

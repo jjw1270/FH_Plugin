@@ -3,9 +3,7 @@
 
 #include "AnimNotify_Looting.h"
 #include "Item_PlayableCharacter.h"
-
-#include "Item_FHPlayerController.h"
-#include "InventoryComponent.h"
+#include "Item_FHGameInstance.h"
 
 UAnimNotify_Looting::UAnimNotify_Looting()
 {
@@ -14,10 +12,10 @@ UAnimNotify_Looting::UAnimNotify_Looting()
 
 void UAnimNotify_Looting::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
-	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(MeshComp->GetOwner()->GetInstigatorController());
-	ensureMsgf(PC, TEXT("PC is nullptr"));
+	UItem_FHGameInstance* GI = Cast<UItem_FHGameInstance>(MeshComp->GetOwner()->GetGameInstance());
+	ensureMsgf(GI, TEXT("PC is nullptr"));
 
-	PC->GetInventoryComponent()->AddItemToInventory(GetRandomItemOnItemDropTable(), 1);
+	GI->AddItemToInventory(GetRandomItemOnItemDropTable(), 1);
 
 	DestroyLootItem(MeshComp->GetOwner());
 }
@@ -34,7 +32,7 @@ int32 UAnimNotify_Looting::GetRandomItemOnItemDropTable()
 	int32 RandomInt = FMath::RandRange(1, GetTotalItemDropWeight(ItemDropTable->DropWeightByItemArray));
 
 	int32 ItemID = 0;
-	for (auto& DropWeightByItem : ItemDropTable->DropWeightByItemArray)
+	for (const auto& DropWeightByItem : ItemDropTable->DropWeightByItemArray)
 	{
 		ItemID = DropWeightByItem.ItemID;
 		if (RandomInt <= DropWeightByItem.DropWeight)
