@@ -18,6 +18,8 @@ protected:
 	virtual void NativeOnInitialized() override;
 	
 public:
+	bool IsEmpty();
+
 	void SetItemDataToSlot(const struct FInventoryItem& InventoryItem);
 
 protected:
@@ -39,6 +41,4 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	int32 Amount;
 
-	UPROPERTY()
-	class UItem_FHGameInstance* GameInstance;
 };

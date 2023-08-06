@@ -3,39 +3,40 @@
 
 #include "AnimNotify_Looting.h"
 #include "Item_PlayableCharacter.h"
-#include "Item_FHGameInstance.h"
+#include "Item_FHPlayerController.h"
 
-UAnimNotify_Looting::UAnimNotify_Looting()
+UAnimNotify_Looting::UAnimNotify_Looting(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	bShouldFireInEditor = false;
 }
 
 void UAnimNotify_Looting::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
-	UItem_FHGameInstance* GI = Cast<UItem_FHGameInstance>(MeshComp->GetOwner()->GetGameInstance());
-	ensureMsgf(GI, TEXT("PC is nullptr"));
+	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(MeshComp->GetOwner()->GetInstigatorController());
+	ensureMsgf(PC, TEXT("PC is nullptr"));
 
-	GI->AddItemToInventory(GetRandomItemOnItemDropTable(), 1);
+	PC->GetInventoryComp()->AddItemToInventory(GetRandomItemOnItemDropTable(), 201);
 
 	DestroyLootItem(MeshComp->GetOwner());
 }
 
 int32 UAnimNotify_Looting::GetRandomItemOnItemDropTable()
 {
-	FItemDropData* ItemDropTable = GetItemDropData(1);  //Should Set Params Later!
-	ensureMsgf(ItemDropTable, TEXT("ItemDropTable is nullptr"));
+	FItemDropData* ItemDropData = GetItemDropData(1);  //Should Set Params Later!
+	ensureMsgf(ItemDropData, TEXT("ItemDropTable is nullptr"));
 
-	// Sort ItemTable by Weight
-	ItemDropTable->DropWeightByItemArray.Sort([](const FDropWeightByItem& A, const FDropWeightByItem& B) { return A.DropWeight < B.DropWeight; });
+	// Sort ItemDropMap by Weight
+	ItemDropData->ItemDropWeightsMap.ValueSort([](const int32& A, const int32& B) { return A < B; });
 
 	// Random Item By Weights
-	int32 RandomInt = FMath::RandRange(1, GetTotalItemDropWeight(ItemDropTable->DropWeightByItemArray));
+	int32 RandomInt = FMath::RandRange(1, GetTotalItemDropWeight(ItemDropData->ItemDropWeightsMap));
 
 	int32 ItemID = 0;
-	for (const auto& DropWeightByItem : ItemDropTable->DropWeightByItemArray)
+	for (const auto& DropWeightByItem : ItemDropData->ItemDropWeightsMap)
 	{
-		ItemID = DropWeightByItem.ItemID;
-		if (RandomInt <= DropWeightByItem.DropWeight)
+		ItemID = DropWeightByItem.Key;
+		if (RandomInt <= DropWeightByItem.Value)
 		{
 			break;
 		}
@@ -46,17 +47,17 @@ int32 UAnimNotify_Looting::GetRandomItemOnItemDropTable()
 
 FItemDropData* UAnimNotify_Looting::GetItemDropData(const int32& DungeonID)
 {
-	ensureMsgf(IsValid(ItemDropDataTable), TEXT("DT_ItemDropTableByDungeon is nullptr"));
+	ensureMsgf(IsValid(ItemDropDataTable), TEXT("ItemDropDataTable is nullptr"));
 
 	return ItemDropDataTable->FindRow<FItemDropData>(*FString::FromInt(DungeonID), TEXT(""));
 }
 
-int32 UAnimNotify_Looting::GetTotalItemDropWeight(const TArray<FDropWeightByItem>& DropWeightsByItem)
+int32 UAnimNotify_Looting::GetTotalItemDropWeight(TMap<int32, int32>& InItemDropWeightsMap)
 {
 	int32 TotalItemDropWeights = 0;
-	for (auto& DropWeightByItem : DropWeightsByItem)
+	for (const auto& ItemDropWeight : InItemDropWeightsMap)
 	{
-		TotalItemDropWeights += DropWeightByItem.DropWeight;
+		TotalItemDropWeights += ItemDropWeight.Value;
 	}
 
 	return TotalItemDropWeights;

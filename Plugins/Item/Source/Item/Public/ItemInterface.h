@@ -31,6 +31,37 @@ public:
 
 // Structs and Enums that using in Item Plugin //
 
+
+//USTRUCT(Atomic, BlueprintType)
+//struct FDropWeightByItem
+//{
+//    GENERATED_BODY()
+//
+//    public:
+//    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//    int32 ItemID;
+//
+//    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//    int32 DropWeight;
+//};
+
+USTRUCT(Atomic, BlueprintType)
+struct FItemDropData : public FTableRowBase
+{
+    GENERATED_BODY()
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 DungeonID;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString DungeonName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TMap<int32, int32> ItemDropWeightsMap;
+};
+
+
 USTRUCT(Atomic, BlueprintType)
 struct FConsumableItemData : public FTableRowBase
 {
@@ -119,33 +150,4 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TObjectPtr<UTexture2D> ItemImage;
-};
-
-USTRUCT(Atomic, BlueprintType)
-struct FDropWeightByItem
-{
-    GENERATED_BODY()
-
-public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 ItemID;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 DropWeight;
-};
-
-USTRUCT(Atomic, BlueprintType)
-struct FItemDropData : public FTableRowBase
-{
-    GENERATED_BODY()
-
-public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 DungeonID;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString DungeonName;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<FDropWeightByItem> DropWeightByItemArray;
 };

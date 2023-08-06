@@ -13,10 +13,7 @@
 UCLASS()
 class ITEM_API UAnimNotify_Looting : public UAnimNotify
 {
-	GENERATED_BODY()
-	
-public:
-	UAnimNotify_Looting();
+	GENERATED_UCLASS_BODY()
 
 protected:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
@@ -30,7 +27,7 @@ protected:
 
 	FItemDropData* GetItemDropData(const int32& DungeonID);
 
-	int32 GetTotalItemDropWeight(const TArray<FDropWeightByItem>& DropWeightsByItem);
+	int32 GetTotalItemDropWeight(TMap<int32, int32>& InItemDropWeightsMap);
 
 	void DestroyLootItem(AActor* Owner);
 

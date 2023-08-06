@@ -31,14 +31,18 @@ protected:
 	/** Inventory Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* InventoryAction;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	class UInventoryComponent* InventoryComp;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE UInventoryComponent* GetInventoryComp() const { return InventoryComp; }
+
+//Widget
 protected:
 	bool bIsInventoryUIOpen;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory)
-	TSubclassOf<class UInventoryWidget> InventoryWidgetClass;
-
-	UPROPERTY()
-	class UInventoryWidget* InventoryWidget;
 
 public:
 	UFUNCTION(BlueprintCallable)
