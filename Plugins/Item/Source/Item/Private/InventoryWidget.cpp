@@ -48,11 +48,11 @@ void UInventoryWidget::NativeDestruct()
 
 }
 
-void UInventoryWidget::SetItemsToSlots()
+void UInventoryWidget::SetItemsToSlots(TArray<FInventoryItem>& InventoryItemArray)
 {
-	TArray<FInventoryItem>* InventoryItemArray = InventoryComp->GetInventoryItems();
+	UE_LOG(LogTemp, Warning, TEXT("aaa"));
 
-	for (auto& InventoryItem : *InventoryItemArray)
+	for (auto& InventoryItem : InventoryItemArray)
 	{
 		for (auto slot : InventorySlotArray)
 		{

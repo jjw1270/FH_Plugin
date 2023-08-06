@@ -48,6 +48,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AddSlotGridRowRange(int32 Num = 1) { SlotGridRowRange  += Num; }
 
-	void SetItemsToSlots();
+	void SetItemsToSlots(TArray<FInventoryItem>& InventoryItemArray);
 
 };

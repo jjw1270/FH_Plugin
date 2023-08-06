@@ -70,7 +70,7 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& A
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,
 		FString::Printf(TEXT("New Loot Item ID = %d, Amount = %d"), InventoryItem.ID, InventoryItem.Amount));
 
-	InventoryWidget->SetItemsToSlots();
+	InventoryWidget->SetItemsToSlots(*InventoryItems);
 
 	return;
 }

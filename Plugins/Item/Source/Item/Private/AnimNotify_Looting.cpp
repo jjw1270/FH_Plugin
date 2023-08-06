@@ -4,6 +4,7 @@
 #include "AnimNotify_Looting.h"
 #include "Item_PlayableCharacter.h"
 #include "Item_FHPlayerController.h"
+#include "InventoryComponent.h"
 
 UAnimNotify_Looting::UAnimNotify_Looting(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -16,14 +17,14 @@ void UAnimNotify_Looting::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
 	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(MeshComp->GetOwner()->GetInstigatorController());
 	ensureMsgf(PC, TEXT("PC is nullptr"));
 
-	PC->GetInventoryComp()->AddItemToInventory(GetRandomItemOnItemDropTable(), 201);
+	PC->GetInventoryComp()->AddItemToInventory(GetRandomItemOnItemDropTable(), 1);
 
 	DestroyLootItem(MeshComp->GetOwner());
 }
 
 int32 UAnimNotify_Looting::GetRandomItemOnItemDropTable()
 {
-	FItemDropData* ItemDropData = GetItemDropData(1);  //Should Set Params Later!
+	FItemDropData* ItemDropData = GetItemDropData(201);  //Should Set Params Later!
 	ensureMsgf(ItemDropData, TEXT("ItemDropTable is nullptr"));
 
 	// Sort ItemDropMap by Weight
