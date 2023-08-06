@@ -2,7 +2,6 @@
 
 
 #include "InventorySlotWidget.h"
-#include "Components/Image.h"
 #include "ItemInterface.h"
 #include "Item_FHGameInstance.h"
 
@@ -23,15 +22,21 @@ void UInventorySlotWidget::SetItemDataToSlot(const struct FInventoryItem& Invent
 		case EItemType::Consumable:
 		{
 			FConsumableItemData* ItemData = GameInstance->GetConsumableItemInfo(InventoryItem.ID);
+			ItemType = FString("Consumable");
+			ItemName = ItemData->Name;
+			ItemPrice = ItemData->Price;
+			ItemInfo = ItemData->ItemTextInfo;
 			Image = ItemData->ItemImage;
-
 			break;
 		}
 		case EItemType::Equipment:
 		{
 			FEquipmentItemData* ItemData = GameInstance->GetEquipmentItemInfo(InventoryItem.ID);
+			ItemType = FString("Equipment");
+			ItemName = ItemData->Name;
+			ItemPrice = ItemData->Price;
+			ItemInfo = ItemData->ItemTextInfo;
 			Image = ItemData->ItemImage;
-
 			break;
 		}
 		default:

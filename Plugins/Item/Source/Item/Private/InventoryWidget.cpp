@@ -3,6 +3,7 @@
 
 #include "InventoryWidget.h"
 #include "Components/UniformGridPanel.h"
+#include "Components/Button.h"
 #include "InventorySlotWidget.h"
 #include "Item_FHGameInstance.h"
 #include "ItemInterface.h"
@@ -39,7 +40,15 @@ void UInventoryWidget::NativeConstruct()
 	PlayerController = Cast<AItem_FHPlayerController>(GameInstance->GetFirstLocalPlayerController(GetWorld()));
 	ensureMsgf(PlayerController, TEXT("PlayerController is nullptr"));
 
-	SetItemsToSlots();
+	PlayerController->GetWorldTimerManager().SetTimer(UpdateInventoryHandle, this, &UInventoryWidget::SetItemsToSlots, 0.01f, true);
+}
+
+void UInventoryWidget::NativeDestruct()
+{
+	if (UpdateInventoryHandle.IsValid())
+	{
+		PlayerController->GetWorldTimerManager().ClearTimer(UpdateInventoryHandle);
+	}
 }
 
 void UInventoryWidget::SetItemsToSlots()

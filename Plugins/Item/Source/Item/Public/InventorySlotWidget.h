@@ -22,6 +22,18 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
+	FString ItemType;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString ItemName;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 ItemPrice;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString ItemInfo;
+
+	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UTexture2D> Image;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -29,7 +41,4 @@ protected:
 
 	UPROPERTY()
 	class UItem_FHGameInstance* GameInstance;
-	
-protected:
-
 };

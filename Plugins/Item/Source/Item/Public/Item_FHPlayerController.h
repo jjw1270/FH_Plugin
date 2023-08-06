@@ -40,8 +40,6 @@ protected:
 	UPROPERTY()
 	class UInventoryWidget* InventoryWidget;
 
-	FTimerHandle UpdateInventoryHandle;
-
 public:
 	UFUNCTION(BlueprintCallable)
 	void InventoryUI();

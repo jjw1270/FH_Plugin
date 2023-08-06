@@ -47,8 +47,6 @@ void AItem_FHPlayerController::InventoryUI()
 		InventoryWidget->AddToViewport();
 		SetShowMouseCursor(true);
 		SetInputMode(FInputModeGameAndUI());
-
-		GetWorldTimerManager().SetTimer(UpdateInventoryHandle, [this](){ InventoryWidget->SetItemsToSlots(); }, 0.01f, true);
 	}
 	else
 	{
@@ -57,10 +55,5 @@ void AItem_FHPlayerController::InventoryUI()
 		InventoryWidget->RemoveFromParent();
 		SetShowMouseCursor(false);
 		SetInputMode(FInputModeGameOnly());
-
-		if (UpdateInventoryHandle.IsValid())
-		{
-			GetWorldTimerManager().ClearTimer(UpdateInventoryHandle);
-		}
 	}
 }

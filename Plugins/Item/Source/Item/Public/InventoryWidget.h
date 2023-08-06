@@ -21,6 +21,8 @@ protected:
 
 	virtual void NativeConstruct() override;
 
+	virtual void NativeDestruct() override;
+
 protected:
 	class UItem_FHGameInstance* GameInstance;
 
@@ -40,6 +42,8 @@ protected:
 	int32 SlotGridRowRange;
 
 	int32 SlotGridColRange{ 5 };
+
+	FTimerHandle UpdateInventoryHandle;
 
 public:
 	UFUNCTION(BlueprintCallable)
