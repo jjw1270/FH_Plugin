@@ -25,11 +25,10 @@ public:
 		Type = EItemType::None;
 		ID = 0;
 		Amount = 0;
-		Index = -99;
 	};
 
-	FInventoryItem(EItemType Type, int32 ID, int32 Amount, int32 Index)
-		: Type(Type), ID(ID), Amount(Amount), Index(Index) {};
+	FInventoryItem(EItemType Type, int32 ID, int32 Amount)
+		: Type(Type), ID(ID), Amount(Amount) {};
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -41,8 +40,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 Amount;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int32 Index;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -90,5 +87,6 @@ protected:
 	class UInventoryWidget* InventoryWidget;
 
 public:
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE UInventoryWidget* GetInventoryWidget() { return InventoryWidget; }
 };

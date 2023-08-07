@@ -17,19 +17,46 @@ class ITEM_API UInventorySlotWidget : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
-public:
-	void AddItemAmount(int32 NewAmount);
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 
-	void SetItemDataToSlot(struct FInventoryItem* InventoryItem, class UInventoryComponent* InventoryComp);
+public:
+	void SetItemDataToSlot(struct FInventoryItem* InventoryItem);
+
+	void UpdateItemAmount();
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> DragWidgetClass;
+
+	UPROPERTY()
+	UUserWidget* DragWidget;
+
+	UPROPERTY()
+	TSubclassOf<class UItemDragDropOperation> DragOperationClass;
+
+	UPROPERTY()
+	class UItemDragDropOperation* DragOperation;
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
-	UUserWidget* ItemInfoBox;
-
-	FInventoryItem* SlotInventoryItem;
+	class UInventoryComponent* InventoryComp;
 
 	UPROPERTY(BlueprintReadOnly)
-	FString ItemType;
+	UUserWidget* ItemInfoBox;
+
+protected:
+	FInventoryItem* SlotInventoryItem;
+
+protected:
+	UFUNCTION(BlueprintCallable)
+	void SetWidgetBindVariables(bool bReset);
+
+protected:
+	UPROPERTY(BlueprintReadOnly)
+	int32 Amount;
+
+	UPROPERTY(BlueprintReadOnly)
+	EItemType ItemType;
 
 	UPROPERTY(BlueprintReadOnly)
 	FString ItemName;
@@ -43,8 +70,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UTexture2D> Image;
 
-	UPROPERTY(BlueprintReadOnly)
-	int32 Amount;
+	UPROPERTY(meta = (BindWidget))
+	class UImage* ItemImage;
 
 public:	
 	FORCEINLINE FInventoryItem* GetSlotInventoryItem() const { return SlotInventoryItem; }

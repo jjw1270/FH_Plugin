@@ -57,7 +57,7 @@ void UInventoryWidget::AddItemToSlot(FInventoryItem* NewItem)
 	{
 		if (slot->IsEmpty())
 		{
-			slot->SetItemDataToSlot(NewItem, InventoryComp);
+			slot->SetItemDataToSlot(NewItem);
 			return;
 		}
 	}
@@ -69,8 +69,7 @@ void UInventoryWidget::UpdateItemToSlot(FInventoryItem* NewItem)
 	{
 		if (slot->GetSlotInventoryItem()->ID == NewItem->ID)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("AddItemAmount"));
-			slot->AddItemAmount(NewItem->Amount);
+			slot->UpdateItemAmount();
 			return;
 		}
 	}

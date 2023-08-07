@@ -53,11 +53,7 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& A
 			if (InventoryItem->ID == ItemID)
 			{
 				InventoryItem->Amount += Amount;
-
 				InventoryWidget->UpdateItemToSlot(InventoryItem);
-
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,
-					FString::Printf(TEXT("Loot Item ID = %d, Amount = %d"), InventoryItem->ID, InventoryItem->Amount));
 
 				return;
 			}
@@ -65,14 +61,9 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& A
 	}
 
 	// else Make InventoryItem
-	FInventoryItem* NewItem = new FInventoryItem(ItemType, ItemID, Amount, InventoryItems->Num());
-
+	FInventoryItem* NewItem = new FInventoryItem(ItemType, ItemID, Amount);
 	InventoryItems->Add(NewItem);
-
 	InventoryWidget->AddItemToSlot(NewItem);
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,
-		FString::Printf(TEXT("New Loot Item ID = %d, Amount = %d"), ItemID, Amount));
 
 	return;
 }
