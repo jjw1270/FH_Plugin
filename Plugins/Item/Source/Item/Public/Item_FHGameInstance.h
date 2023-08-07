@@ -15,10 +15,9 @@ class ITEM_API UItem_FHGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY()
-	TArray<FInventoryItem> InventoryItems;
+	TArray<struct FInventoryItem*> InventoryItems;
 
 public:
-	FORCEINLINE TArray<FInventoryItem>* GetInventoryItems() { return &InventoryItems; }
+	FORCEINLINE TArray<struct FInventoryItem*>* GetInventoryItems() { return &InventoryItems; }
 
 };

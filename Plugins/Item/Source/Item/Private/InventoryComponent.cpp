@@ -48,14 +48,16 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& A
 	if (ItemType == EItemType::Consumable)
 	{
 		// if Already Exist in Inventory, Add Amount
-		for (auto& InventoryItem : *InventoryItems)
+		for (auto InventoryItem : *InventoryItems)
 		{
-			if (InventoryItem.ID == ItemID)
+			if (InventoryItem->ID == ItemID)
 			{
-				InventoryItem.Amount += Amount;
+				InventoryItem->Amount += Amount;
+
+				InventoryWidget->UpdateItemToSlot(InventoryItem);
 
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,
-					FString::Printf(TEXT("Loot Item ID = %d, Amount = %d"), InventoryItem.ID, InventoryItem.Amount));
+					FString::Printf(TEXT("Loot Item ID = %d, Amount = %d"), InventoryItem->ID, InventoryItem->Amount));
 
 				return;
 			}
@@ -63,14 +65,14 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& A
 	}
 
 	// else Make InventoryItem
-	FInventoryItem InventoryItem = FInventoryItem(ItemType, ItemID, Amount);
+	FInventoryItem* NewItem = new FInventoryItem(ItemType, ItemID, Amount, InventoryItems->Num());
 
-	InventoryItems->Add(InventoryItem);
+	InventoryItems->Add(NewItem);
+
+	InventoryWidget->AddItemToSlot(NewItem);
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,
-		FString::Printf(TEXT("New Loot Item ID = %d, Amount = %d"), InventoryItem.ID, InventoryItem.Amount));
-
-	InventoryWidget->SetItemsToSlots(*InventoryItems);
+		FString::Printf(TEXT("New Loot Item ID = %d, Amount = %d"), ItemID, Amount));
 
 	return;
 }

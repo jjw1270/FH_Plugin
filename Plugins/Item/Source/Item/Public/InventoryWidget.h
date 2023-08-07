@@ -24,10 +24,14 @@ protected:
 	virtual void NativeDestruct() override;
 
 protected:
-	bool bIsCreateSlots;
+	UPROPERTY(BlueprintReadOnly)
+	class AItem_FHPlayerController* PC;
 
 	UPROPERTY(meta = (BindWidget))
 	class UUniformGridPanel* InventorySlotGrid;
+
+	UPROPERTY(meta = (BindWidget))
+	UUserWidget* ItemInfoBox;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UInventorySlotWidget> InventorySlotClass;
@@ -40,14 +44,16 @@ protected:
 
 	int32 SlotGridColRange{ 5 };
 
-
-	UPROPERTY()
 	class UInventoryComponent* InventoryComp;
 
 public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AddSlotGridRowRange(int32 Num = 1) { SlotGridRowRange  += Num; }
 
-	void SetItemsToSlots(TArray<FInventoryItem>& InventoryItemArray);
+	FORCEINLINE UUserWidget* GetItemInfoBox() const { return ItemInfoBox; }
+
+	void AddItemToSlot(FInventoryItem* NewItem);
+
+	void UpdateItemToSlot(FInventoryItem* NewItem);
 
 };

@@ -10,41 +10,45 @@ void UInventorySlotWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
+	Amount = 0;
 }
 
-bool UInventorySlotWidget::IsEmpty()
+void UInventorySlotWidget::AddItemAmount(int32 NewAmount)
 {
-	return Amount > 0;
+	Amount = NewAmount;
 }
 
-void UInventorySlotWidget::SetItemDataToSlot(const struct FInventoryItem& InventoryItem)
+void UInventorySlotWidget::SetItemDataToSlot(struct FInventoryItem* InventoryItem, class UInventoryComponent* InventoryComp)
 {
-	//Amount = InventoryItem.Amount;
+	ItemInfoBox = InventoryComp->GetInventoryWidget()->GetItemInfoBox();
 
-	//switch (InventoryItem.Type)
-	//{
-	//	case EItemType::Consumable:
-	//	{
-	//		FConsumableItemData* ItemData = GameInstance->GetConsumableItemInfo(InventoryItem.ID);
-	//		ItemType = FString("Consumable");
-	//		ItemName = ItemData->Name;
-	//		ItemPrice = ItemData->Price;
-	//		ItemInfo = ItemData->ItemTextInfo;
-	//		Image = ItemData->ItemImage;
-	//		break;
-	//	}
-	//	case EItemType::Equipment:
-	//	{
-	//		FEquipmentItemData* ItemData = GameInstance->GetEquipmentItemInfo(InventoryItem.ID);
-	//		ItemType = FString("Equipment");
-	//		ItemName = ItemData->Name;
-	//		ItemPrice = ItemData->Price;
-	//		ItemInfo = ItemData->ItemTextInfo;
-	//		Image = ItemData->ItemImage;
-	//		break;
-	//	}
-	//	default:
-	//		break;
-	//}
+	SlotInventoryItem = InventoryItem;
+
+	Amount = SlotInventoryItem->Amount;
+
+	switch (SlotInventoryItem->Type)
+	{
+		case EItemType::Consumable:
+		{
+			FConsumableItemData* ItemData = InventoryComp->GetConsumableItemInfo(SlotInventoryItem->ID);
+			ItemType = FString("Consumable");
+			ItemName = ItemData->Name;
+			ItemPrice = ItemData->Price;
+			ItemInfo = ItemData->ItemTextInfo;
+			Image = ItemData->ItemImage;
+			break;
+		}
+		case EItemType::Equipment:
+		{
+			FEquipmentItemData* ItemData = InventoryComp->GetEquipmentItemInfo(SlotInventoryItem->ID);
+			ItemType = FString("Equipment");
+			ItemName = ItemData->Name;
+			ItemPrice = ItemData->Price;
+			ItemInfo = ItemData->ItemTextInfo;
+			Image = ItemData->ItemImage;
+			break;
+		}
+		default:
+			break;
+	}
 }
-

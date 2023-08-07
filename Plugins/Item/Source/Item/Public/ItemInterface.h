@@ -31,20 +31,6 @@ public:
 
 // Structs and Enums that using in Item Plugin //
 
-
-//USTRUCT(Atomic, BlueprintType)
-//struct FDropWeightByItem
-//{
-//    GENERATED_BODY()
-//
-//    public:
-//    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//    int32 ItemID;
-//
-//    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//    int32 DropWeight;
-//};
-
 USTRUCT(Atomic, BlueprintType)
 struct FItemDropData : public FTableRowBase
 {

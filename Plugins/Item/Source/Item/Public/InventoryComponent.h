@@ -25,10 +25,11 @@ public:
 		Type = EItemType::None;
 		ID = 0;
 		Amount = 0;
+		Index = -99;
 	};
 
-	FInventoryItem(EItemType Type, int32 ID, int32 Amount)
-		: Type(Type), ID(ID), Amount(Amount) {};
+	FInventoryItem(EItemType Type, int32 ID, int32 Amount, int32 Index)
+		: Type(Type), ID(ID), Amount(Amount), Index(Index) {};
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -39,6 +40,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 Amount;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int32 Index;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -67,13 +71,13 @@ public:
 	struct FEquipmentItemData* GetEquipmentItemInfo(const int32& ItemID);
 
 protected:
-	TArray<FInventoryItem>* InventoryItems;
+	TArray<FInventoryItem*>* InventoryItems;
 
 public:
 	UFUNCTION(BlueprintCallable)
 	void AddItemToInventory(const int32& ItemID, const int32& Amount);
 
-	FORCEINLINE TArray<FInventoryItem>* GetInventoryItems() { return InventoryItems; }
+	FORCEINLINE TArray<FInventoryItem*>* GetInventoryItems() { return InventoryItems; }
 
 private:
 	EItemType GetItemType(const int32& ItemID);

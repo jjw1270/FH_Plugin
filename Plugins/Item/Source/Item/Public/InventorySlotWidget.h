@@ -16,13 +16,18 @@ class ITEM_API UInventorySlotWidget : public UUserWidget
 	
 protected:
 	virtual void NativeOnInitialized() override;
-	
-public:
-	bool IsEmpty();
 
-	void SetItemDataToSlot(const struct FInventoryItem& InventoryItem);
+public:
+	void AddItemAmount(int32 NewAmount);
+
+	void SetItemDataToSlot(struct FInventoryItem* InventoryItem, class UInventoryComponent* InventoryComp);
 
 protected:
+	UPROPERTY(BlueprintReadOnly)
+	UUserWidget* ItemInfoBox;
+
+	FInventoryItem* SlotInventoryItem;
+
 	UPROPERTY(BlueprintReadOnly)
 	FString ItemType;
 
@@ -40,5 +45,11 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	int32 Amount;
+
+public:	
+	FORCEINLINE FInventoryItem* GetSlotInventoryItem() const { return SlotInventoryItem; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool IsEmpty() const { return Amount <= 0; }
 
 };
