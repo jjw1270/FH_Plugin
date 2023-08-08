@@ -79,9 +79,12 @@ public:
 private:
 	EItemType GetItemType(const int32& ItemID);
 
+	UPROPERTY()
+	class AItem_FHPlayerController* PC;
+
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory)
-	TSubclassOf<class UInventoryWidget> InventoryWidgetClass;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UInventoryWidget> InventoryWidgetClass;
 
 	UPROPERTY()
 	class UInventoryWidget* InventoryWidget;

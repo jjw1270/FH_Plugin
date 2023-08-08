@@ -13,7 +13,6 @@
 void UInventoryWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-	UE_LOG(LogTemp, Warning, TEXT("Initwidget"));
 
 	PC = Cast<AItem_FHPlayerController>(GetOwningPlayer());
 	ensureMsgf(PC, TEXT("PC is nullptr"));
@@ -67,10 +66,13 @@ void UInventoryWidget::UpdateItemToSlot(FInventoryItem* NewItem)
 {
 	for (auto slot : InventorySlotArray)
 	{
-		if (slot->GetSlotInventoryItem()->ID == NewItem->ID)
+		if (FInventoryItem* SlotInventoryItem =  slot->GetSlotInventoryItem())
 		{
-			slot->UpdateItemAmount();
-			return;
+			if (SlotInventoryItem->ID == NewItem->ID)
+			{
+				slot->UpdateItemAmount();
+				return;
+			}
 		}
 	}
 }

@@ -22,9 +22,8 @@ void UInventoryComponent::BeginPlay()
 
 	InventoryItems = GI->GetInventoryItems();
 
-	ensureMsgf(IsValid(InventoryWidgetClass), TEXT("InventoryWidgetClass is Not Valid"));
+	ensureMsgf(IsValid(InventoryWidgetClass), TEXT("InventoryWidgetClass is not set"));
 	InventoryWidget = CreateWidget<UInventoryWidget>(GetWorld(), InventoryWidgetClass);
-
 }
 
 FConsumableItemData* UInventoryComponent::GetConsumableItemInfo(const int32& ItemID)

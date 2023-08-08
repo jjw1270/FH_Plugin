@@ -17,7 +17,13 @@ class ITEM_API UInventorySlotWidget : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
+	virtual void NativeConstruct() override;
+
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+
+	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 public:
 	void SetItemDataToSlot(struct FInventoryItem* InventoryItem);
@@ -26,16 +32,7 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UUserWidget> DragWidgetClass;
-
-	UPROPERTY()
-	UUserWidget* DragWidget;
-
-	UPROPERTY()
-	TSubclassOf<class UItemDragDropOperation> DragOperationClass;
-
-	UPROPERTY()
-	class UItemDragDropOperation* DragOperation;
+	TSubclassOf<class UOnDragWidget> DragWidgetClass;
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
@@ -49,7 +46,9 @@ protected:
 
 protected:
 	UFUNCTION(BlueprintCallable)
-	void SetWidgetBindVariables(bool bReset);
+	void SetWidgetBindVariables();
+
+	void ClearBindWidget();
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
@@ -70,6 +69,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UTexture2D> Image;
 
+protected:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* ItemImage;
 

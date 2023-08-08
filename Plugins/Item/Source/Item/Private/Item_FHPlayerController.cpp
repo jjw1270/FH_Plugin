@@ -7,7 +7,7 @@
 //Enhanced Input
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-
+//UI
 #include "InventoryWidget.h"
 
 AItem_FHPlayerController::AItem_FHPlayerController()
@@ -23,6 +23,8 @@ void AItem_FHPlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(UIMappingContext, 0);
 	}
+
+
 }
 
 void AItem_FHPlayerController::SetupInputComponent()

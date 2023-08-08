@@ -9,6 +9,7 @@
 #include "InventoryWidget.h"
 #include "ItemDragDropOperation.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "OnDragWidget.h"
 
 void UInventorySlotWidget::NativeOnInitialized()
 {
@@ -16,6 +17,17 @@ void UInventorySlotWidget::NativeOnInitialized()
 
 	InventoryComp = Cast<UInventoryComponent>(GetOwningPlayer()->GetComponentByClass(UInventoryComponent::StaticClass()));
 	ensureMsgf(InventoryComp, TEXT("InventoryComp is nullptr"));
+
+	ClearBindWidget();
+}
+
+void UInventorySlotWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	ItemInfoBox = InventoryComp->GetInventoryWidget()->GetItemInfoBox();
+	ensureMsgf(ItemInfoBox, TEXT("ItemInfoBox is nullptr"));
+
 }
 
 void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
@@ -26,23 +38,77 @@ void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, con
 	{
 		return;
 	}
-	/////////////////////////////////////////////
-	DragWidget = CreateWidget(GetOwningPlayer(), DragWidgetClass);
-	DragOperation = Cast<UItemDragDropOperation>(UWidgetBlueprintLibrary::CreateDragDropOperation(DragOperationClass));
+
+	ensureMsgf(DragWidgetClass, TEXT("DragWidgetClass is nullptr"));
+	UOnDragWidget* DragWidget = Cast<UOnDragWidget>(CreateWidget(GetWorld(), DragWidgetClass));
+	DragWidget->SetItemImage(Cast<UTexture2D>(ItemImage->GetBrush().GetResourceObject()));
+
+	UItemDragDropOperation* DragOperation = Cast<UItemDragDropOperation>(UWidgetBlueprintLibrary::CreateDragDropOperation(UItemDragDropOperation::StaticClass()));
+	if (!IsValid(DragOperation))
+	{
+		return;
+	}
 	DragOperation->DefaultDragVisual = DragWidget;
-	DragOperation->SlotInventoryItem = *SlotInventoryItem;
-	SetWidgetBindVariables(true);
+	DragOperation->SlotInventoryItem = SlotInventoryItem;
+	DragOperation->Payload = this;
+
+	ClearBindWidget();
 	ItemInfoBox->SetVisibility(ESlateVisibility::Collapsed);
 
 	OutOperation = DragOperation;
 }
 
+void UInventorySlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+	UItemDragDropOperation* DragOperation = Cast<UItemDragDropOperation>(InOperation);
+	if (!DragOperation)
+	{
+		return;
+	}
+
+	SetItemDataToSlot(DragOperation->SlotInventoryItem);
+}
+
+// Called On Drag Droped Slot!
+bool UInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+
+	UItemDragDropOperation* DragOperation = Cast<UItemDragDropOperation>(InOperation);
+	if (!DragOperation)
+	{
+		return false;
+	}
+
+	// if slot is empty
+	if (!SlotInventoryItem)
+	{	
+		SetItemDataToSlot(DragOperation->SlotInventoryItem);
+
+		return true;
+	}
+
+	// if slot has Item, Swap slots
+	UInventorySlotWidget* PrevInventorySlot = Cast<UInventorySlotWidget>(DragOperation->Payload);
+	if (PrevInventorySlot)
+	{
+		PrevInventorySlot->SetItemDataToSlot(SlotInventoryItem);
+		
+		SetItemDataToSlot(DragOperation->SlotInventoryItem);
+
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *PrevInventorySlot->GetName());
+
+		return true;
+	}
+
+	return false;
+}
+
 void UInventorySlotWidget::SetItemDataToSlot(struct FInventoryItem* NewInventoryItem)
 {
 	SlotInventoryItem = NewInventoryItem;
-	ItemInfoBox = InventoryComp->GetInventoryWidget()->GetItemInfoBox();
 
-	SetWidgetBindVariables(false);
+	SetWidgetBindVariables();
 }
 
 void UInventorySlotWidget::UpdateItemAmount()
@@ -50,22 +116,12 @@ void UInventorySlotWidget::UpdateItemAmount()
 	Amount = SlotInventoryItem->Amount;
 }
 
-void UInventorySlotWidget::SetWidgetBindVariables(bool bReset)
+void UInventorySlotWidget::SetWidgetBindVariables()
 {
-	if (bReset)
-	{
-		Amount = 0;
-		ItemType = EItemType::None;
-		ItemName = "";
-		ItemPrice = 0;
-		ItemInfo = "";
-		ItemImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
-		return;
-	}
+	ItemImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
 
 	Amount = SlotInventoryItem->Amount;
 	ItemType = SlotInventoryItem->Type;
-	ItemImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
 
 	switch (ItemType)
 	{
@@ -75,7 +131,7 @@ void UInventorySlotWidget::SetWidgetBindVariables(bool bReset)
 		ItemName = ItemData->Name;
 		ItemPrice = ItemData->Price;
 		ItemInfo = ItemData->ItemTextInfo;
-		Image = ItemData->ItemImage;
+		ItemImage->SetBrushFromTexture(ItemData->ItemImage);
 		return;
 	}
 	case EItemType::Equipment:
@@ -84,10 +140,25 @@ void UInventorySlotWidget::SetWidgetBindVariables(bool bReset)
 		ItemName = ItemData->Name;
 		ItemPrice = ItemData->Price;
 		ItemInfo = ItemData->ItemTextInfo;
-		Image = ItemData->ItemImage;
+		ItemImage->SetBrushFromTexture(ItemData->ItemImage);
 		return;
 	}
 	default:
 		return;
 	}
+}
+
+void UInventorySlotWidget::ClearBindWidget()
+{
+	SlotInventoryItem = nullptr;
+
+	Amount = 0;
+	ItemType = EItemType::None;
+	ItemName = "";
+	ItemPrice = 0;
+	ItemInfo = "";
+	ItemImage->SetBrushFromTexture(nullptr);
+	ItemImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
+
+	return;
 }
