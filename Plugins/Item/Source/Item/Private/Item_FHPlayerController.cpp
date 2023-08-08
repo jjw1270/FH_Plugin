@@ -38,19 +38,19 @@ void AItem_FHPlayerController::SetupInputComponent()
 }
 
 void AItem_FHPlayerController::InventoryUI()
-{
+{		
+	//Open Inventory UI
 	if (!bIsInventoryUIOpen)
 	{
 		bIsInventoryUIOpen = true;
-		//Open Inventory UI
 		InventoryComp->GetInventoryWidget()->AddToViewport();
 		SetShowMouseCursor(true);
 		SetInputMode(FInputModeGameAndUI());
 	}
+	//Close Inventory UI
 	else
 	{
 		bIsInventoryUIOpen = false;
-		//Close Inventory UI
 		InventoryComp->GetInventoryWidget()->RemoveFromParent();
 		SetShowMouseCursor(false);
 		SetInputMode(FInputModeGameOnly());
