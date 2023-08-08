@@ -67,6 +67,31 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& A
 	return;
 }
 
+void UInventoryComponent::RemoveItemFromInventory(const FInventoryItem* InventoryItem, int32 Amount)
+{
+	int32 FindIndex = -1;
+
+	for (auto a : *InventoryItems)
+	{
+		if (a == InventoryItem)
+		{
+			a->Amount -= Amount;
+
+			if (a->Amount <= 0)
+			{
+				InventoryItems->Remove(a);
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("Remove Item Success"));
+
+			return;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Remove Item Fail"));
+
+}
+
 EItemType UInventoryComponent::GetItemType(const int32& ItemID)
 {
 	EItemType Itemtype;

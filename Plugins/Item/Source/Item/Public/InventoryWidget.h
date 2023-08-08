@@ -17,12 +17,6 @@ class ITEM_API UInventoryWidget : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
-	virtual void NativePreConstruct() override;
-
-	virtual void NativeConstruct() override;
-
-	virtual void NativeDestruct() override;
-
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	class AItem_FHPlayerController* PC;
@@ -32,6 +26,12 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UUserWidget* ItemInfoBox;
+
+	UPROPERTY(meta = (BindWidget))
+	UUserWidget* ItemTrash;
+
+	UPROPERTY(meta = (BindWidget))
+	URemoveConfirmWidget* RemoveConfirmWidget;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UInventorySlotWidget> InventorySlotClass;
@@ -44,13 +44,16 @@ protected:
 
 	int32 SlotGridColRange{ 5 };
 
-	class UInventoryComponent* InventoryComp;
-
 public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AddSlotGridRowRange(int32 Num = 1) { SlotGridRowRange  += Num; }
 
 	FORCEINLINE UUserWidget* GetItemInfoBox() const { return ItemInfoBox; }
+
+	FORCEINLINE UUserWidget* GetItemTrash() const { return ItemTrash; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE class URemoveConfirmWidget* GetRemoveConfirmWidget() const { return RemoveConfirmWidget; }
 
 	void AddItemToSlot(FInventoryItem* NewItem);
 

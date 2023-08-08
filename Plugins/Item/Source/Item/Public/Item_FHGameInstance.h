@@ -18,6 +18,9 @@ protected:
 	TArray<struct FInventoryItem*> InventoryItems;
 
 public:
+	UFUNCTION(BlueprintCallable)
+	void TestInventory();
+
 	FORCEINLINE TArray<struct FInventoryItem*>* GetInventoryItems() { return &InventoryItems; }
 
 };

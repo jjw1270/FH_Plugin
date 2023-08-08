@@ -53,7 +53,9 @@ void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, con
 	DragOperation->Payload = this;
 
 	ClearBindWidget();
+
 	ItemInfoBox->SetVisibility(ESlateVisibility::Collapsed);
+	InventoryComp->GetInventoryWidget()->GetItemTrash()->SetVisibility(ESlateVisibility::Visible);
 
 	OutOperation = DragOperation;
 }
@@ -67,6 +69,8 @@ void UInventorySlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDro
 	}
 
 	SetItemDataToSlot(DragOperation->SlotInventoryItem);
+
+	InventoryComp->GetInventoryWidget()->GetItemTrash()->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 // Called On Drag Droped Slot!

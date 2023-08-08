@@ -5,20 +5,11 @@
 #include "Components/UniformGridPanel.h"
 #include "Components/Button.h"
 #include "InventorySlotWidget.h"
-
-#include "ItemInterface.h"
 #include "InventoryComponent.h"
-#include "Item_FHPlayerController.h"
 
 void UInventoryWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-
-	PC = Cast<AItem_FHPlayerController>(GetOwningPlayer());
-	ensureMsgf(PC, TEXT("PC is nullptr"));
-
-	InventoryComp = PC->GetInventoryComp();
-	ensureMsgf(InventoryComp, TEXT("InventoryComp is nullptr"));
 
 	ensureMsgf(InventorySlotClass, TEXT("InventorySlotClass is nullptr"));
 	for (int32 row = 0; row < SlotGridRowRange; row++)
@@ -30,24 +21,6 @@ void UInventoryWidget::NativeOnInitialized()
 			InventorySlotArray.Add(NewInventorySlot);
 		}
 	}
-}
-
-void UInventoryWidget::NativePreConstruct()
-{
-	Super::NativePreConstruct();
-
-	
-}
-
-void UInventoryWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-}
-
-void UInventoryWidget::NativeDestruct()
-{
-
 }
 
 void UInventoryWidget::AddItemToSlot(FInventoryItem* NewItem)

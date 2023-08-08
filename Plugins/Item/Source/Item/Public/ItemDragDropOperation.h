@@ -15,6 +15,9 @@ class ITEM_API UItemDragDropOperation : public UDragDropOperation
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY()
+	class UImage* ItemImage;
+
 	struct FInventoryItem* SlotInventoryItem;
 
 };
