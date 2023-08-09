@@ -66,9 +66,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	FString ItemInfo;
 
-	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UTexture2D> Image;
-
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* ItemImage;

@@ -67,7 +67,7 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& A
 	return;
 }
 
-void UInventoryComponent::RemoveItemFromInventory(const FInventoryItem* InventoryItem, int32 Amount)
+int32 UInventoryComponent::RemoveItemFromInventory(const FInventoryItem* InventoryItem, int32 Amount)
 {
 	int32 FindIndex = -1;
 
@@ -84,12 +84,13 @@ void UInventoryComponent::RemoveItemFromInventory(const FInventoryItem* Inventor
 
 			UE_LOG(LogTemp, Warning, TEXT("Remove Item Success"));
 
-			return;
+			return a->Amount;
 		}
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Remove Item Fail"));
 
+	return 0;
 }
 
 EItemType UInventoryComponent::GetItemType(const int32& ItemID)

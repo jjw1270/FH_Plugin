@@ -3,6 +3,8 @@
 
 #include "RemoveConfirmWidget.h"
 #include "Components/Image.h"
+#include "Components/Slider.h"
+#include "Components/VerticalBox.h"
 #include "ItemDragDropOperation.h"
 #include "Item_FHPlayerController.h"
 #include "InventoryComponent.h"
@@ -23,18 +25,41 @@ void URemoveConfirmWidget::ShowRemoveConfirm(UItemDragDropOperation* NewItemDrag
 {
 	ItemDragDropOperation = NewItemDragDropOperation;
 
-	ItemImage->SetBrushFromTexture(ItemDragDropOperation->SlotInventoryItem->)
+	ItemImage->SetBrushFromTexture(ItemDragDropOperation->ItemImage);
 	MaxAmount = ItemDragDropOperation->SlotInventoryItem->Amount;
+	Slider_Amount->SetValue(1.f);
+
+	if (MaxAmount <= 1)
+	{
+		SetAmountBox->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	else
+	{
+		Slider_Amount->SetMaxValue(MaxAmount);
+	}
 
 	SetVisibility(ESlateVisibility::Visible);
 }
 
-void URemoveConfirmWidget::RemoveItem(int32 Amount)
+void URemoveConfirmWidget::RemoveItem()
 {
+	int32 Amount = Slider_Amount->GetValue();
+
 	if (ItemDragDropOperation)
 	{
-		InventoryComp->RemoveItemFromInventory(ItemDragDropOperation->SlotInventoryItem, ItemDragDropOperation->SlotInventoryItem->Amount);
+		int32 AmountLeft = InventoryComp->RemoveItemFromInventory(ItemDragDropOperation->SlotInventoryItem, Amount);
+
+		if (AmountLeft > 0)
+		{
+			UInventorySlotWidget* PrevInventorySlot = Cast<UInventorySlotWidget>(ItemDragDropOperation->Payload);
+			if (PrevInventorySlot)
+			{
+				PrevInventorySlot->SetItemDataToSlot(ItemDragDropOperation->SlotInventoryItem);
+			}
+		}
 	}
+
+	SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void URemoveConfirmWidget::OnCancel()
@@ -44,6 +69,8 @@ void URemoveConfirmWidget::OnCancel()
 	{
 		PrevInventorySlot->SetItemDataToSlot(ItemDragDropOperation->SlotInventoryItem);
 	}
+
+	SetAmountBox->SetVisibility(ESlateVisibility::Visible);
 
 	SetVisibility(ESlateVisibility::Collapsed);
 }

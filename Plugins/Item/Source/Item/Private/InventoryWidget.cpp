@@ -11,6 +11,9 @@ void UInventoryWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
+	PC = Cast<AItem_FHPlayerController>(GetOwningPlayer());
+	ensureMsgf(PC, TEXT("PC is nullptr"));
+
 	ensureMsgf(InventorySlotClass, TEXT("InventorySlotClass is nullptr"));
 	for (int32 row = 0; row < SlotGridRowRange; row++)
 	{

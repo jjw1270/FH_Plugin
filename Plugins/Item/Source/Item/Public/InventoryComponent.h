@@ -76,7 +76,7 @@ public:
 
 	FORCEINLINE TArray<FInventoryItem*>* GetInventoryItems() { return InventoryItems; }
 
-	void RemoveItemFromInventory(const FInventoryItem* InventoryItem, int32 Amount);
+	int32 RemoveItemFromInventory(const FInventoryItem* InventoryItem, int32 Amount);
 
 private:
 	EItemType GetItemType(const int32& ItemID);

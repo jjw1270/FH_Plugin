@@ -31,13 +31,19 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* ItemImage;
 
+	UPROPERTY(meta = (BindWidget))
+	class USlider* Slider_Amount;
+
+	UPROPERTY(meta = (BindWidget))
+	class UVerticalBox* SetAmountBox;
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void ShowRemoveConfirm(class UItemDragDropOperation* NewItemDragDropOperation);
 
 protected:
 	UFUNCTION(BlueprintCallable)
-	void RemoveItem(int32 Amount);
+	void RemoveItem();
 
 	UFUNCTION(BlueprintCallable)
 	void OnCancel();

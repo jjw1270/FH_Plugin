@@ -15,8 +15,8 @@ class ITEM_API UItemDragDropOperation : public UDragDropOperation
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY()
-	class UImage* ItemImage;
+	UPROPERTY(BlueprintReadOnly)
+	class UTexture2D* ItemImage;
 
 	struct FInventoryItem* SlotInventoryItem;
 

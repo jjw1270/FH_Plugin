@@ -41,7 +41,8 @@ void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, con
 
 	ensureMsgf(DragWidgetClass, TEXT("DragWidgetClass is nullptr"));
 	UOnDragWidget* DragWidget = Cast<UOnDragWidget>(CreateWidget(GetWorld(), DragWidgetClass));
-	DragWidget->SetItemImage(Cast<UTexture2D>(ItemImage->GetBrush().GetResourceObject()));
+	UTexture2D* Image = Cast<UTexture2D>(ItemImage->GetBrush().GetResourceObject());
+	DragWidget->SetItemImage(Image);
 
 	UItemDragDropOperation* DragOperation = Cast<UItemDragDropOperation>(UWidgetBlueprintLibrary::CreateDragDropOperation(UItemDragDropOperation::StaticClass()));
 	if (!IsValid(DragOperation))
@@ -50,6 +51,7 @@ void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, con
 	}
 	DragOperation->DefaultDragVisual = DragWidget;
 	DragOperation->SlotInventoryItem = SlotInventoryItem;
+	DragOperation->ItemImage = Image;
 	DragOperation->Payload = this;
 
 	ClearBindWidget();
@@ -77,6 +79,8 @@ void UInventorySlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDro
 bool UInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+
+	InventoryComp->GetInventoryWidget()->GetItemTrash()->SetVisibility(ESlateVisibility::Collapsed);
 
 	UItemDragDropOperation* DragOperation = Cast<UItemDragDropOperation>(InOperation);
 	if (!DragOperation)
