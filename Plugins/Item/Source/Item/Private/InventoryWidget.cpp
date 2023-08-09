@@ -63,7 +63,7 @@ void UInventoryWidget::SortItemSlot()
 			continue;
 		}
 
-		for (int j = i; j < InventorySlotArray.Num(); j++)
+		for (int j = InventorySlotArray.Num()-1; j > i; j--)
 		{
 			if (!InventorySlotArray[j]->IsEmpty())
 			{
