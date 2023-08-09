@@ -47,10 +47,6 @@ void ADropItem::BeginPlay()
 	ensureMsgf(PlayerController, TEXT("PlayerController is nullptr"));
 
 	GetWorldTimerManager().SetTimer(UpdateWidgetVisiblityTimerHandle, this, &ADropItem::UpdateWidgetVisiblity, 0.1f, true);
-
-	// Add random Upward Impulse to animating
-
-	/////
 }
 
 void ADropItem::UpdateWidgetVisiblity()

@@ -76,4 +76,6 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	AActor* InteractingActor;  // For AnimNotify on Interaction Montage Playing, Delete when Notify End Execution.
 
+	UPROPERTY(BlueprintReadWrite)
+	AActor* LootingEffect;
 };

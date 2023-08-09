@@ -68,6 +68,11 @@ void UAnimNotify_Looting::DestroyLootItem(AActor* Owner)
 {
 	if (AItem_PlayableCharacter* Char = Cast<AItem_PlayableCharacter>(Owner))
 	{
+		if (Char->LootingEffect)
+		{
+			Char->LootingEffect->Destroy();
+		}
+
 		Char->InteractingActor->Destroy();
 		Char->InteractingActor = nullptr;
 	}
