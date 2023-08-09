@@ -45,6 +45,15 @@ protected:
 	int32 SlotGridColRange{ 5 };
 
 public:
+	void AddItemToSlot(FInventoryItem* NewItem);
+
+	void UpdateItemToSlot(FInventoryItem* NewItem);
+
+protected:
+	UFUNCTION(BlueprintCallable)
+	void SortItemSlot();
+
+public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AddSlotGridRowRange(int32 Num = 1) { SlotGridRowRange  += Num; }
 
@@ -54,9 +63,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE class URemoveConfirmWidget* GetRemoveConfirmWidget() const { return RemoveConfirmWidget; }
-
-	void AddItemToSlot(FInventoryItem* NewItem);
-
-	void UpdateItemToSlot(FInventoryItem* NewItem);
 
 };

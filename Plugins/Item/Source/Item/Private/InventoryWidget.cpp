@@ -52,3 +52,26 @@ void UInventoryWidget::UpdateItemToSlot(FInventoryItem* NewItem)
 		}
 	}
 }
+
+// Sort according to IsEmpty()
+void UInventoryWidget::SortItemSlot()
+{
+	for (int i = 0; i < InventorySlotArray.Num(); i++)
+	{
+		if (!InventorySlotArray[i]->IsEmpty())
+		{
+			continue;
+		}
+
+		for (int j = i; j < InventorySlotArray.Num(); j++)
+		{
+			if (!InventorySlotArray[j]->IsEmpty())
+			{
+				InventorySlotArray[i]->SetItemDataToSlot(InventorySlotArray[j]->GetSlotInventoryItem());
+				InventorySlotArray[j]->ClearBindWidget();
+
+				break;
+			}
+		}
+	}
+}

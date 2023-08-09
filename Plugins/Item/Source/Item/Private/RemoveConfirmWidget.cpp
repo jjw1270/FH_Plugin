@@ -4,6 +4,7 @@
 #include "RemoveConfirmWidget.h"
 #include "Components/Image.h"
 #include "Components/Slider.h"
+#include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "ItemDragDropOperation.h"
 #include "Item_FHPlayerController.h"
@@ -28,6 +29,9 @@ void URemoveConfirmWidget::ShowRemoveConfirm(UItemDragDropOperation* NewItemDrag
 	ItemImage->SetBrushFromTexture(ItemDragDropOperation->ItemImage);
 	MaxAmount = ItemDragDropOperation->SlotInventoryItem->Amount;
 	Slider_Amount->SetValue(1.f);
+
+	FString AmountTxt = FString::FromInt(static_cast<int32>(Slider_Amount->GetValue()));
+	Text_Amount->SetText(FText::FromString(AmountTxt));
 
 	if (MaxAmount <= 1)
 	{

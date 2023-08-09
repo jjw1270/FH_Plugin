@@ -82,13 +82,13 @@ int32 UInventoryComponent::RemoveItemFromInventory(const FInventoryItem* Invento
 				InventoryItems->Remove(a);
 			}
 
-			UE_LOG(LogTemp, Warning, TEXT("Remove Item Success"));
+			//UE_LOG(LogTemp, Warning, TEXT("Remove Item Success"));
 
 			return a->Amount;
 		}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Remove Item Fail"));
+	//UE_LOG(LogTemp, Warning, TEXT("Remove Item Fail"));
 
 	return 0;
 }

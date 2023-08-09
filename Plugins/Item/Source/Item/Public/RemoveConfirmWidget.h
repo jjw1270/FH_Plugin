@@ -37,6 +37,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	class UVerticalBox* SetAmountBox;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	class UTextBlock* Text_Amount;
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void ShowRemoveConfirm(class UItemDragDropOperation* NewItemDragDropOperation);

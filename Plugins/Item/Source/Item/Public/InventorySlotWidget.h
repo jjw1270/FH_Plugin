@@ -45,10 +45,8 @@ protected:
 	FInventoryItem* SlotInventoryItem;
 
 protected:
-	UFUNCTION(BlueprintCallable)
-	void SetWidgetBindVariables();
 
-	void ClearBindWidget();
+
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
@@ -71,6 +69,11 @@ protected:
 	class UImage* ItemImage;
 
 public:	
+	UFUNCTION(BlueprintCallable)
+	void SetWidgetBindVariables();
+
+	void ClearBindWidget();
+
 	FORCEINLINE FInventoryItem* GetSlotInventoryItem() const { return SlotInventoryItem; }
 
 	UFUNCTION(BlueprintCallable)

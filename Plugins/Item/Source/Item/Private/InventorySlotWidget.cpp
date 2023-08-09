@@ -104,7 +104,7 @@ bool UInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 		
 		SetItemDataToSlot(DragOperation->SlotInventoryItem);
 
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *PrevInventorySlot->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("%s"), *PrevInventorySlot->GetName());
 
 		return true;
 	}
