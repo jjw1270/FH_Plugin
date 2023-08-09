@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -20,9 +21,8 @@ ADropItem::ADropItem()
 	RootSphereCollision->SetCollisionProfileName(FName("OverlapOnlyPawn"));
 	RootSphereCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
-	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMesh"));
-	ItemMesh->SetupAttachment(RootComponent);
-	ItemMesh->SetCollisionProfileName(FName("NoCollision"));
+	ItemParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ItemParticle"));
+	ItemParticle->SetupAttachment(RootComponent);
 
 	OverlapBoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBoxCollision"));
 	OverlapBoxCollision->SetupAttachment(RootComponent);

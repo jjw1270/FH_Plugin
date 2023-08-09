@@ -25,7 +25,7 @@ protected:
 	TObjectPtr<class USphereComponent> RootSphereCollision;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component)
-	TObjectPtr<UStaticMeshComponent> ItemMesh;
+	TObjectPtr<UParticleSystemComponent> ItemParticle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component)
 	TObjectPtr<class UBoxComponent> OverlapBoxCollision;
@@ -38,6 +38,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, Meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> LootingMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = Particle, Meta = (AllowPrivateAccess = true))
+	TSubclassOf<UParticleSystemComponent> ItemParticleClass;
 
 	UPROPERTY(EditAnywhere, Category = Widget, Meta = (AllowPrivateAccess = true))
 	float WidgetVisiblityRange{ 1500.f };
