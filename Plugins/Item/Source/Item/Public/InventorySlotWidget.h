@@ -18,7 +18,7 @@ class ITEM_API UInventorySlotWidget : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
-	virtual void NativeConstruct() override;
+	// virtual void NativeConstruct() override;
 
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 
@@ -27,11 +27,13 @@ protected:
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 public:
-	void SetItemDataToSlot(struct FInventoryItem* InventoryItem);
+	void BindOnInventoryItemChanged();
 
-	void UpdateItemAmount();
+	void UpdateItem(struct FInventoryItem* NewItem);
 
 protected:
+	FDelegateHandle DeleHandle_OnInventoryItemChanged;
+
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UOnDragWidget> DragWidgetClass;
 

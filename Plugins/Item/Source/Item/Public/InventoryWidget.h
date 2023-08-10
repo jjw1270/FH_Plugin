@@ -45,9 +45,7 @@ protected:
 	int32 SlotGridColRange{ 5 };
 
 public:
-	void AddItemToSlot(FInventoryItem* NewItem);
-
-	void UpdateItemToSlot(FInventoryItem* NewItem);
+	void AddNewItemToSlot(FInventoryItem* NewItem);
 
 protected:
 	UFUNCTION(BlueprintCallable)

@@ -21,11 +21,6 @@ void UInventorySlotWidget::NativeOnInitialized()
 	ClearBindWidget();
 }
 
-void UInventorySlotWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-}
-
 void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
 	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
@@ -36,7 +31,7 @@ void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, con
 	}
 
 	ensureMsgf(DragWidgetClass, TEXT("DragWidgetClass is nullptr"));
-	UOnDragWidget* DragWidget = Cast<UOnDragWidget>(CreateWidget(GetWorld(), DragWidgetClass));
+	UOnDragWidget* DragWidget = Cast<UOnDragWidget>(CreateWidget(GetOwningPlayer(), DragWidgetClass));
 	UTexture2D* Image = Cast<UTexture2D>(ItemImage->GetBrush().GetResourceObject());
 	DragWidget->SetItemImage(Image);
 
@@ -60,15 +55,25 @@ void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, con
 
 void UInventorySlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
+	Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
+
+	InventoryWidget->GetItemTrash()->SetVisibility(ESlateVisibility::Collapsed);
+	
 	UItemDragDropOperation* DragOperation = Cast<UItemDragDropOperation>(InOperation);
 	if (!DragOperation)
 	{
 		return;
 	}
 
-	SetItemDataToSlot(DragOperation->SlotInventoryItem);
+	// If a new item is added to the PrevInventorySlot, Add to New slot
+	if (!IsEmpty())
+	{
+		InventoryWidget->AddNewItemToSlot(DragOperation->SlotInventoryItem);
+		return;
+	}
 
-	InventoryWidget->GetItemTrash()->SetVisibility(ESlateVisibility::Collapsed);
+	BindOnInventoryItemChanged();
+	UpdateItem(DragOperation->SlotInventoryItem);
 }
 
 // Called On Drag Droped Slot!
@@ -87,7 +92,8 @@ bool UInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 	// if slot is empty
 	if (!SlotInventoryItem)
 	{	
-		SetItemDataToSlot(DragOperation->SlotInventoryItem);
+		BindOnInventoryItemChanged();
+		UpdateItem(DragOperation->SlotInventoryItem);
 
 		return true;
 	}
@@ -96,11 +102,12 @@ bool UInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 	UInventorySlotWidget* PrevInventorySlot = Cast<UInventorySlotWidget>(DragOperation->Payload);
 	if (PrevInventorySlot)
 	{
-		PrevInventorySlot->SetItemDataToSlot(SlotInventoryItem);
-		
-		SetItemDataToSlot(DragOperation->SlotInventoryItem);
+		PrevInventorySlot->BindOnInventoryItemChanged();
+		PrevInventorySlot->UpdateItem(SlotInventoryItem);
 
-		//UE_LOG(LogTemp, Warning, TEXT("%s"), *PrevInventorySlot->GetName());
+		ClearBindWidget();
+		BindOnInventoryItemChanged();
+		UpdateItem(DragOperation->SlotInventoryItem);
 
 		return true;
 	}
@@ -108,16 +115,19 @@ bool UInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 	return false;
 }
 
-void UInventorySlotWidget::SetItemDataToSlot(struct FInventoryItem* NewInventoryItem)
+void UInventorySlotWidget::BindOnInventoryItemChanged()
 {
-	SlotInventoryItem = NewInventoryItem;
-
-	SetWidgetBindVariables();
+	DeleHandle_OnInventoryItemChanged = InventoryComp->Fuc_Dele_OnInventoryItemChanged.AddUObject(this, &UInventorySlotWidget::UpdateItem);
 }
 
-void UInventorySlotWidget::UpdateItemAmount()
+void UInventorySlotWidget::UpdateItem(FInventoryItem* NewItem)
 {
-	Amount = SlotInventoryItem->Amount;
+	if (!SlotInventoryItem)
+	{
+		SlotInventoryItem = NewItem;
+	}
+
+	SetWidgetBindVariables();
 }
 
 void UInventorySlotWidget::SetOwningInventoryWidget(UInventoryWidget* NewInventoryWidget)
@@ -160,6 +170,11 @@ void UInventorySlotWidget::SetWidgetBindVariables()
 void UInventorySlotWidget::ClearBindWidget()
 {
 	SlotInventoryItem = nullptr;
+
+	if (DeleHandle_OnInventoryItemChanged.IsValid())
+	{
+		InventoryComp->Fuc_Dele_OnInventoryItemChanged.Remove(DeleHandle_OnInventoryItemChanged);
+	}
 
 	Amount = 0;
 	ItemType = EItemType::None;

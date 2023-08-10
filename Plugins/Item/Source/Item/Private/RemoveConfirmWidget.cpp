@@ -58,7 +58,8 @@ void URemoveConfirmWidget::RemoveItem()
 			UInventorySlotWidget* PrevInventorySlot = Cast<UInventorySlotWidget>(ItemDragDropOperation->Payload);
 			if (PrevInventorySlot)
 			{
-				PrevInventorySlot->SetItemDataToSlot(ItemDragDropOperation->SlotInventoryItem);
+				PrevInventorySlot->BindOnInventoryItemChanged();
+				PrevInventorySlot->UpdateItem(ItemDragDropOperation->SlotInventoryItem);
 			}
 		}
 	}
@@ -71,7 +72,8 @@ void URemoveConfirmWidget::OnCancel()
 	UInventorySlotWidget* PrevInventorySlot = Cast<UInventorySlotWidget>(ItemDragDropOperation->Payload);
 	if (PrevInventorySlot)
 	{
-		PrevInventorySlot->SetItemDataToSlot(ItemDragDropOperation->SlotInventoryItem);
+		PrevInventorySlot->BindOnInventoryItemChanged();
+		PrevInventorySlot->UpdateItem(ItemDragDropOperation->SlotInventoryItem);
 	}
 
 	SetAmountBox->SetVisibility(ESlateVisibility::Visible);

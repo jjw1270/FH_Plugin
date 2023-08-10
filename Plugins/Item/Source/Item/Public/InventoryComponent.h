@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "InventoryComponent.generated.h"
 
+// Inventory Item Struct
 UENUM(BlueprintType)
 enum class EItemType : uint8
 {
@@ -39,8 +40,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 Amount;
-
 };
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FDele_Multi_OneParam_pFInventoryItem, struct FInventoryItem*);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ITEM_API UInventoryComponent : public UActorComponent
@@ -62,10 +64,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void InventoryUI();
 
-protected:
-	//UPROPERTY()
-	//class UInventoryWidget* InventoryWidget;
+	FDele_Multi_OneParam_pFInventoryItem Fuc_Dele_OnInventoryItemChanged;
 
+protected:
 	bool bIsInventoryUIOpen;
 	
 // Inventory
@@ -80,7 +81,7 @@ public:
 protected:
 	EItemType GetItemType(const int32& ItemID);
 
-protected:
+private:
 	TArray<FInventoryItem*>* InventoryItems;
 
 //Item DataTables

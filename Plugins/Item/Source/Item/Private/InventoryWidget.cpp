@@ -14,12 +14,13 @@ void UInventoryWidget::NativeOnInitialized()
 	PC = Cast<AItem_FHPlayerController>(GetOwningPlayer());
 	ensureMsgf(PC, TEXT("PC is nullptr"));
 
+	// Create Slots
 	ensureMsgf(InventorySlotClass, TEXT("InventorySlotClass is nullptr"));
 	for (int32 row = 0; row < SlotGridRowRange; row++)
 	{
 		for (int32 col = 0; col < SlotGridColRange; col++)
 		{
-			UInventorySlotWidget* NewInventorySlot = Cast<UInventorySlotWidget>(CreateWidget(GetWorld(), InventorySlotClass));
+			UInventorySlotWidget* NewInventorySlot = Cast<UInventorySlotWidget>(CreateWidget(GetOwningPlayer(), InventorySlotClass));
 			NewInventorySlot->SetOwningInventoryWidget(this);
 			InventorySlotGrid->AddChildToUniformGrid(NewInventorySlot, row, col);
 			InventorySlotArray.Add(NewInventorySlot);
@@ -27,29 +28,15 @@ void UInventoryWidget::NativeOnInitialized()
 	}
 }
 
-void UInventoryWidget::AddItemToSlot(FInventoryItem* NewItem)
+void UInventoryWidget::AddNewItemToSlot(FInventoryItem* NewItem)
 {
 	for (auto slot : InventorySlotArray)
 	{
 		if (slot->IsEmpty())
 		{
-			slot->SetItemDataToSlot(NewItem);
+			slot->BindOnInventoryItemChanged();
+			slot->UpdateItem(NewItem);
 			return;
-		}
-	}
-}
-
-void UInventoryWidget::UpdateItemToSlot(FInventoryItem* NewItem)
-{
-	for (auto slot : InventorySlotArray)
-	{
-		if (FInventoryItem* SlotInventoryItem =  slot->GetSlotInventoryItem())
-		{
-			if (SlotInventoryItem->ID == NewItem->ID)
-			{
-				slot->UpdateItemAmount();
-				return;
-			}
 		}
 	}
 }
@@ -68,7 +55,9 @@ void UInventoryWidget::SortItemSlot()
 		{
 			if (!InventorySlotArray[j]->IsEmpty())
 			{
-				InventorySlotArray[i]->SetItemDataToSlot(InventorySlotArray[j]->GetSlotInventoryItem());
+				InventorySlotArray[i]->BindOnInventoryItemChanged();
+				InventorySlotArray[i]->UpdateItem(InventorySlotArray[j]->GetSlotInventoryItem());
+
 				InventorySlotArray[j]->ClearBindWidget();
 
 				break;

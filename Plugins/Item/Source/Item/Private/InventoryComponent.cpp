@@ -59,8 +59,11 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& A
 			if (InventoryItem->ID == ItemID)
 			{
 				InventoryItem->Amount += Amount;
-				PC->GetHUDWidget()->GetInventoryWidget()->UpdateItemToSlot(InventoryItem);
-
+				// BroadCast
+				if (Fuc_Dele_OnInventoryItemChanged.IsBound())
+				{
+					Fuc_Dele_OnInventoryItemChanged.Broadcast(InventoryItem);
+				}
 				return;
 			}
 		}
@@ -69,33 +72,28 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& A
 	// else Make InventoryItem
 	FInventoryItem* NewItem = new FInventoryItem(ItemType, ItemID, Amount);
 	InventoryItems->Add(NewItem);
-	PC->GetHUDWidget()->GetInventoryWidget()->AddItemToSlot(NewItem);
+	PC->GetHUDWidget()->GetInventoryWidget()->AddNewItemToSlot(NewItem);
 
 	return;
 }
 
 int32 UInventoryComponent::RemoveItemFromInventory(const FInventoryItem* InventoryItem, int32 Amount)
 {
-	int32 FindIndex = -1;
-
-	for (auto a : *InventoryItems)
+	for (auto Item : *InventoryItems)
 	{
-		if (a == InventoryItem)
+		if (Item == InventoryItem)
 		{
-			a->Amount -= Amount;
+			Item->Amount -= Amount;
 
-			if (a->Amount <= 0)
+			if (Item->Amount <= 0)
 			{
-				InventoryItems->Remove(a);
+				InventoryItems->Remove(Item);
+				return 0;
 			}
 
-			//UE_LOG(LogTemp, Warning, TEXT("Remove Item Success"));
-
-			return a->Amount;
+			return Item->Amount;
 		}
 	}
-
-	//UE_LOG(LogTemp, Warning, TEXT("Remove Item Fail"));
 
 	return 0;
 }
