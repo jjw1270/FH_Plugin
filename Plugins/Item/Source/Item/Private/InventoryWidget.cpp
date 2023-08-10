@@ -20,6 +20,7 @@ void UInventoryWidget::NativeOnInitialized()
 		for (int32 col = 0; col < SlotGridColRange; col++)
 		{
 			UInventorySlotWidget* NewInventorySlot = Cast<UInventorySlotWidget>(CreateWidget(GetWorld(), InventorySlotClass));
+			NewInventorySlot->SetOwningInventoryWidget(this);
 			InventorySlotGrid->AddChildToUniformGrid(NewInventorySlot, row, col);
 			InventorySlotArray.Add(NewInventorySlot);
 		}

@@ -31,7 +31,7 @@ protected:
 	UUserWidget* ItemTrash;
 
 	UPROPERTY(meta = (BindWidget))
-	URemoveConfirmWidget* RemoveConfirmWidget;
+	class URemoveConfirmWidget* RemoveConfirmWidget;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UInventorySlotWidget> InventorySlotClass;
@@ -57,6 +57,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AddSlotGridRowRange(int32 Num = 1) { SlotGridRowRange  += Num; }
 
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE UUserWidget* GetItemInfoBox() const { return ItemInfoBox; }
 
 	FORCEINLINE UUserWidget* GetItemTrash() const { return ItemTrash; }

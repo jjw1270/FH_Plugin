@@ -3,14 +3,14 @@
 
 #include "InventoryComponent.h"
 #include "Item_FHGameInstance.h"
+#include "Item_FHPlayerController.h"
 #include "ItemInterface.h"
-//Widget
+#include "Item_HUDWidget.h"
 #include "InventoryWidget.h"
 
 UInventoryComponent::UInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
 }
 
 void UInventoryComponent::BeginPlay()
@@ -18,26 +18,33 @@ void UInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 
 	UItem_FHGameInstance* GI = Cast<UItem_FHGameInstance>(GetOwner()->GetGameInstance());
-	ensureMsgf(GI, TEXT("GI not Set"));
+	check(GI);
 
 	InventoryItems = GI->GetInventoryItems();
+	check(InventoryItems);
 
-	ensureMsgf(IsValid(InventoryWidgetClass), TEXT("InventoryWidgetClass is not set"));
-	InventoryWidget = CreateWidget<UInventoryWidget>(GetWorld(), InventoryWidgetClass);
+	PC = Cast<AItem_FHPlayerController>(GetOwner());
+	check(PC);
 }
 
-FConsumableItemData* UInventoryComponent::GetConsumableItemInfo(const int32& ItemID)
+void UInventoryComponent::InventoryUI()
 {
-	ensureMsgf(ConsumableItemDataTable, TEXT("ConsumableItemDataTable is nullptr"));
-
-	return ConsumableItemDataTable->FindRow<FConsumableItemData>(*FString::FromInt(ItemID), TEXT(""), false);
-}
-
-FEquipmentItemData* UInventoryComponent::GetEquipmentItemInfo(const int32& ItemID)
-{
-	ensureMsgf(EquipmentItemDataTable, TEXT("EquipmentItemDataTable is nullptr"));
-
-	return EquipmentItemDataTable->FindRow<FEquipmentItemData>(*FString::FromInt(ItemID), TEXT(""), false);
+	//Open Inventory UI
+	if (!bIsInventoryUIOpen)
+	{
+		bIsInventoryUIOpen = true;
+		PC->GetHUDWidget()->GetInventoryWidget()->SetVisibility(ESlateVisibility::Visible);
+		PC->SetShowMouseCursor(true);
+		PC->SetInputMode(FInputModeGameAndUI());
+	}
+	//Close Inventory UI
+	else
+	{
+		bIsInventoryUIOpen = false;
+		PC->GetHUDWidget()->GetInventoryWidget()->SetVisibility(ESlateVisibility::Collapsed);
+		PC->SetShowMouseCursor(false);
+		PC->SetInputMode(FInputModeGameOnly());
+	}
 }
 
 void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& Amount)
@@ -52,7 +59,7 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& A
 			if (InventoryItem->ID == ItemID)
 			{
 				InventoryItem->Amount += Amount;
-				InventoryWidget->UpdateItemToSlot(InventoryItem);
+				PC->GetHUDWidget()->GetInventoryWidget()->UpdateItemToSlot(InventoryItem);
 
 				return;
 			}
@@ -62,7 +69,7 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& A
 	// else Make InventoryItem
 	FInventoryItem* NewItem = new FInventoryItem(ItemType, ItemID, Amount);
 	InventoryItems->Add(NewItem);
-	InventoryWidget->AddItemToSlot(NewItem);
+	PC->GetHUDWidget()->GetInventoryWidget()->AddItemToSlot(NewItem);
 
 	return;
 }
@@ -111,4 +118,18 @@ EItemType UInventoryComponent::GetItemType(const int32& ItemID)
 	}
 
 	return Itemtype;
+}
+
+FConsumableItemData* UInventoryComponent::GetConsumableItemInfo(const int32& ItemID)
+{
+	check(ConsumableItemDataTable);
+
+	return ConsumableItemDataTable->FindRow<FConsumableItemData>(*FString::FromInt(ItemID), TEXT(""), false);
+}
+
+FEquipmentItemData* UInventoryComponent::GetEquipmentItemInfo(const int32& ItemID)
+{
+	check(EquipmentItemDataTable);
+
+	return EquipmentItemDataTable->FindRow<FEquipmentItemData>(*FString::FromInt(ItemID), TEXT(""), false);
 }

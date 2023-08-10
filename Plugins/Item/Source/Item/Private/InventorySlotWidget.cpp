@@ -24,10 +24,6 @@ void UInventorySlotWidget::NativeOnInitialized()
 void UInventorySlotWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	ItemInfoBox = InventoryComp->GetInventoryWidget()->GetItemInfoBox();
-	ensureMsgf(ItemInfoBox, TEXT("ItemInfoBox is nullptr"));
-
 }
 
 void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
@@ -56,8 +52,8 @@ void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, con
 
 	ClearBindWidget();
 
-	ItemInfoBox->SetVisibility(ESlateVisibility::Collapsed);
-	InventoryComp->GetInventoryWidget()->GetItemTrash()->SetVisibility(ESlateVisibility::Visible);
+	InventoryWidget->GetItemInfoBox()->SetVisibility(ESlateVisibility::Collapsed);
+	InventoryWidget->GetItemTrash()->SetVisibility(ESlateVisibility::Visible);
 
 	OutOperation = DragOperation;
 }
@@ -72,7 +68,7 @@ void UInventorySlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDro
 
 	SetItemDataToSlot(DragOperation->SlotInventoryItem);
 
-	InventoryComp->GetInventoryWidget()->GetItemTrash()->SetVisibility(ESlateVisibility::Collapsed);
+	InventoryWidget->GetItemTrash()->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 // Called On Drag Droped Slot!
@@ -80,7 +76,7 @@ bool UInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 {
 	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 
-	InventoryComp->GetInventoryWidget()->GetItemTrash()->SetVisibility(ESlateVisibility::Collapsed);
+	InventoryWidget->GetItemTrash()->SetVisibility(ESlateVisibility::Collapsed);
 
 	UItemDragDropOperation* DragOperation = Cast<UItemDragDropOperation>(InOperation);
 	if (!DragOperation)
@@ -122,6 +118,11 @@ void UInventorySlotWidget::SetItemDataToSlot(struct FInventoryItem* NewInventory
 void UInventorySlotWidget::UpdateItemAmount()
 {
 	Amount = SlotInventoryItem->Amount;
+}
+
+void UInventorySlotWidget::SetOwningInventoryWidget(UInventoryWidget* NewInventoryWidget)
+{
+	InventoryWidget = NewInventoryWidget;
 }
 
 void UInventorySlotWidget::SetWidgetBindVariables()

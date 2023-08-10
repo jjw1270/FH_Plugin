@@ -14,6 +14,7 @@ class ITEM_API UInventorySlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+// Native Func
 protected:
 	virtual void NativeOnInitialized() override;
 
@@ -39,15 +40,13 @@ protected:
 	class UInventoryComponent* InventoryComp;
 
 	UPROPERTY(BlueprintReadOnly)
-	UUserWidget* ItemInfoBox;
+	class UInventoryWidget* InventoryWidget;
 
+// FInventoryItem In this Slot 
 protected:
 	FInventoryItem* SlotInventoryItem;
 
-protected:
-
-
-
+// Variables to Bind UMG Components
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	int32 Amount;
@@ -69,6 +68,8 @@ protected:
 	class UImage* ItemImage;
 
 public:	
+	void SetOwningInventoryWidget(class UInventoryWidget* NewInventoryWidget);
+
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetBindVariables();
 

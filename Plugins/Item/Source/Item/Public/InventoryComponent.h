@@ -48,13 +48,42 @@ class ITEM_API UInventoryComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UInventoryComponent();
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
+protected:
+	UPROPERTY()
+	class AItem_FHPlayerController* PC;
+
+// UI
+public:
+	UFUNCTION(BlueprintCallable)
+	void InventoryUI();
+
+protected:
+	//UPROPERTY()
+	//class UInventoryWidget* InventoryWidget;
+
+	bool bIsInventoryUIOpen;
+	
+// Inventory
+public:
+	UFUNCTION(BlueprintCallable)
+	void AddItemToInventory(const int32& ItemID, const int32& Amount);
+
+	FORCEINLINE TArray<FInventoryItem*>* GetInventoryItems() { return InventoryItems; }
+
+	int32 RemoveItemFromInventory(const FInventoryItem* InventoryItem, int32 Amount);
+
+protected:
+	EItemType GetItemType(const int32& ItemID);
+
+protected:
+	TArray<FInventoryItem*>* InventoryItems;
+
+//Item DataTables
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UDataTable* ConsumableItemDataTable;
@@ -67,31 +96,4 @@ public:
 
 	struct FEquipmentItemData* GetEquipmentItemInfo(const int32& ItemID);
 
-protected:
-	TArray<FInventoryItem*>* InventoryItems;
-
-public:
-	UFUNCTION(BlueprintCallable)
-	void AddItemToInventory(const int32& ItemID, const int32& Amount);
-
-	FORCEINLINE TArray<FInventoryItem*>* GetInventoryItems() { return InventoryItems; }
-
-	int32 RemoveItemFromInventory(const FInventoryItem* InventoryItem, int32 Amount);
-
-private:
-	EItemType GetItemType(const int32& ItemID);
-
-	UPROPERTY()
-	class AItem_FHPlayerController* PC;
-
-protected:
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UInventoryWidget> InventoryWidgetClass;
-
-	UPROPERTY()
-	class UInventoryWidget* InventoryWidget;
-
-public:
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE UInventoryWidget* GetInventoryWidget() { return InventoryWidget; }
 };

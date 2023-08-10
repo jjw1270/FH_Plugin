@@ -9,8 +9,6 @@
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
-#include "DrawDebugHelpers.h"
-
 // Sets default values
 ADropItem::ADropItem()
 {
@@ -76,8 +74,6 @@ bool ADropItem::IsCanSeePlayer()
 	FVector StartPos = PlayerController->PlayerCameraManager->GetCameraLocation();
 	// FVector EndPos = GetActorLocation();
 	FVector EndPos = StartPos + (GetActorLocation() - StartPos).GetSafeNormal() * WidgetVisiblityRange;
-
-	// DrawDebugLine(GetWorld(), StartPos, EndPos, FColor::Green, false, 3.f);
 
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(PlayerController->GetPawn());

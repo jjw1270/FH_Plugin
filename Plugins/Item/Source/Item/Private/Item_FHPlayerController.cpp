@@ -2,12 +2,13 @@
 
 
 #include "Item_FHPlayerController.h"
-//Components
-#include "InventoryComponent.h"
-//Enhanced Input
+// Input
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-//UI
+// Components
+#include "InventoryComponent.h"
+// UI
+#include "Item_HUDWidget.h"
 #include "InventoryWidget.h"
 
 AItem_FHPlayerController::AItem_FHPlayerController()
@@ -24,7 +25,10 @@ void AItem_FHPlayerController::BeginPlay()
 		Subsystem->AddMappingContext(UIMappingContext, 0);
 	}
 
-
+	// Create HUDWidget
+	ensureMsgf(HUDWidgetClass, TEXT("HudWidgetClass is not set."));
+	HUDWidget = CreateWidget<UItem_HUDWidget>(GetWorld(), HUDWidgetClass);
+	HUDWidget->AddToViewport();
 }
 
 void AItem_FHPlayerController::SetupInputComponent()
@@ -33,26 +37,6 @@ void AItem_FHPlayerController::SetupInputComponent()
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
-		EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &AItem_FHPlayerController::InventoryUI);
-	}
-}
-
-void AItem_FHPlayerController::InventoryUI()
-{		
-	//Open Inventory UI
-	if (!bIsInventoryUIOpen)
-	{
-		bIsInventoryUIOpen = true;
-		InventoryComp->GetInventoryWidget()->AddToViewport();
-		SetShowMouseCursor(true);
-		SetInputMode(FInputModeGameAndUI());
-	}
-	//Close Inventory UI
-	else
-	{
-		bIsInventoryUIOpen = false;
-		InventoryComp->GetInventoryWidget()->RemoveFromParent();
-		SetShowMouseCursor(false);
-		SetInputMode(FInputModeGameOnly());
+		EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, InventoryComp, &UInventoryComponent::InventoryUI);
 	}
 }

@@ -18,20 +18,21 @@ class ITEM_API AItem_FHPlayerController : public APlayerController
 public:
 	AItem_FHPlayerController();
 
+// Inherited Functions
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void SetupInputComponent() override;
 
+// Player Input
 protected:
-	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputMappingContext* UIMappingContext;
 
-	/** Inventory Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* InventoryAction;
 
+// Components
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
 	class UInventoryComponent* InventoryComp;
@@ -40,12 +41,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE UInventoryComponent* GetInventoryComp() const { return InventoryComp; }
 
-//Widget
+// UI
 protected:
-	bool bIsInventoryUIOpen;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UItem_HUDWidget> HUDWidgetClass;
+
+	UPROPERTY(BlueprintReadOnly)
+	class UItem_HUDWidget* HUDWidget;
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void InventoryUI();
+	FORCEINLINE class UItem_HUDWidget* GetHUDWidget() const { return HUDWidget; }
 
 };

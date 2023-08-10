@@ -42,7 +42,7 @@ void URemoveConfirmWidget::ShowRemoveConfirm(UItemDragDropOperation* NewItemDrag
 		Slider_Amount->SetMaxValue(MaxAmount);
 	}
 
-	SetVisibility(ESlateVisibility::Visible);
+	GetParent()->SetVisibility(ESlateVisibility::Visible);
 }
 
 void URemoveConfirmWidget::RemoveItem()
@@ -63,7 +63,7 @@ void URemoveConfirmWidget::RemoveItem()
 		}
 	}
 
-	SetVisibility(ESlateVisibility::Collapsed);
+	GetParent()->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void URemoveConfirmWidget::OnCancel()
@@ -76,5 +76,5 @@ void URemoveConfirmWidget::OnCancel()
 
 	SetAmountBox->SetVisibility(ESlateVisibility::Visible);
 
-	SetVisibility(ESlateVisibility::Collapsed);
+	GetParent()->SetVisibility(ESlateVisibility::Collapsed);
 }
