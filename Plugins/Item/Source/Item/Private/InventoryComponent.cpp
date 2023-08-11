@@ -72,6 +72,7 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& A
 	// else Make InventoryItem
 	FInventoryItem* NewItem = new FInventoryItem(ItemType, ItemID, Amount);
 	InventoryItems->Add(NewItem);
+	UE_LOG(LogTemp, Warning, TEXT("A"));
 	PC->GetHUDWidget()->GetInventoryWidget()->AddNewItemToSlot(NewItem);
 
 	return;
@@ -88,6 +89,9 @@ int32 UInventoryComponent::RemoveItemFromInventory(const FInventoryItem* Invento
 			if (Item->Amount <= 0)
 			{
 				InventoryItems->Remove(Item);
+				delete Item;
+				UE_LOG(LogTemp, Warning, TEXT("B"));
+				// Need to change FInventoryItem* to week_Ptr to fix!
 				return 0;
 			}
 
