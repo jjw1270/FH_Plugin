@@ -89,9 +89,9 @@ int32 UInventoryComponent::RemoveItemFromInventory(const FInventoryItem* Invento
 			if (Item->Amount <= 0)
 			{
 				InventoryItems->Remove(Item);
-				delete Item;
+				// delete Item;
 				UE_LOG(LogTemp, Warning, TEXT("B"));
-				// Need to change FInventoryItem* to week_Ptr to fix!
+				// Need to change FInventoryItem* to week_Ptr to fix?
 				return 0;
 			}
 
