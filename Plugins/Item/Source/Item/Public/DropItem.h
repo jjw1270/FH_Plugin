@@ -28,7 +28,7 @@ protected:
 	TObjectPtr<UParticleSystemComponent> ItemParticle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component)
-	TObjectPtr<class UBoxComponent> OverlapBoxCollision;
+	TObjectPtr<class USphereComponent> OverlapCollision;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component)
 	TObjectPtr<class UWidgetComponent> LootWidgetComp;

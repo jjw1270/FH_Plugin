@@ -3,7 +3,6 @@
 
 #include "DropItem.h"
 #include "Components/SphereComponent.h"
-#include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/Character.h"
@@ -22,9 +21,9 @@ ADropItem::ADropItem()
 	ItemParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ItemParticle"));
 	ItemParticle->SetupAttachment(RootComponent);
 
-	OverlapBoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBoxCollision"));
-	OverlapBoxCollision->SetupAttachment(RootComponent);
-	OverlapBoxCollision->SetCollisionProfileName(FName("OverlapAllDynamic"));
+	OverlapCollision = CreateDefaultSubobject<USphereComponent>(TEXT("OverlapCollision"));
+	OverlapCollision->SetupAttachment(RootComponent);
+	OverlapCollision->SetCollisionProfileName(FName("OverlapAllDynamic"));
 
 	LootWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("LootWidget"));
 	LootWidgetComp->SetupAttachment(RootComponent);
