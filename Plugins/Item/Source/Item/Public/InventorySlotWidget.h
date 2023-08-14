@@ -18,8 +18,6 @@ class ITEM_API UInventorySlotWidget : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
-	// virtual void NativeConstruct() override;
-
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 
 	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
@@ -27,13 +25,19 @@ protected:
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 public:
-	void BindOnInventoryItemChanged();
+	void SetOwningInventoryWidget(class UInventoryWidget* NewInventoryWidget);
 
-	void UpdateItem(struct FInventoryItem* NewItem);
+public:
+	void SetSlot(const int32& NewItemID);
+
+	void OnUpdateItem(const int32& UpdateItemID);
+
+	UFUNCTION(BlueprintCallable)
+	void SetWidgetBindVariables();
+
+	void ClearSlot();
 
 protected:
-	FDelegateHandle DeleHandle_OnInventoryItemChanged;
-
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UOnDragWidget> DragWidgetClass;
 
@@ -46,18 +50,20 @@ protected:
 
 // FInventoryItem In this Slot 
 protected:
-	FInventoryItem* SlotInventoryItem;
+	int32 ItemID;
+
+	FDelegateHandle OnInventoryItemChangedHandle;
 
 // Variables to Bind UMG Components
 protected:
-	UPROPERTY(BlueprintReadOnly)
-	int32 Amount;
-
 	UPROPERTY(BlueprintReadOnly)
 	EItemType ItemType;
 
 	UPROPERTY(BlueprintReadOnly)
 	FString ItemName;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 Amount;
 
 	UPROPERTY(BlueprintReadOnly)
 	int32 ItemPrice;
@@ -67,19 +73,13 @@ protected:
 
 protected:
 	UPROPERTY(meta = (BindWidget))
-	class UImage* ItemImage;
+	class UImage* ItemImageWidget;
 
 public:	
-	void SetOwningInventoryWidget(class UInventoryWidget* NewInventoryWidget);
-
-	UFUNCTION(BlueprintCallable)
-	void SetWidgetBindVariables();
-
-	void ClearBindWidget();
-
-	FORCEINLINE FInventoryItem* GetSlotInventoryItem() const { return SlotInventoryItem; }
-
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool IsEmpty() const { return Amount <= 0; }
 
+	FORCEINLINE int32 GetSlotItemID() const { return ItemID; }
+
+	UTexture2D* GetItemImage();
 };

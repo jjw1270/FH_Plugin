@@ -11,12 +11,13 @@ void UInventoryWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	PC = Cast<AItem_FHPlayerController>(GetOwningPlayer());
-	ensureMsgf(PC, TEXT("PC is nullptr"));
+	CreateSlotWidgets(DefaultSlotGridRowRange);
+}
 
-	// Create Slots
+void UInventoryWidget::CreateSlotWidgets(int32 Row)
+{
 	ensureMsgf(InventorySlotClass, TEXT("InventorySlotClass is nullptr"));
-	for (int32 row = 0; row < SlotGridRowRange; row++)
+	for (int32 row = 0; row < Row; row++)
 	{
 		for (int32 col = 0; col < SlotGridColRange; col++)
 		{
@@ -28,17 +29,20 @@ void UInventoryWidget::NativeOnInitialized()
 	}
 }
 
-void UInventoryWidget::AddNewItemToSlot(FInventoryItem* NewItem)
+void UInventoryWidget::AddNewItemToSlot(const int32& ItemID)
 {
 	for (auto slot : InventorySlotArray)
 	{
 		if (slot->IsEmpty())
 		{
-			slot->BindOnInventoryItemChanged();
-			slot->UpdateItem(NewItem);
+			slot->SetSlot(ItemID);
 			return;
 		}
 	}
+
+	//If All Slots are Full, Make New Slots Row
+	CreateSlotWidgets(1);
+	AddNewItemToSlot(ItemID);
 }
 
 // Sort according to IsEmpty()
@@ -55,10 +59,8 @@ void UInventoryWidget::SortItemSlot()
 		{
 			if (!InventorySlotArray[j]->IsEmpty())
 			{
-				InventorySlotArray[i]->BindOnInventoryItemChanged();
-				InventorySlotArray[i]->UpdateItem(InventorySlotArray[j]->GetSlotInventoryItem());
-
-				InventorySlotArray[j]->ClearBindWidget();
+				InventorySlotArray[i]->SetSlot(InventorySlotArray[j]->GetSlotItemID());
+				InventorySlotArray[j]->ClearSlot();
 
 				break;
 			}

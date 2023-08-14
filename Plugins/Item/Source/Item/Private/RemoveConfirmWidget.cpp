@@ -15,31 +15,51 @@ void URemoveConfirmWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetOwningPlayer());
+	PC = Cast<AItem_FHPlayerController>(GetOwningPlayer());
 	ensureMsgf(PC, TEXT("PC is nullptr"));
 
 	InventoryComp = PC->GetInventoryComp();
 	ensureMsgf(InventoryComp, TEXT("InventoryComp is nullptr"));
 }
 
-void URemoveConfirmWidget::ShowRemoveConfirm(UItemDragDropOperation* NewItemDragDropOperation)
+void URemoveConfirmWidget::ShowRemoveConfirm(UItemDragDropOperation* NewDragDropOperation)
 {
-	ItemDragDropOperation = NewItemDragDropOperation;
+	ItemID = NewDragDropOperation->DragingItemID;
 
-	ItemImage->SetBrushFromTexture(ItemDragDropOperation->ItemImage);
-	MaxAmount = ItemDragDropOperation->SlotInventoryItem->Amount;
+	MaxAmount = *InventoryComp->GetInventoryItems()->Find(ItemID);
+	
+	EItemType ItemType = InventoryComp->GetItemType(ItemID);
+	switch (ItemType)
+	{
+	case EItemType::Consumable:
+	{
+		FConsumableItemData* ItemData = InventoryComp->GetConsumableItemInfo(ItemID);
+		ItemName = ItemData->Name;
+		Image_Item->SetBrushFromTexture(ItemData->ItemImage);
+		break;
+	}
+	case EItemType::Equipment:
+	{
+		FEquipmentItemData* ItemData = InventoryComp->GetEquipmentItemInfo(ItemID);
+		ItemName = ItemData->Name;
+		Image_Item->SetBrushFromTexture(ItemData->ItemImage);
+		break;
+	}
+	default:
+		break;
+	}
+
 	Slider_Amount->SetValue(1.f);
 
-	FString AmountTxt = FString::FromInt(static_cast<int32>(Slider_Amount->GetValue()));
-	Text_Amount->SetText(FText::FromString(AmountTxt));
-
-	if (MaxAmount <= 1)
+	if (MaxAmount > 1)
 	{
-		SetAmountBox->SetVisibility(ESlateVisibility::Collapsed);
+		Text_Amount->SetText(FText::FromString(TEXT("1")));
+
+		Slider_Amount->SetMaxValue(MaxAmount);
 	}
 	else
 	{
-		Slider_Amount->SetMaxValue(MaxAmount);
+		SetAmountBox->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
 	GetParent()->SetVisibility(ESlateVisibility::Visible);
@@ -49,34 +69,16 @@ void URemoveConfirmWidget::RemoveItem()
 {
 	int32 Amount = Slider_Amount->GetValue();
 
-	if (ItemDragDropOperation)
-	{
-		int32 AmountLeft = InventoryComp->RemoveItemFromInventory(ItemDragDropOperation->SlotInventoryItem, Amount);
+	InventoryComp->RemoveItemFromInventory(ItemID, Amount);
 
-		if (AmountLeft > 0)
-		{
-			UInventorySlotWidget* PrevInventorySlot = Cast<UInventorySlotWidget>(ItemDragDropOperation->Payload);
-			if (PrevInventorySlot)
-			{
-				PrevInventorySlot->BindOnInventoryItemChanged();
-				PrevInventorySlot->UpdateItem(ItemDragDropOperation->SlotInventoryItem);
-			}
-		}
-	}
-
+	SetAmountBox->SetVisibility(ESlateVisibility::Visible);
 	GetParent()->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void URemoveConfirmWidget::OnCancel()
 {
-	UInventorySlotWidget* PrevInventorySlot = Cast<UInventorySlotWidget>(ItemDragDropOperation->Payload);
-	if (PrevInventorySlot)
-	{
-		PrevInventorySlot->BindOnInventoryItemChanged();
-		PrevInventorySlot->UpdateItem(ItemDragDropOperation->SlotInventoryItem);
-	}
+	ItemID = 0;
 
 	SetAmountBox->SetVisibility(ESlateVisibility::Visible);
-
 	GetParent()->SetVisibility(ESlateVisibility::Collapsed);
 }

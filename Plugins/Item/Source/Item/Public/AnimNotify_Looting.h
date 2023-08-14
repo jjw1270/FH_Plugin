@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
-#include "ItemInterface.h"
+#include "ItemType.h"
 #include "AnimNotify_Looting.generated.h"
 
 /**

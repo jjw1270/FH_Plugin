@@ -13,6 +13,15 @@ UInventoryComponent::UInventoryComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
+void UInventoryComponent::TestInventory()
+{
+	for (auto& a : *InventoryItems)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%d"), a.Value);
+	}
+}
+
+
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -50,56 +59,43 @@ void UInventoryComponent::InventoryUI()
 void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& Amount)
 {
 	EItemType ItemType = GetItemType(ItemID);
-
 	if (ItemType == EItemType::Consumable)
 	{
 		// if Already Exist in Inventory, Add Amount
-		for (auto InventoryItem : *InventoryItems)
+		if (int32* PrevAmount = InventoryItems->Find(ItemID))
 		{
-			if (InventoryItem->ID == ItemID)
+			*PrevAmount += Amount;
+
+			// BroadCast
+			if (OnInventoryItemChangedDelegate.IsBound())
 			{
-				InventoryItem->Amount += Amount;
-				// BroadCast
-				if (Fuc_Dele_OnInventoryItemChanged.IsBound())
-				{
-					Fuc_Dele_OnInventoryItemChanged.Broadcast(InventoryItem);
-				}
-				return;
+				OnInventoryItemChangedDelegate.Broadcast(ItemID);
 			}
+			return;
 		}
 	}
 
-	// else Make InventoryItem
-	FInventoryItem* NewItem = new FInventoryItem(ItemType, ItemID, Amount);
-	InventoryItems->Add(NewItem);
-	UE_LOG(LogTemp, Warning, TEXT("A"));
-	PC->GetHUDWidget()->GetInventoryWidget()->AddNewItemToSlot(NewItem);
+	// else Make New InventoryItem
+	InventoryItems->Add(ItemID, Amount);
+	PC->GetHUDWidget()->GetInventoryWidget()->AddNewItemToSlot(ItemID);
 
 	return;
 }
 
-int32 UInventoryComponent::RemoveItemFromInventory(const FInventoryItem* InventoryItem, int32 Amount)
+void UInventoryComponent::RemoveItemFromInventory(const int32& ItemID, const int32& Amount)
 {
-	for (auto Item : *InventoryItems)
+	if (int32* PrevAmount = InventoryItems->Find(ItemID))
 	{
-		if (Item == InventoryItem)
+		*PrevAmount -= Amount;
+
+		if (*PrevAmount <= 0)
 		{
-			Item->Amount -= Amount;
-
-			if (Item->Amount <= 0)
-			{
-				InventoryItems->Remove(Item);
-				// delete Item;
-				UE_LOG(LogTemp, Warning, TEXT("B"));
-				// Need to change FInventoryItem* to week_Ptr to fix?
-				return 0;
-			}
-
-			return Item->Amount;
+			InventoryItems->Remove(ItemID);
 		}
-	}
 
-	return 0;
+		// BroadCast
+		OnInventoryItemChangedDelegate.Broadcast(ItemID);
+	}
 }
 
 EItemType UInventoryComponent::GetItemType(const int32& ItemID)

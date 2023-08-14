@@ -19,17 +19,23 @@ protected:
 	
 protected:
 	UPROPERTY()
-	class UInventoryComponent* InventoryComp;
+	class AItem_FHPlayerController* PC;
 
 	UPROPERTY()
-	class UItemDragDropOperation* ItemDragDropOperation;
+	class UInventoryComponent* InventoryComp;
+
+protected:
+	int32 ItemID;
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	int32 MaxAmount;
 
+	UPROPERTY(BlueprintReadOnly)
+	FString ItemName;
+
 	UPROPERTY(meta = (BindWidget))
-	class UImage* ItemImage;
+	class UImage* Image_Item;
 
 	UPROPERTY(meta = (BindWidget))
 	class USlider* Slider_Amount;
@@ -42,7 +48,7 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void ShowRemoveConfirm(class UItemDragDropOperation* NewItemDragDropOperation);
+	void ShowRemoveConfirm(class UItemDragDropOperation* NewDragDropOperation);
 
 protected:
 	UFUNCTION(BlueprintCallable)

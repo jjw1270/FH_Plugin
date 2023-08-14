@@ -10,6 +10,7 @@
 #include "ItemDragDropOperation.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "OnDragWidget.h"
+#include "ItemType.h"
 
 void UInventorySlotWidget::NativeOnInitialized()
 {
@@ -18,7 +19,7 @@ void UInventorySlotWidget::NativeOnInitialized()
 	InventoryComp = Cast<UInventoryComponent>(GetOwningPlayer()->GetComponentByClass(UInventoryComponent::StaticClass()));
 	ensureMsgf(InventoryComp, TEXT("InventoryComp is nullptr"));
 
-	ClearBindWidget();
+	ClearSlot();
 }
 
 void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
@@ -32,25 +33,25 @@ void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, con
 
 	ensureMsgf(DragWidgetClass, TEXT("DragWidgetClass is nullptr"));
 	UOnDragWidget* DragWidget = Cast<UOnDragWidget>(CreateWidget(GetOwningPlayer(), DragWidgetClass));
-	UTexture2D* Image = Cast<UTexture2D>(ItemImage->GetBrush().GetResourceObject());
+	UTexture2D* Image = GetItemImage();
 	DragWidget->SetItemImage(Image);
 
-	UItemDragDropOperation* DragOperation = Cast<UItemDragDropOperation>(UWidgetBlueprintLibrary::CreateDragDropOperation(UItemDragDropOperation::StaticClass()));
-	if (!IsValid(DragOperation))
+	UItemDragDropOperation* DDOperation = Cast<UItemDragDropOperation>(UWidgetBlueprintLibrary::CreateDragDropOperation(UItemDragDropOperation::StaticClass()));
+	if (!IsValid(DDOperation))
 	{
 		return;
 	}
-	DragOperation->DefaultDragVisual = DragWidget;
-	DragOperation->SlotInventoryItem = SlotInventoryItem;
-	DragOperation->ItemImage = Image;
-	DragOperation->Payload = this;
 
-	ClearBindWidget();
+	DDOperation->DefaultDragVisual = DragWidget;
+	DDOperation->DragingItemID = ItemID;
+	DDOperation->Payload = this;
+
+	ClearSlot();
 
 	InventoryWidget->GetItemInfoBox()->SetVisibility(ESlateVisibility::Collapsed);
 	InventoryWidget->GetItemTrash()->SetVisibility(ESlateVisibility::Visible);
 
-	OutOperation = DragOperation;
+	OutOperation = DDOperation;
 }
 
 void UInventorySlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
@@ -58,9 +59,9 @@ void UInventorySlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDro
 	Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
 
 	InventoryWidget->GetItemTrash()->SetVisibility(ESlateVisibility::Collapsed);
-	
-	UItemDragDropOperation* DragOperation = Cast<UItemDragDropOperation>(InOperation);
-	if (!DragOperation)
+
+	UItemDragDropOperation* DDOperation = Cast<UItemDragDropOperation>(InOperation);
+	if (!DDOperation)
 	{
 		return;
 	}
@@ -68,12 +69,11 @@ void UInventorySlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDro
 	// If a new item is added to the PrevInventorySlot, Add to New slot
 	if (!IsEmpty())
 	{
-		InventoryWidget->AddNewItemToSlot(DragOperation->SlotInventoryItem);
+		InventoryWidget->AddNewItemToSlot(DDOperation->DragingItemID);
 		return;
 	}
 
-	BindOnInventoryItemChanged();
-	UpdateItem(DragOperation->SlotInventoryItem);
+	SetSlot(DDOperation->DragingItemID);
 }
 
 // Called On Drag Droped Slot!
@@ -83,51 +83,32 @@ bool UInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 
 	InventoryWidget->GetItemTrash()->SetVisibility(ESlateVisibility::Collapsed);
 
-	UItemDragDropOperation* DragOperation = Cast<UItemDragDropOperation>(InOperation);
-	if (!DragOperation)
+	UItemDragDropOperation* DDOperation = Cast<UItemDragDropOperation>(InOperation);
+	if (!DDOperation)
 	{
 		return false;
 	}
 
 	// if slot is empty
-	if (!SlotInventoryItem)
+	if (ItemID == 0)
 	{	
-		BindOnInventoryItemChanged();
-		UpdateItem(DragOperation->SlotInventoryItem);
+		SetSlot(DDOperation->DragingItemID);
 
 		return true;
 	}
 
-	// if slot has Item, Swap slots
-	UInventorySlotWidget* PrevInventorySlot = Cast<UInventorySlotWidget>(DragOperation->Payload);
-	if (PrevInventorySlot)
+	// else slot has Item, Swap slots
+	UInventorySlotWidget* PrevInventorySlot = Cast<UInventorySlotWidget>(DDOperation->Payload);
+	if (!PrevInventorySlot)
 	{
-		PrevInventorySlot->BindOnInventoryItemChanged();
-		PrevInventorySlot->UpdateItem(SlotInventoryItem);
-
-		ClearBindWidget();
-		BindOnInventoryItemChanged();
-		UpdateItem(DragOperation->SlotInventoryItem);
-
-		return true;
+		return false;
 	}
 
-	return false;
-}
+	PrevInventorySlot->SetSlot(ItemID);
+	
+	SetSlot(DDOperation->DragingItemID);
 
-void UInventorySlotWidget::BindOnInventoryItemChanged()
-{
-	DeleHandle_OnInventoryItemChanged = InventoryComp->Fuc_Dele_OnInventoryItemChanged.AddUObject(this, &UInventorySlotWidget::UpdateItem);
-}
-
-void UInventorySlotWidget::UpdateItem(FInventoryItem* NewItem)
-{
-	if (!SlotInventoryItem)
-	{
-		SlotInventoryItem = NewItem;
-	}
-
-	SetWidgetBindVariables();
+	return true;
 }
 
 void UInventorySlotWidget::SetOwningInventoryWidget(UInventoryWidget* NewInventoryWidget)
@@ -135,54 +116,87 @@ void UInventorySlotWidget::SetOwningInventoryWidget(UInventoryWidget* NewInvento
 	InventoryWidget = NewInventoryWidget;
 }
 
-void UInventorySlotWidget::SetWidgetBindVariables()
+void UInventorySlotWidget::SetSlot(const int32& NewItemID)
 {
-	ItemImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
-
-	Amount = SlotInventoryItem->Amount;
-	ItemType = SlotInventoryItem->Type;
-
-	switch (ItemType)
+	if (!OnInventoryItemChangedHandle.IsValid())
 	{
-	case EItemType::Consumable:
-	{
-		FConsumableItemData* ItemData = InventoryComp->GetConsumableItemInfo(SlotInventoryItem->ID);
-		ItemName = ItemData->Name;
-		ItemPrice = ItemData->Price;
-		ItemInfo = ItemData->ItemTextInfo;
-		ItemImage->SetBrushFromTexture(ItemData->ItemImage);
-		return;
+		OnInventoryItemChangedHandle = InventoryComp->OnInventoryItemChangedDelegate.AddUObject(this, &UInventorySlotWidget::OnUpdateItem);
 	}
-	case EItemType::Equipment:
+
+	ItemID = NewItemID;
+
+	ItemImageWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
+
+	SetWidgetBindVariables();
+}
+
+void UInventorySlotWidget::OnUpdateItem(const int32& UpdateItemID)
+{
+	if (ItemID == UpdateItemID)
 	{
-		FEquipmentItemData* ItemData = InventoryComp->GetEquipmentItemInfo(SlotInventoryItem->ID);
-		ItemName = ItemData->Name;
-		ItemPrice = ItemData->Price;
-		ItemInfo = ItemData->ItemTextInfo;
-		ItemImage->SetBrushFromTexture(ItemData->ItemImage);
-		return;
-	}
-	default:
-		return;
+		// if This Item Fully Removed
+		if (!InventoryComp->GetInventoryItems()->Contains(ItemID))
+		{
+			ClearSlot();
+			return;
+		}
+
+		SetWidgetBindVariables();
 	}
 }
 
-void UInventorySlotWidget::ClearBindWidget()
+void UInventorySlotWidget::SetWidgetBindVariables()
 {
-	SlotInventoryItem = nullptr;
+	ItemType = InventoryComp->GetItemType(ItemID);
+	
+	Amount = *InventoryComp->GetInventoryItems()->Find(ItemID);
 
-	if (DeleHandle_OnInventoryItemChanged.IsValid())
+	switch (ItemType)
 	{
-		InventoryComp->Fuc_Dele_OnInventoryItemChanged.Remove(DeleHandle_OnInventoryItemChanged);
+		case EItemType::Consumable:
+		{
+			FConsumableItemData* ItemData = InventoryComp->GetConsumableItemInfo(ItemID);
+			ItemName = ItemData->Name;
+			ItemPrice = ItemData->Price;
+			ItemInfo = ItemData->ItemTextInfo;
+			ItemImageWidget->SetBrushFromTexture(ItemData->ItemImage);
+			break;
+		}
+		case EItemType::Equipment:
+		{
+			FEquipmentItemData* ItemData = InventoryComp->GetEquipmentItemInfo(ItemID);
+			ItemName = ItemData->Name;
+			ItemPrice = ItemData->Price;
+			ItemInfo = ItemData->ItemTextInfo;
+			ItemImageWidget->SetBrushFromTexture(ItemData->ItemImage);
+			break;
+		}
+		default:
+			break;
+	}
+}
+
+void UInventorySlotWidget::ClearSlot()
+{
+	ItemID = 0;
+
+	if (!OnInventoryItemChangedHandle.IsValid())
+	{
+		InventoryComp->OnInventoryItemChangedDelegate.Remove(OnInventoryItemChangedHandle);
 	}
 
-	Amount = 0;
 	ItemType = EItemType::None;
+	Amount = 0;
 	ItemName = "";
 	ItemPrice = 0;
 	ItemInfo = "";
-	ItemImage->SetBrushFromTexture(nullptr);
-	ItemImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
+	ItemImageWidget->SetBrushFromTexture(nullptr);
+	ItemImageWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
 
 	return;
+}
+
+UTexture2D* UInventorySlotWidget::GetItemImage()
+{
+	return Cast<UTexture2D>(ItemImageWidget->GetBrush().GetResourceObject());
 }

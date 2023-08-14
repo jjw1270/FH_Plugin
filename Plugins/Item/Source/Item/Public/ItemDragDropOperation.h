@@ -16,8 +16,6 @@ class ITEM_API UItemDragDropOperation : public UDragDropOperation
 	
 public:
 	UPROPERTY(BlueprintReadOnly)
-	class UTexture2D* ItemImage;
-
-	struct FInventoryItem* SlotInventoryItem;
+	int32 DragingItemID;
 
 };

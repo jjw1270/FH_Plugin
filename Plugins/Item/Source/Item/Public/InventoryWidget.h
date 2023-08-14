@@ -17,10 +17,8 @@ class ITEM_API UInventoryWidget : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
+// Blueprint Bind Widgets
 protected:
-	UPROPERTY(BlueprintReadOnly)
-	class AItem_FHPlayerController* PC;
-
 	UPROPERTY(meta = (BindWidget))
 	class UUniformGridPanel* InventorySlotGrid;
 
@@ -40,21 +38,20 @@ protected:
 	TArray<class UInventorySlotWidget*> InventorySlotArray;
 	
 	UPROPERTY(EditAnywhere)
-	int32 SlotGridRowRange;
+	int32 DefaultSlotGridRowRange;
 
 	int32 SlotGridColRange{ 5 };
 
 public:
-	void AddNewItemToSlot(FInventoryItem* NewItem);
+	void AddNewItemToSlot(const int32& ItemID);
 
 protected:
+	void CreateSlotWidgets(int32 Row);
+
 	UFUNCTION(BlueprintCallable)
 	void SortItemSlot();
 
 public:
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AddSlotGridRowRange(int32 Num = 1) { SlotGridRowRange  += Num; }
-
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE UUserWidget* GetItemInfoBox() const { return ItemInfoBox; }
 

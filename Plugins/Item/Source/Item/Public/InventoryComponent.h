@@ -4,45 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ItemType.h"
 #include "InventoryComponent.generated.h"
 
-// Inventory Item Struct
-UENUM(BlueprintType)
-enum class EItemType : uint8
-{
-	None            UMETA(DisplayName = "None"),
-	Consumable      UMETA(DisplayName = "Consumable"),
-	Equipment       UMETA(DisplayName = "Equipment"),
-};
-
-USTRUCT(Atomic, BlueprintType)
-struct FInventoryItem
-{
-	GENERATED_BODY()
-
-public:
-	FInventoryItem()
-	{
-		Type = EItemType::None;
-		ID = 0;
-		Amount = 0;
-	};
-
-	FInventoryItem(EItemType Type, int32 ID, int32 Amount)
-		: Type(Type), ID(ID), Amount(Amount) {};
-
-public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	EItemType Type;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int32 ID;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int32 Amount;
-};
-
-DECLARE_MULTICAST_DELEGATE_OneParam(FDele_Multi_OneParam_pFInventoryItem, struct FInventoryItem*);
+/** Delegate called when an inventory item changes */
+DECLARE_MULTICAST_DELEGATE_OneParam(FDele_Multi_OneParam, const int32&);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ITEM_API UInventoryComponent : public UActorComponent
@@ -51,6 +17,9 @@ class ITEM_API UInventoryComponent : public UActorComponent
 
 public:	
 	UInventoryComponent();
+
+	UFUNCTION(BlueprintCallable)
+	void TestInventory();
 
 protected:
 	virtual void BeginPlay() override;
@@ -64,25 +33,25 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void InventoryUI();
 
-	FDele_Multi_OneParam_pFInventoryItem Fuc_Dele_OnInventoryItemChanged;
+	FDele_Multi_OneParam OnInventoryItemChangedDelegate;
 
 protected:
 	bool bIsInventoryUIOpen;
 	
 // Inventory
+private:
+	TMap<int32, int32>* InventoryItems;
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void AddItemToInventory(const int32& ItemID, const int32& Amount);
 
-	FORCEINLINE TArray<FInventoryItem*>* GetInventoryItems() { return InventoryItems; }
+	UFUNCTION(BlueprintCallable)
+	void RemoveItemFromInventory(const int32& ItemID, const int32& Amount);
 
-	int32 RemoveItemFromInventory(const FInventoryItem* InventoryItem, int32 Amount);
+	FORCEINLINE TMap<int32, int32>* GetInventoryItems() { return InventoryItems; }
 
-protected:
 	EItemType GetItemType(const int32& ItemID);
-
-private:
-	TArray<FInventoryItem*>* InventoryItems;
 
 //Item DataTables
 protected:

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "ItemType.h"
 #include "Item_FHGameInstance.generated.h"
 
 /**
@@ -15,12 +16,14 @@ class ITEM_API UItem_FHGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 protected:
-	TArray<struct FInventoryItem*> InventoryItems;
+	// TMap<ItemID, ItemAmount>
+	UPROPERTY()
+	TMap<int32, int32> InventoryItems;
 
 public:
 	UFUNCTION(BlueprintCallable)
 	void TestInventory();
 
-	FORCEINLINE TArray<struct FInventoryItem*>* GetInventoryItems() { return &InventoryItems; }
+	FORCEINLINE TMap<int32, int32>* GetInventoryItems() { return &InventoryItems; }
 
 };
