@@ -14,6 +14,9 @@
 //Components
 #include "Components/CapsuleComponent.h"
 
+#include "Item_FHPlayerController.h"
+#include "InventoryComponent.h"
+
 // Sets default values
 AItem_PlayableCharacter::AItem_PlayableCharacter()
 {
@@ -74,7 +77,8 @@ void AItem_PlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
+	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) 
+	{
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AItem_PlayableCharacter::Move);
 
@@ -84,6 +88,13 @@ void AItem_PlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 		//Interaction
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AItem_PlayableCharacter::Interaction);
 
+		//Quick Slots
+		EnhancedInputComponent->BindAction<AItem_PlayableCharacter, int32>(QuickSlot1Action, ETriggerEvent::Started, this, &AItem_PlayableCharacter::UseQuickSlot, 1);
+		EnhancedInputComponent->BindAction<AItem_PlayableCharacter, int32>(QuickSlot2Action, ETriggerEvent::Started, this, &AItem_PlayableCharacter::UseQuickSlot, 2);
+		EnhancedInputComponent->BindAction<AItem_PlayableCharacter, int32>(QuickSlot3Action, ETriggerEvent::Started, this, &AItem_PlayableCharacter::UseQuickSlot, 3);
+		EnhancedInputComponent->BindAction<AItem_PlayableCharacter, int32>(QuickSlot4Action, ETriggerEvent::Started, this, &AItem_PlayableCharacter::UseQuickSlot, 4);
+		EnhancedInputComponent->BindAction<AItem_PlayableCharacter, int32>(QuickSlot5Action, ETriggerEvent::Started, this, &AItem_PlayableCharacter::UseQuickSlot, 5);
+		EnhancedInputComponent->BindAction<AItem_PlayableCharacter, int32>(QuickSlot6Action, ETriggerEvent::Started, this, &AItem_PlayableCharacter::UseQuickSlot, 6);
 	}
 }
 
@@ -163,4 +174,15 @@ void AItem_PlayableCharacter::Interaction(const FInputActionValue& Value)
 	}
 
 	return;
+}
+
+void AItem_PlayableCharacter::UseQuickSlot(int32 SlotNum)
+{
+	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetController());
+	if (!PC)
+	{
+		return;
+	}
+
+	PC->GetInventoryComp()->UseQuickSlotItem(SlotNum);
 }

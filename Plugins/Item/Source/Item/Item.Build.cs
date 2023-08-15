@@ -27,8 +27,9 @@ public class Item : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"EnhancedInput",
-				"UMG"
+				"InputCore",
+                "EnhancedInput",
+				"UMG",
 			}
 			);
 			

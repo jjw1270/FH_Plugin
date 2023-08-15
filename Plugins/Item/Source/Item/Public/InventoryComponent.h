@@ -53,6 +53,19 @@ public:
 
 	EItemType GetItemType(const int32& ItemID);
 
+	void UseQuickSlotItem(const int32& QuickSlotNum);
+
+	UFUNCTION(BlueprintCallable)
+	void UseItem(const int32& ItemID);
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bCanUseItem;
+
+protected:
+	void UseConsumableItem(const int32& ItemID);
+
+	void EquipmentItem(const int32& ItemID);
+
 //Item DataTables
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

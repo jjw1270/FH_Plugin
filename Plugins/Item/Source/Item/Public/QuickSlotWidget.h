@@ -14,4 +14,19 @@ class ITEM_API UQuickSlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void NativeOnInitialized() override;
+
+private:
+	UPROPERTY()
+	TArray<class UQuickSlotSlotWidget*> QuickSlotSlots;
+
+	UPROPERTY(meta = (BindWidget))
+	class UUniformGridPanel* QuickSlotGrid;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UQuickSlotSlotWidget> QuickSlotSlotClass;
+
+public:
+	class UQuickSlotSlotWidget* GetQuickSlotSlot(int32 SlotNum);
 };

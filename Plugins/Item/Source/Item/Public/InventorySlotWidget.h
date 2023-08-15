@@ -18,14 +18,22 @@ class ITEM_API UInventorySlotWidget : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 
-	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
-	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UOnDragWidget> DragWidgetClass;
 
 public:
 	void SetOwningInventoryWidget(class UInventoryWidget* NewInventoryWidget);
+
+	FORCEINLINE UInventoryWidget* GetOwningInventoryWidget() const { return InventoryWidget; }
 
 public:
 	void SetSlot(const int32& NewItemID);
@@ -33,13 +41,9 @@ public:
 	void OnUpdateItem(const int32& UpdateItemID);
 
 	UFUNCTION(BlueprintCallable)
-	void SetWidgetBindVariables();
+	virtual void SetWidgetBindVariables();
 
-	void ClearSlot();
-
-protected:
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class UOnDragWidget> DragWidgetClass;
+	virtual void ClearSlot();
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
@@ -57,23 +61,24 @@ protected:
 // Variables to Bind UMG Components
 protected:
 	UPROPERTY(BlueprintReadOnly)
-	EItemType ItemType;
-
-	UPROPERTY(BlueprintReadOnly)
-	FString ItemName;
-
-	UPROPERTY(BlueprintReadOnly)
 	int32 Amount;
-
-	UPROPERTY(BlueprintReadOnly)
-	int32 ItemPrice;
-
-	UPROPERTY(BlueprintReadOnly)
-	FString ItemInfo;
 
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* ItemImageWidget;
+
+private:
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	EItemType ItemType;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	FString ItemName;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	int32 ItemPrice;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	FString ItemInfo;
 
 public:	
 	UFUNCTION(BlueprintCallable)

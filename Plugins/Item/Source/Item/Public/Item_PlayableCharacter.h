@@ -68,9 +68,31 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* InteractAction;
 
+	// Quick Slot Input Actions
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* QuickSlot1Action;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* QuickSlot2Action;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* QuickSlot3Action;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* QuickSlot4Action;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* QuickSlot5Action;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* QuickSlot6Action;
+
 protected:
 	/** Called for Interact input */
 	void Interaction(const FInputActionValue& Value);
+
+	/** Called for Quick Slot inputs */
+	void UseQuickSlot(int32 SlotNum);
 
 public:
 	UPROPERTY(BlueprintReadOnly)

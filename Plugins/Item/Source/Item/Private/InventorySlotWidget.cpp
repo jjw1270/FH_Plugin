@@ -2,15 +2,14 @@
 
 
 #include "InventorySlotWidget.h"
-#include "ItemInterface.h"
+#include "ItemType.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "ItemDragDropOperation.h"
+#include "OnDragWidget.h"
 #include "InventoryComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "InventoryWidget.h"
-#include "ItemDragDropOperation.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
-#include "OnDragWidget.h"
-#include "ItemType.h"
 
 void UInventorySlotWidget::NativeOnInitialized()
 {
@@ -20,6 +19,12 @@ void UInventorySlotWidget::NativeOnInitialized()
 	ensureMsgf(InventoryComp, TEXT("InventoryComp is nullptr"));
 
 	ClearSlot();
+}
+
+FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	FEventReply reply = UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
+	return reply.NativeReply;
 }
 
 void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
@@ -192,8 +197,6 @@ void UInventorySlotWidget::ClearSlot()
 	ItemInfo = "";
 	ItemImageWidget->SetBrushFromTexture(nullptr);
 	ItemImageWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
-
-	return;
 }
 
 UTexture2D* UInventorySlotWidget::GetItemImage()

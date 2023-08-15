@@ -7,6 +7,8 @@
 #include "ItemInterface.h"
 #include "Item_HUDWidget.h"
 #include "InventoryWidget.h"
+#include "QuickSlotWidget.h"
+#include "QuickSlotSlotWidget.h"
 
 UInventoryComponent::UInventoryComponent()
 {
@@ -116,6 +118,53 @@ EItemType UInventoryComponent::GetItemType(const int32& ItemID)
 	}
 
 	return Itemtype;
+}
+
+void UInventoryComponent::UseQuickSlotItem(const int32& QuickSlotNum)
+{
+	// find item in quick slot
+	UQuickSlotSlotWidget* QuickSlotSlot = PC->GetHUDWidget()->GetQuickSlotWidget()->GetQuickSlotSlot(QuickSlotNum);
+	if (!QuickSlotSlot)
+	{
+		return;
+	}
+
+	// use item
+	UseItem(QuickSlotSlot->GetSlotItemID());
+}
+
+void UInventoryComponent::UseItem(const int32& ItemID)
+{
+	// first check can use item
+	// can use only in dungeon, not on attacking, not on using item, ...
+	if (!bCanUseItem)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can not Use Items!"));
+		return;
+	}
+
+	EItemType ItemType = GetItemType(ItemID);
+	switch (ItemType)
+	{
+		case EItemType::Consumable:
+			UseConsumableItem(ItemID);
+			break;
+		case EItemType::Equipment:
+			EquipmentItem(ItemID);
+			break;
+		default:
+			break;
+	}
+}
+
+void UInventoryComponent::UseConsumableItem(const int32& ItemID)
+{
+
+}
+
+void UInventoryComponent::EquipmentItem(const int32& ItemID)
+{
+
 }
 
 FConsumableItemData* UInventoryComponent::GetConsumableItemInfo(const int32& ItemID)
