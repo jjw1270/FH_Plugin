@@ -22,9 +22,9 @@ protected:
 
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 
-	void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
-	bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -59,15 +59,10 @@ protected:
 	FDelegateHandle OnInventoryItemChangedHandle;
 
 // Variables to Bind UMG Components
-protected:
-	UPROPERTY(BlueprintReadOnly)
+private:
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32 Amount;
 
-protected:
-	UPROPERTY(meta = (BindWidget))
-	class UImage* ItemImageWidget;
-
-private:
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	EItemType ItemType;
 
@@ -79,6 +74,10 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	FString ItemInfo;
+
+protected:
+	UPROPERTY(meta = (BindWidget))
+	class UImage* ItemImageWidget;
 
 public:	
 	UFUNCTION(BlueprintCallable)

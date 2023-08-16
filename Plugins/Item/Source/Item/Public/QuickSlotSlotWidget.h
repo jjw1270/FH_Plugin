@@ -3,29 +3,61 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InventorySlotWidget.h"
+#include "Blueprint/UserWidget.h"
 #include "QuickSlotSlotWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ITEM_API UQuickSlotSlotWidget : public UInventorySlotWidget
+class ITEM_API UQuickSlotSlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
 // Native Func
 protected:
-	void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	virtual void NativeOnInitialized() override;
 
-	bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 public:
-	virtual void SetWidgetBindVariables() override;
+	void SetSlot(const int32& NewItemID);
 
-	virtual void ClearSlot() override;
+	void OnUpdateItem(const int32& UpdateItemID);
 
+	void SetWidgetBindVariables();
+
+	void ClearSlot();
+
+protected:
+	UPROPERTY(BlueprintReadOnly)
+	class UQuickSlotWidget* QuickSlotWidget;
+
+	UPROPERTY(BlueprintReadOnly)
+	class UInventoryComponent* InventoryComp;
+
+protected:
+	int32 ItemID;
+
+	FDelegateHandle OnInventoryItemChangedHandle;
+
+// bind widget vars
 public:
 	UPROPERTY(BlueprintReadOnly)
 	int32 QuickSlotSlotNum;
+
+protected:
+	UPROPERTY(meta = (BindWidget))
+	class UImage* ItemImageWidget;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 Amount;
+
+public:
+	FORCEINLINE int32 GetSlotItemID() const { return ItemID; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool IsEmpty() const { return Amount <= 0; }
 };

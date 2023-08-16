@@ -28,5 +28,7 @@ private:
 	TSubclassOf<class UQuickSlotSlotWidget> QuickSlotSlotClass;
 
 public:
+	TArray<class UQuickSlotSlotWidget*>* GetQuickSlotSlotArray();
+
 	class UQuickSlotSlotWidget* GetQuickSlotSlot(int32 SlotNum);
 };

@@ -20,6 +20,11 @@ void UQuickSlotWidget::NativeOnInitialized()
 	}
 }
 
+TArray<class UQuickSlotSlotWidget*>* UQuickSlotWidget::GetQuickSlotSlotArray()
+{
+	return &QuickSlotSlots;
+}
+
 UQuickSlotSlotWidget* UQuickSlotWidget::GetQuickSlotSlot(int32 SlotNum)
 {
 	return QuickSlotSlots[SlotNum-1];

@@ -4,29 +4,39 @@
 #include "QuickSlotSlotWidget.h"
 #include "ItemType.h"
 #include "InventoryComponent.h"
+#include "Item_FHPlayerController.h"
+#include "Item_HUDWidget.h"
+#include "QuickSlotWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "ItemDragDropOperation.h"
-#include "OnDragWidget.h"
 #include "Components/Image.h"
-#include "InventoryWidget.h"
 
-void UQuickSlotSlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+void UQuickSlotSlotWidget::NativeOnInitialized()
 {
-	UUserWidget::NativeOnDragCancelled(InDragDropEvent, InOperation);
+	Super::NativeOnInitialized();
 
-	InventoryWidget->GetItemTrash()->SetVisibility(ESlateVisibility::Collapsed);
+	InventoryComp = Cast<UInventoryComponent>(GetOwningPlayer()->GetComponentByClass(UInventoryComponent::StaticClass()));
+	ensureMsgf(InventoryComp, TEXT("InventoryComp is nullptr"));
 
-	UItemDragDropOperation* DDOperation = Cast<UItemDragDropOperation>(InOperation);
-	if (!DDOperation)
-	{
-		return;
-	}
-
-	//SetSlot(DDOperation->DragingItemID);
+	ClearSlot();
 }
 
-bool UQuickSlotSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+FReply UQuickSlotSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+	if (InMouseEvent.GetPressedButtons().Contains(EKeys::RightMouseButton))
+	{
+		if (!IsEmpty())
+		{
+			ClearSlot();
+		}
+	}
+
+	return FReply::Handled();
+}
+
+// Only for inventory slot to quick slot
+bool UQuickSlotSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{	
 	UUserWidget::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 
 	UItemDragDropOperation* DDOperation = Cast<UItemDragDropOperation>(InOperation);
@@ -35,56 +45,58 @@ bool UQuickSlotSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 		return false;
 	}
 
-	UInventorySlotWidget* PrevInventorySlot = Cast<UInventorySlotWidget>(DDOperation->Payload);
-	if (!PrevInventorySlot)
-	{
-		return false;
-	}
-	InventoryWidget = PrevInventorySlot->GetOwningInventoryWidget();
-
-	InventoryWidget->GetItemTrash()->SetVisibility(ESlateVisibility::Collapsed);
-
 	// Quick slot is only for Consumalbe Items
 	if (InventoryComp->GetItemType(DDOperation->DragingItemID) != EItemType::Consumable)
 	{
 		return false;
 	}
 
-	// if quick slot to quick slot
-	if (Cast<UQuickSlotSlotWidget>(PrevInventorySlot))
+	// check quickslotslots in quickslotslotarray has same Item : clear prev quick slot item
+	if (!QuickSlotWidget)
 	{
-		// if dropped quick slot is empty
-		if (ItemID == 0)
-		{
-			SetSlot(DDOperation->DragingItemID);
-
-			return true;
-		}
-
-		// else swap slots
-		PrevInventorySlot->SetSlot(ItemID);
-
-		ClearSlot();
-		SetSlot(DDOperation->DragingItemID);
-
-		return true;
+		QuickSlotWidget = GetOwningPlayer<AItem_FHPlayerController>()->GetHUDWidget()->GetQuickSlotWidget();
 	}
-	// if inventory slot to quick slot, duplicate item
-	else
-	{
-		// if dropped quick slot is empty
-		if (ItemID == 0)
-		{
-			SetSlot(DDOperation->DragingItemID);
 
-			return false;
+	for (auto QuickSlotSlot : *QuickSlotWidget->GetQuickSlotSlotArray())
+	{
+		if (QuickSlotSlot->GetSlotItemID() == DDOperation->DragingItemID)
+		{
+			QuickSlotSlot->ClearSlot();
+		}
+	}
+
+	//duplicate inventory slot to quick slot
+	SetSlot(DDOperation->DragingItemID);
+
+	return false;
+}
+
+void UQuickSlotSlotWidget::SetSlot(const int32& NewItemID)
+{
+	if (!OnInventoryItemChangedHandle.IsValid())
+	{
+		OnInventoryItemChangedHandle = InventoryComp->OnInventoryItemChangedDelegate.AddUObject(this, &UQuickSlotSlotWidget::OnUpdateItem);
+	}
+
+	ItemID = NewItemID;
+
+	ItemImageWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
+
+	SetWidgetBindVariables();
+}
+
+void UQuickSlotSlotWidget::OnUpdateItem(const int32& UpdateItemID)
+{
+	if (ItemID == UpdateItemID)
+	{
+		// if This Item Fully Removed
+		if (!InventoryComp->GetInventoryItems()->Contains(ItemID))
+		{
+			ClearSlot();
+			return;
 		}
 
-		// else clear dropped quick slot first
-		ClearSlot();
-		SetSlot(DDOperation->DragingItemID);
-
-		return false;
+		SetWidgetBindVariables();
 	}
 }
 
