@@ -62,6 +62,7 @@ struct FConsumableItemData : public FTableRowBase
 UENUM(BlueprintType)
 enum class EEquipmentType : uint8
 {
+    None        UMETA(DisplayName = "None"),
     Helmet      UMETA(DisplayName = "Helmet"),
     Upper       UMETA(DisplayName = "Upper"),
     Lower       UMETA(DisplayName = "Lower"),

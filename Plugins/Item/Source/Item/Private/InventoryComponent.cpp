@@ -15,15 +15,6 @@ UInventoryComponent::UInventoryComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UInventoryComponent::TestInventory()
-{
-	for (auto& a : *InventoryItems)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%d"), a.Value);
-	}
-}
-
-
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -102,7 +93,7 @@ void UInventoryComponent::RemoveItemFromInventory(const int32& ItemID, const int
 
 EItemType UInventoryComponent::GetItemType(const int32& ItemID)
 {
-	EItemType Itemtype;
+	EItemType Itemtype = EItemType::None;
 
 	switch (ItemID / 1000)
 	{
@@ -113,7 +104,6 @@ EItemType UInventoryComponent::GetItemType(const int32& ItemID)
 		Itemtype = EItemType::Equipment;
 		break;
 	default:
-		Itemtype = EItemType::None;
 		break;
 	}
 

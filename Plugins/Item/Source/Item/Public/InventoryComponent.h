@@ -18,9 +18,6 @@ class ITEM_API UInventoryComponent : public UActorComponent
 public:	
 	UInventoryComponent();
 
-	UFUNCTION(BlueprintCallable)
-	void TestInventory();
-
 protected:
 	virtual void BeginPlay() override;
 

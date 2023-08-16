@@ -20,10 +20,13 @@ protected:
 	UPROPERTY()
 	TMap<int32, int32> InventoryItems;
 
-public:
-	UFUNCTION(BlueprintCallable)
-	void TestInventory();
+	// TMap<EquipType, ItemID>
+	UPROPERTY()
+	TMap<EEquipmentType, int32> Equiments;
 
+public:
 	FORCEINLINE TMap<int32, int32>* GetInventoryItems() { return &InventoryItems; }
+
+	FORCEINLINE TMap<EEquipmentType, int32>* GetEquipments() { return &Equiments; }
 
 };
