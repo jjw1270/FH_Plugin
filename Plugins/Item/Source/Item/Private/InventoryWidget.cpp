@@ -4,14 +4,20 @@
 #include "InventoryWidget.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/Button.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/HorizontalBox.h"
 #include "InventorySlotWidget.h"
 #include "InventoryComponent.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 
 void UInventoryWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
 	CreateSlotWidgets(DefaultSlotGridRowRange);
+
+	UIDragBtn->OnPressed.AddDynamic(this, &UInventoryWidget::OnDragBtnPressed);
+	UIDragBtn->OnReleased.AddDynamic(this, &UInventoryWidget::OnDragBtnReleased);
 }
 
 void UInventoryWidget::CreateSlotWidgets(int32 Row)
@@ -65,5 +71,28 @@ void UInventoryWidget::SortItemSlot()
 				break;
 			}
 		}
+	}
+}
+
+void UInventoryWidget::OnDragBtnPressed()
+{
+	MousePosOnDragStart = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld())
+		- Cast<UCanvasPanelSlot>(InventoryUI->Slot)->GetPosition();
+
+	GetWorld()->GetTimerManager().SetTimer(DragTimerHandle, this, &UInventoryWidget::DragUI, 0.01f, true);
+}
+
+void UInventoryWidget::DragUI()
+{
+	FVector2D UIPos = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()) - MousePosOnDragStart;
+
+	Cast<UCanvasPanelSlot>(InventoryUI->Slot)->SetPosition(UIPos);
+}
+
+void UInventoryWidget::OnDragBtnReleased()
+{
+	if (DragTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(DragTimerHandle);
 	}
 }

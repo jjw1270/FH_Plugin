@@ -42,6 +42,16 @@ protected:
 
 	int32 SlotGridColRange{ 5 };
 
+	UPROPERTY(meta = (BindWidget))
+	class UHorizontalBox* InventoryUI;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* UIDragBtn;
+
+	FVector2D MousePosOnDragStart;
+
+	FTimerHandle DragTimerHandle;
+
 public:
 	void AddNewItemToSlot(const int32& ItemID);
 
@@ -50,6 +60,14 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void SortItemSlot();
+
+	UFUNCTION()
+	void OnDragBtnPressed();
+
+	void DragUI();
+
+	UFUNCTION()
+	void OnDragBtnReleased();
 
 public:
 	UFUNCTION(BlueprintCallable)
