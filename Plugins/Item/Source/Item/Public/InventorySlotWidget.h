@@ -43,6 +43,8 @@ public:
 
 	void OnUpdateItem(const int32& UpdateItemID);
 
+	void OnUpdateEquipItem(const int32& UpdateItemID, bool bVisibility);
+
 	UFUNCTION(BlueprintCallable)
 	virtual void SetWidgetBindVariables();
 
@@ -55,11 +57,16 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	class UInventoryWidget* InventoryWidget;
 
+	UPROPERTY()
+	UEquipmentComponent* EquipmentComp;
+
 // FInventoryItem In this Slot 
 protected:
 	int32 ItemID;
 
 	FDelegateHandle OnInventoryItemChangedHandle;
+
+	FDelegateHandle OnEquipItemChangedHandle;
 
 // Variables to Bind UMG Components
 private:
@@ -81,6 +88,9 @@ private:
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* ItemImageWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* Image_OnEquip;
 
 public:	
 	UFUNCTION(BlueprintCallable)

@@ -14,6 +14,8 @@
 #include "Item_HUDWidget.h"
 #include "QuickSlotWidget.h"
 #include "QuickSlotSlotWidget.h"
+#include "EquipmentComponent.h"
+#include "Item_FHPlayerState.h"
 
 void UInventorySlotWidget::NativeOnInitialized()
 {
@@ -133,8 +135,6 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InG
 	TSet<FKey> PressedBtns = InMouseEvent.GetPressedButtons();
 	for (const auto& pb : PressedBtns)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AA"));
-
 		if (pb != EKeys::LeftMouseButton)
 		{
 			return FReply::Unhandled();
@@ -171,7 +171,14 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InG
 		break;
 	case EItemType::Equipment:
 		// Equip Item
-		InventoryComp->UseItem(ItemID);
+		if (Image_OnEquip->GetVisibility() == ESlateVisibility::Visible)
+		{
+			InventoryComp->UseItem(ItemID, true);
+		}
+		else if(Image_OnEquip->GetVisibility() == ESlateVisibility::Collapsed)
+		{
+			InventoryComp->UseItem(ItemID, false);
+		}
 		break;
 	default:
 		break;
@@ -214,6 +221,21 @@ void UInventorySlotWidget::OnUpdateItem(const int32& UpdateItemID)
 	}
 }
 
+void UInventorySlotWidget::OnUpdateEquipItem(const int32& UpdateItemID, bool bVisibility)
+{
+	if (ItemID == UpdateItemID)
+	{
+		if (bVisibility)
+		{
+			Image_OnEquip->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
+			Image_OnEquip->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
+}
+
 void UInventorySlotWidget::SetWidgetBindVariables()
 {
 	ItemType = InventoryComp->GetItemType(ItemID);
@@ -238,6 +260,14 @@ void UInventorySlotWidget::SetWidgetBindVariables()
 			ItemPrice = ItemData->Price;
 			ItemInfo = ItemData->ItemTextInfo;
 			ItemImageWidget->SetBrushFromTexture(ItemData->ItemImage);
+			
+			EquipmentComp = Cast<UEquipmentComponent>(GetOwningPlayerState()->GetComponentByClass(UEquipmentComponent::StaticClass()));
+			if (!EquipmentComp) return;
+
+			if (!OnEquipItemChangedHandle.IsValid())
+			{
+				OnEquipItemChangedHandle = EquipmentComp->OnInventoryItemEquipDelegate.AddUObject(this, &UInventorySlotWidget::OnUpdateEquipItem);
+			}
 			break;
 		}
 		default:
@@ -249,9 +279,17 @@ void UInventorySlotWidget::ClearSlot()
 {
 	ItemID = 0;
 
-	if (!OnInventoryItemChangedHandle.IsValid())
+	if (OnInventoryItemChangedHandle.IsValid())
 	{
 		InventoryComp->OnInventoryItemChangedDelegate.Remove(OnInventoryItemChangedHandle);
+	}
+
+	if (OnEquipItemChangedHandle.IsValid())
+	{
+		if (EquipmentComp)
+		{
+			EquipmentComp->OnInventoryItemEquipDelegate.Remove(OnEquipItemChangedHandle);
+		}
 	}
 
 	ItemType = EItemType::None;

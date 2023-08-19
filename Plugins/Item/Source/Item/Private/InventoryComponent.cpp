@@ -9,6 +9,8 @@
 #include "InventoryWidget.h"
 #include "QuickSlotWidget.h"
 #include "QuickSlotSlotWidget.h"
+#include "Item_FHPlayerState.h"
+#include "EquipmentComponent.h"
 
 UInventoryComponent::UInventoryComponent()
 {
@@ -120,10 +122,10 @@ void UInventoryComponent::UseQuickSlotItem(const int32& QuickSlotNum)
 	}
 
 	// use item
-	UseItem(QuickSlotSlot->GetSlotItemID());
+	UseItem(QuickSlotSlot->GetSlotItemID(), false);
 }
 
-void UInventoryComponent::UseItem(const int32& ItemID)
+void UInventoryComponent::UseItem(const int32& ItemID, bool bEquip)
 {
 	// first check can use item
 	// can use only in dungeon, not on attacking, not on using item, ...
@@ -133,6 +135,14 @@ void UInventoryComponent::UseItem(const int32& ItemID)
 		return;
 	}
 
+	AItem_FHPlayerState* PS = PC->GetPlayerState<AItem_FHPlayerState>();
+	if (!PS)
+	{
+		return;
+	}
+
+	UEquipmentComponent* EquipComp = PS->GetEquipmentComp();
+
 	EItemType ItemType = GetItemType(ItemID);
 	switch (ItemType)
 	{
@@ -140,7 +150,14 @@ void UInventoryComponent::UseItem(const int32& ItemID)
 			UseConsumableItem(ItemID);
 			break;
 		case EItemType::Equipment:
-			EquipmentItem(ItemID);
+			if (bEquip)
+			{
+				EquipComp->UnEquip(EquipComp->GetEquipmentType(ItemID));
+			}
+			else
+			{
+				EquipComp->Equip(ItemID);
+			}
 			break;
 		default:
 			break;
@@ -148,11 +165,6 @@ void UInventoryComponent::UseItem(const int32& ItemID)
 }
 
 void UInventoryComponent::UseConsumableItem(const int32& ItemID)
-{
-
-}
-
-void UInventoryComponent::EquipmentItem(const int32& ItemID)
 {
 
 }

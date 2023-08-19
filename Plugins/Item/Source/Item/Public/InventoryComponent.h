@@ -53,15 +53,13 @@ public:
 	void UseQuickSlotItem(const int32& QuickSlotNum);
 
 	UFUNCTION(BlueprintCallable)
-	void UseItem(const int32& ItemID);
+	void UseItem(const int32& ItemID, bool bEquip);
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bCanUseItem;
 
 protected:
 	void UseConsumableItem(const int32& ItemID);
-
-	void EquipmentItem(const int32& ItemID);
 
 //Item DataTables
 protected:

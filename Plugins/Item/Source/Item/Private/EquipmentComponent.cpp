@@ -10,7 +10,6 @@ UEquipmentComponent::UEquipmentComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
 void UEquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -21,8 +20,8 @@ void UEquipmentComponent::BeginPlay()
 	Equipments = GI->GetEquipments();
 	check(Equipments);
 
-	PC = Cast<AItem_FHPlayerController>(GetOwner());
-	check(PC);
+	//PC = Cast<AItem_FHPlayerController>(GetOwner());
+	//check(PC);
 
 	InitEquipment();
 }
@@ -47,6 +46,12 @@ void UEquipmentComponent::Equip(const int32& ItemID)
 	}
 
 	Equipments->Add(EquipType, ItemID);
+
+	if (OnEquipmentChangedDelegate.IsBound())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("A"));
+		OnEquipmentChangedDelegate.Broadcast(EquipType, ItemID);
+	}
 }
 
 void UEquipmentComponent::UnEquip(EEquipmentType EquipType)
@@ -57,6 +62,11 @@ void UEquipmentComponent::UnEquip(EEquipmentType EquipType)
 	}
 
 	Equipments->Remove(EquipType);
+
+	if (OnEquipmentChangedDelegate.IsBound())
+	{
+		OnEquipmentChangedDelegate.Broadcast(EquipType, 0);
+	}
 }
 
 EEquipmentType UEquipmentComponent::GetEquipmentType(const int32& ItemID)
