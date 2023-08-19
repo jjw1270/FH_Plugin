@@ -23,6 +23,8 @@ void UQuickSlotSlotWidget::NativeOnInitialized()
 
 FReply UQuickSlotSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+
 	if (InMouseEvent.GetPressedButtons().Contains(EKeys::RightMouseButton))
 	{
 		if (!IsEmpty())
@@ -37,7 +39,7 @@ FReply UQuickSlotSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 // Only for inventory slot to quick slot
 bool UQuickSlotSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {	
-	UUserWidget::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 
 	UItemDragDropOperation* DDOperation = Cast<UItemDragDropOperation>(InOperation);
 	if (!DDOperation)
@@ -57,7 +59,7 @@ bool UQuickSlotSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 		QuickSlotWidget = GetOwningPlayer<AItem_FHPlayerController>()->GetHUDWidget()->GetQuickSlotWidget();
 	}
 
-	for (auto QuickSlotSlot : *QuickSlotWidget->GetQuickSlotSlotArray())
+	for (auto& QuickSlotSlot : *QuickSlotWidget->GetQuickSlotSlotArray())
 	{
 		if (QuickSlotSlot->GetSlotItemID() == DDOperation->DragingItemID)
 		{

@@ -2,13 +2,13 @@
 
 
 #include "InventoryWidget.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
 #include "InventorySlotWidget.h"
 #include "InventoryComponent.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
 
 void UInventoryWidget::NativeOnInitialized()
 {

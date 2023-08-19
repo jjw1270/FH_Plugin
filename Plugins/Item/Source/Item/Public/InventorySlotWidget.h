@@ -26,6 +26,9 @@ protected:
 
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
+	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
+
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UOnDragWidget> DragWidgetClass;

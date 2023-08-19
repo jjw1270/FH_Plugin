@@ -10,6 +10,10 @@
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "InventoryWidget.h"
+#include "Item_FHPlayerController.h"
+#include "Item_HUDWidget.h"
+#include "QuickSlotWidget.h"
+#include "QuickSlotSlotWidget.h"
 
 void UInventorySlotWidget::NativeOnInitialized()
 {
@@ -114,6 +118,66 @@ bool UInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 	SetSlot(DDOperation->DragingItemID);
 
 	return true;
+}
+
+FReply UInventorySlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+
+	if (IsEmpty())
+	{
+		return FReply::Unhandled();
+	}
+
+	//check left mouse double clicked
+	TSet<FKey> PressedBtns = InMouseEvent.GetPressedButtons();
+	for (const auto& pb : PressedBtns)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AA"));
+
+		if (pb != EKeys::LeftMouseButton)
+		{
+			return FReply::Unhandled();
+		}
+	}
+
+	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetOwningPlayer());
+	if (!PC) return FReply::Unhandled();
+	UQuickSlotWidget* QuickSlotWidget = PC->GetHUDWidget()->GetQuickSlotWidget();
+	if (!QuickSlotWidget) return FReply::Unhandled();
+
+	switch (ItemType)
+	{
+	case EItemType::Consumable:
+		// If QuickSlotArray has this itemID, clear first
+		for (auto& QuickSlotSlot : *QuickSlotWidget->GetQuickSlotSlotArray())
+		{
+			if (QuickSlotSlot->GetSlotItemID() == ItemID)
+			{
+				QuickSlotSlot->ClearSlot();
+			}
+		}
+
+		// set slot on first empty slot
+		for (auto& QuickSlotSlot : *QuickSlotWidget->GetQuickSlotSlotArray())
+		{
+			if (QuickSlotSlot->IsEmpty())
+			{
+				QuickSlotSlot->SetSlot(ItemID);
+				break;
+			}
+		}
+
+		break;
+	case EItemType::Equipment:
+		// Equip Item
+		InventoryComp->UseItem(ItemID);
+		break;
+	default:
+		break;
+	}
+
+	return FReply::Handled();
 }
 
 void UInventorySlotWidget::SetOwningInventoryWidget(UInventoryWidget* NewInventoryWidget)
