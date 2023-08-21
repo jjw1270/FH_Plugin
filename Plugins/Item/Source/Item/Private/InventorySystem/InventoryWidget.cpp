@@ -54,7 +54,7 @@ void UInventoryWidget::BindInventoryCompEvents()
 		if (IsValid(InventoryComp))
 		{
 			InventoryComp->ItemUpdateDelegate.AddUObject(this, &UInventoryWidget::OnItemUpdate);
-			InventoryComp->ItemRegisterDelegate.AddUObject(this, &UInventoryWidget::);
+			InventoryComp->ItemRegisterDelegate.AddUObject(this, &UInventoryWidget::OnItemRegister);
 
 			return;
 		}
@@ -78,9 +78,15 @@ void UInventoryWidget::OnItemUpdate(const int32& UpdateItemID, const int32& Upda
 	{
 		if (InventorySlot->GetSlotItemID() == UpdateItemID)
 		{
-
+			InventorySlot->SetSlot(UpdateItemID, UpdateValue);
+			return;
 		}
 	}
+}
+
+void UInventoryWidget::OnItemRegister(const int32& UpdateItemID, const bool& bIsRegist, const int32& UpdateItemIdx)
+{
+
 }
 
 void UInventoryWidget::AddNewItemToSlot(const int32& ItemID, const int32& ItemValue)

@@ -9,8 +9,6 @@
 #include "Item_FHPlayerState.h"
 #include "EquipmentComponent.h"
 
-
-
 UInventoryComponent::UInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -47,7 +45,7 @@ void UInventoryComponent::AddItemToInventory(const int32& ItemID, const int32& N
 {
 	// If Already Exist in Inventory, Add Amount
 	//
-	// If Item is Equipment Item, Value is Item Index
+	// If Item is Equipment Item,
 	// Else Value is Item Amount
 	if (int32* PrevValue = InventoryItems->Find(ItemID))
 	{
@@ -133,18 +131,4 @@ void UInventoryComponent::ManageItem(const int32& ItemID, const int32& NewValue)
 		default:
 			break;
 	}
-}
-
-FConsumableItemData* UInventoryComponent::GetConsumableItemInfo(const int32& ItemID)
-{
-	check(ConsumableItemDataTable);
-
-	return ConsumableItemDataTable->FindRow<FConsumableItemData>(*FString::FromInt(ItemID), TEXT(""), false);
-}
-
-FEquipmentItemData* UInventoryComponent::GetEquipmentItemInfo(const int32& ItemID)
-{
-	check(EquipmentItemDataTable);
-
-	return EquipmentItemDataTable->FindRow<FEquipmentItemData>(*FString::FromInt(ItemID), TEXT(""), false);
 }

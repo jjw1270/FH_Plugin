@@ -68,7 +68,11 @@ protected:
 
 	void BindInventoryCompEvents();
 
+	UFUNCTION()
 	void OnItemUpdate(const int32& UpdateItemID, const int32& UpdateValue);
+
+	UFUNCTION()
+	void OnItemRegister(const int32& UpdateItemID, const bool& bIsRegist, const int32& UpdateItemIdx);
 
 	UFUNCTION(BlueprintCallable)
 	void SortItemSlot();

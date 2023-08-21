@@ -37,14 +37,15 @@ protected:
 	UPROPERTY()
 	class UQuickSlotComponent* QuickSlotComp;
 
-// for UI delegate
+// UI delegate
 public:
 	FDele_Multi_ItemUpdate ItemUpdateDelegate;
 
 	FDele_Multi_ItemRegister ItemRegisterDelegate;
 	
-// Inventory
+// Inventory func
 private:
+	UPROPERTY()
 	TMap<int32, int32>* InventoryItems;
 
 public:
@@ -58,22 +59,7 @@ public:
 
 	EItemType GetItemType(const int32& ItemID);
 
-	// void UseQuickSlotItem(const int32& QuickSlotNum);
-
 	UFUNCTION(BlueprintCallable)
 	void ManageItem(const int32& ItemID, const int32& NewValue);
-
-//Item DataTables
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UDataTable* ConsumableItemDataTable;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UDataTable* EquipmentItemDataTable;
-
-public:
-	struct FConsumableItemData* GetConsumableItemInfo(const int32& ItemID);
-
-	struct FEquipmentItemData* GetEquipmentItemInfo(const int32& ItemID);
 
 };
