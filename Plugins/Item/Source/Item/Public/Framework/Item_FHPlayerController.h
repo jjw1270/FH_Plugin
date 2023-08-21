@@ -26,31 +26,42 @@ protected:
 
 // Player Input
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input|UI")
 	class UInputMappingContext* UIMappingContext;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputAction* InventoryAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input|UI")
+	class UInputAction* InventoryUIAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input|UI")
+	class UInputAction* EquipmentUIAction;
+
+// Input Func
+public:
+	UFUNCTION(BlueprintCallable)
+	void WidgetOnOff(FName WidgetName);
 
 // Components
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
 	class UInventoryComponent* InventoryComp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	class UQuickSlotComponent* QuickSlotComp;
+
+// Component Getter
 public:
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE UInventoryComponent* GetInventoryComp() const { return InventoryComp; }
+	FORCEINLINE class UInventoryComponent* GetInventoryComp() const { return InventoryComp; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE class UQuickSlotComponent* GetQuickSlotComp() const { return QuickSlotComp; }
 
 // UI
 protected:
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class UItem_HUDWidget> HUDWidgetClass;
-
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY()
 	class UItem_HUDWidget* HUDWidget;
 
 public:
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE class UItem_HUDWidget* GetHUDWidget() const { return HUDWidget; }
+	class UItem_HUDWidget* GetHUDWidget();
 
 };

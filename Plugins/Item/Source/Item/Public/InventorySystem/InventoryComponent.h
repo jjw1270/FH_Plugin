@@ -7,8 +7,14 @@
 #include "ItemType.h"
 #include "InventoryComponent.generated.h"
 
-/** Delegate called when an inventory item changes */
-DECLARE_MULTICAST_DELEGATE_OneParam(FDele_Multi_OneParam, const int32&);
+// Delegate called when an inventory item changes
+// const int32& ItemID, const int32& ItemAmount
+DECLARE_MULTICAST_DELEGATE_TwoParams(FDele_Multi_ItemUpdate, const int32&, const int32&);
+
+// Delegate called when inventory item is registered
+// const int32& ItemID, const bool& bIsRegist, const int32& ItemIdx
+// Third Parameter is used for Cant Stackable Item(ex. Equipment Item) Idx Only!
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FDele_Multi_ItemRegister, const int32&, const bool&, const int32&);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ITEM_API UInventoryComponent : public UActorComponent
@@ -22,18 +28,20 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
-	UPROPERTY()
-	class AItem_FHPlayerController* PC;
-
-// UI
-public:
-	UFUNCTION(BlueprintCallable)
-	void InventoryUI();
-
-	FDele_Multi_OneParam OnInventoryItemChangedDelegate;
+	void Init();
 
 protected:
-	bool bIsInventoryUIOpen;
+	UPROPERTY()
+	class UEquipmentComponent* EquipComp;
+
+	UPROPERTY()
+	class UQuickSlotComponent* QuickSlotComp;
+
+// for UI delegate
+public:
+	FDele_Multi_ItemUpdate ItemUpdateDelegate;
+
+	FDele_Multi_ItemRegister ItemRegisterDelegate;
 	
 // Inventory
 private:
@@ -41,25 +49,19 @@ private:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void AddItemToInventory(const int32& ItemID, const int32& Amount);
+	void AddItemToInventory(const int32& ItemID, const int32& NewValue);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveItemFromInventory(const int32& ItemID, const int32& Amount);
+	void RemoveItemFromInventory(const int32& ItemID, const int32& NewValue);
 
 	FORCEINLINE TMap<int32, int32>* GetInventoryItems() { return InventoryItems; }
 
 	EItemType GetItemType(const int32& ItemID);
 
-	void UseQuickSlotItem(const int32& QuickSlotNum);
+	// void UseQuickSlotItem(const int32& QuickSlotNum);
 
 	UFUNCTION(BlueprintCallable)
-	void UseItem(const int32& ItemID, bool bEquip);
-
-	UPROPERTY(BlueprintReadWrite)
-	bool bCanUseItem;
-
-protected:
-	void UseConsumableItem(const int32& ItemID);
+	void ManageItem(const int32& ItemID, const int32& NewValue);
 
 //Item DataTables
 protected:

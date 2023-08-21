@@ -14,6 +14,11 @@ UCLASS()
 class ITEM_API UItem_FHGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
+	
+public:
+	//test
+	UFUNCTION(BlueprintCallable)
+	void TESTss();
 
 protected:
 	// TMap<ItemID, ItemAmount>

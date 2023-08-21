@@ -2,6 +2,7 @@
 
 
 #include "AnimNotify_Looting.h"
+#include "ItemType.h"
 #include "Item_PlayableCharacter.h"
 #include "Item_FHPlayerController.h"
 #include "InventoryComponent.h"

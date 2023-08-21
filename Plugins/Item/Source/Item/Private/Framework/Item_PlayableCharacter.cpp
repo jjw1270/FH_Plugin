@@ -10,7 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 //Interfaces
-#include "ItemInterface.h"
+#include "InteractionInterface.h"
 //Components
 #include "Components/CapsuleComponent.h"
 
@@ -157,16 +157,16 @@ void AItem_PlayableCharacter::Interaction(const FInputActionValue& Value)
 		}
 
 		// Check If Actor Inherits any Interfaces
-		if (Cast<IItemInterface>(Actor))  // ... || Cast<IAInterface>(Actor) || Cast<IBInterface>(Actor))
+		if (Cast<IInteractionInterface>(Actor))  // ... || Cast<IAInterface>(Actor) || Cast<IBInterface>(Actor))
 		{
 			NearestLength = distance;
 			InteractingActor = Actor;
 		}
 	}
 
-	if (IItemInterface* NearestItemInterfaceObj = Cast<IItemInterface>(InteractingActor))
+	if (IInteractionInterface* NearestItemInterfaceObj = Cast<IInteractionInterface>(InteractingActor))
 	{
-		NearestItemInterfaceObj->Execute_EventLoot(InteractingActor, this);
+		NearestItemInterfaceObj->Execute_EventInteraction(InteractingActor, this);
 	}
 	else
 	{

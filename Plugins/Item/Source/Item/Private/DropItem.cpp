@@ -90,7 +90,7 @@ bool ADropItem::IsCanSeePlayer()
 	return false;
 }
 
-void ADropItem::EventLoot_Implementation(ACharacter* OwnCharacter)
+void ADropItem::EventInteraction_Implementation(ACharacter* OwnCharacter)
 {
 	// Hide UI Widget
 	LootWidgetComp->SetHiddenInGame(true);

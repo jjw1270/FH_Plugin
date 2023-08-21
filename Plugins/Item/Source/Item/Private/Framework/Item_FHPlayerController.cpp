@@ -7,13 +7,15 @@
 #include "EnhancedInputSubsystems.h"
 // Components
 #include "InventoryComponent.h"
+#include "QuickSlotComponent.h"
 // UI
+#include "Item_FHHUD.h"
 #include "Item_HUDWidget.h"
-#include "InventoryWidget.h"
 
 AItem_FHPlayerController::AItem_FHPlayerController()
 {
 	InventoryComp = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComp"));
+	QuickSlotComp = CreateDefaultSubobject<UQuickSlotComponent>(TEXT("QuickSlotComp"));
 }
 
 void AItem_FHPlayerController::BeginPlay()
@@ -24,11 +26,6 @@ void AItem_FHPlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(UIMappingContext, 0);
 	}
-
-	// Create HUDWidget
-	ensureMsgf(HUDWidgetClass, TEXT("HudWidgetClass is not set."));
-	HUDWidget = CreateWidget<UItem_HUDWidget>(GetWorld(), HUDWidgetClass);
-	HUDWidget->AddToViewport();
 }
 
 void AItem_FHPlayerController::SetupInputComponent()
@@ -37,6 +34,23 @@ void AItem_FHPlayerController::SetupInputComponent()
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
-		EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, InventoryComp, &UInventoryComponent::InventoryUI);
+		EnhancedInputComponent->BindAction<AItem_FHPlayerController, FName>(InventoryUIAction, ETriggerEvent::Started, this, &AItem_FHPlayerController::WidgetOnOff, FName("InventoryWidget"));
+		EnhancedInputComponent->BindAction<AItem_FHPlayerController, FName>(EquipmentUIAction, ETriggerEvent::Started, this, &AItem_FHPlayerController::WidgetOnOff, FName("EquipmentWidget"));
 	}
+}
+
+void AItem_FHPlayerController::WidgetOnOff(FName WidgetName)
+{
+	GetHUDWidget()->SwichWidgetVisibility(WidgetName);
+}
+
+UItem_HUDWidget* AItem_FHPlayerController::GetHUDWidget()
+{
+	AItem_FHHUD* MyHUD = GetHUD<AItem_FHHUD>();
+	if (!MyHUD)
+	{
+		return nullptr;
+	}
+
+	return MyHUD->GetHUDWidget();
 }

@@ -4,26 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "ItemInterface.generated.h"
+#include "InteractionInterface.generated.h"
 
 // NEED TO CHANGE IT TO INCLUDING INTERACTION //
 
 // This class does not need to be modified.
 UINTERFACE(BlueprintType)
-class UItemInterface : public UInterface
+class UInteractionInterface : public UInterface
 {
 	GENERATED_BODY()
-};
+	};
 
 /**
- * 
+ *
  */
-class ITEM_API IItemInterface
+class ITEM_API IInteractionInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void EventLoot(ACharacter* OwnCharacter);
+	void EventInteraction(ACharacter* OwnCharacter);
 };

@@ -5,6 +5,13 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
+#define CHECK_VALID(Obj) \
+if (!(Obj)) \
+{ \
+    UE_LOG(LogTemp, Warning, TEXT("%s->%s"), *GetClass()->GetName(), TEXT(#Obj)); \
+    return; \
+}
+
 class FItemModule : public IModuleInterface
 {
 public:

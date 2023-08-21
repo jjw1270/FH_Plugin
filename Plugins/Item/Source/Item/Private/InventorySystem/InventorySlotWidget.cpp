@@ -169,16 +169,10 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InG
 		}
 
 		break;
+	// Equip item, clear inventory slot
 	case EItemType::Equipment:
-		// Equip Item
-		if (Image_OnEquip->GetVisibility() == ESlateVisibility::Visible)
-		{
-			InventoryComp->UseItem(ItemID, true);
-		}
-		else if(Image_OnEquip->GetVisibility() == ESlateVisibility::Collapsed)
-		{
-			InventoryComp->UseItem(ItemID, false);
-		}
+		InventoryComp->UseItem(ItemID);
+		ClearSlot();
 		break;
 	default:
 		break;
@@ -192,7 +186,7 @@ void UInventorySlotWidget::SetOwningInventoryWidget(UInventoryWidget* NewInvento
 	InventoryWidget = NewInventoryWidget;
 }
 
-void UInventorySlotWidget::SetSlot(const int32& NewItemID)
+void UInventorySlotWidget::SetSlot(const int32& NewItemID, const int32& ItemValue)
 {
 	if (!OnInventoryItemChangedHandle.IsValid())
 	{
@@ -221,21 +215,6 @@ void UInventorySlotWidget::OnUpdateItem(const int32& UpdateItemID)
 	}
 }
 
-void UInventorySlotWidget::OnUpdateEquipItem(const int32& UpdateItemID, bool bVisibility)
-{
-	if (ItemID == UpdateItemID)
-	{
-		if (bVisibility)
-		{
-			Image_OnEquip->SetVisibility(ESlateVisibility::Visible);
-		}
-		else
-		{
-			Image_OnEquip->SetVisibility(ESlateVisibility::Collapsed);
-		}
-	}
-}
-
 void UInventorySlotWidget::SetWidgetBindVariables()
 {
 	ItemType = InventoryComp->GetItemType(ItemID);
@@ -260,14 +239,6 @@ void UInventorySlotWidget::SetWidgetBindVariables()
 			ItemPrice = ItemData->Price;
 			ItemInfo = ItemData->ItemTextInfo;
 			ItemImageWidget->SetBrushFromTexture(ItemData->ItemImage);
-			
-			EquipmentComp = Cast<UEquipmentComponent>(GetOwningPlayerState()->GetComponentByClass(UEquipmentComponent::StaticClass()));
-			if (!EquipmentComp) return;
-
-			if (!OnEquipItemChangedHandle.IsValid())
-			{
-				OnEquipItemChangedHandle = EquipmentComp->OnInventoryItemEquipDelegate.AddUObject(this, &UInventorySlotWidget::OnUpdateEquipItem);
-			}
 			break;
 		}
 		default:
@@ -284,11 +255,12 @@ void UInventorySlotWidget::ClearSlot()
 		InventoryComp->OnInventoryItemChangedDelegate.Remove(OnInventoryItemChangedHandle);
 	}
 
-	if (OnEquipItemChangedHandle.IsValid())
+	if (InventoryWidget)
 	{
-		if (EquipmentComp)
+		UUserWidget* ItemInfoBox = InventoryWidget->GetItemInfoBox();
+		if (ItemInfoBox->GetVisibility() == ESlateVisibility::Visible)
 		{
-			EquipmentComp->OnInventoryItemEquipDelegate.Remove(OnEquipItemChangedHandle);
+			ItemInfoBox->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
 

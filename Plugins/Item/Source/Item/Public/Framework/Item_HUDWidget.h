@@ -16,10 +16,7 @@ class ITEM_API UItem_HUDWidget : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void OpenWidget(UUserWidget* Widget);
-
-	UFUNCTION(BlueprintCallable)
-	void CloseWidget(UUserWidget* Widget);
+	void SwichWidgetVisibility(const FName& WidgetName);
 	
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
@@ -28,11 +25,20 @@ protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UInventoryWidget* InventoryWidget;
 
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UEquipmentWidget* EquipmentWidget;
+
+protected:
+	UUserWidget* GetUserwidgetFromFName(const FName& WidgetName);
+
 public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE class UQuickSlotWidget* GetQuickSlotWidget() const { return QuickSlotWidget; }
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE class UInventoryWidget* GetInventoryWidget() const { return InventoryWidget; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE class UEquipmentWidget* GetEquipmentWidget() const { return EquipmentWidget; }
 
 };

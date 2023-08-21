@@ -17,8 +17,27 @@ class ITEM_API UInventoryWidget : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
+protected:
+	UPROPERTY()
+	class UInventoryComponent* InventoryComp;
+
+	FTimerHandle InitTimerHandle;
+
 // Blueprint Bind Widgets
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UInventorySlotWidget> InventorySlotClass;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<class UInventorySlotWidget*> InventorySlotArray;
+
+protected:
+	UPROPERTY(meta = (BindWidget))
+	class UHorizontalBox* InventoryUI;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* UIDragBtn;
+
 	UPROPERTY(meta = (BindWidget))
 	class UUniformGridPanel* InventorySlotGrid;
 
@@ -30,37 +49,31 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	class URemoveConfirmWidget* RemoveConfirmWidget;
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class UInventorySlotWidget> InventorySlotClass;
-
-	UPROPERTY(BlueprintReadOnly)
-	TArray<class UInventorySlotWidget*> InventorySlotArray;
 	
+protected:
 	UPROPERTY(EditAnywhere)
 	int32 DefaultSlotGridRowRange;
 
 	int32 SlotGridColRange{ 5 };
-
-	UPROPERTY(meta = (BindWidget))
-	class UHorizontalBox* InventoryUI;
-
-	UPROPERTY(meta = (BindWidget))
-	class UButton* UIDragBtn;
 
 	FVector2D MousePosOnDragStart;
 
 	FTimerHandle DragTimerHandle;
 
 public:
-	void AddNewItemToSlot(const int32& ItemID);
+	void AddNewItemToSlot(const int32& ItemID, const int32& ItemValue);
 
 protected:
 	void CreateSlotWidgets(int32 Row);
 
+	void BindInventoryCompEvents();
+
+	void OnItemUpdate(const int32& UpdateItemID, const int32& UpdateValue);
+
 	UFUNCTION(BlueprintCallable)
 	void SortItemSlot();
 
+//Drag Func
 	UFUNCTION()
 	void OnDragBtnPressed();
 

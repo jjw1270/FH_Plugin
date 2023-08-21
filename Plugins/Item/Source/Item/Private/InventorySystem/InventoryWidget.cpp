@@ -2,13 +2,17 @@
 
 
 #include "InventoryWidget.h"
+#include "Item.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+// Widget Components
 #include "Components/UniformGridPanel.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
 #include "InventorySlotWidget.h"
+
 #include "InventoryComponent.h"
+#include "Item_FHPlayerController.h"
 
 void UInventoryWidget::NativeOnInitialized()
 {
@@ -16,13 +20,18 @@ void UInventoryWidget::NativeOnInitialized()
 
 	CreateSlotWidgets(DefaultSlotGridRowRange);
 
+	// Bind UI Drag Event
 	UIDragBtn->OnPressed.AddDynamic(this, &UInventoryWidget::OnDragBtnPressed);
 	UIDragBtn->OnReleased.AddDynamic(this, &UInventoryWidget::OnDragBtnReleased);
+
+	// Bind InventoryComponent Delegates
+	BindInventoryCompEvents();
 }
 
 void UInventoryWidget::CreateSlotWidgets(int32 Row)
 {
-	ensureMsgf(InventorySlotClass, TEXT("InventorySlotClass is nullptr"));
+	CHECK_VALID(InventorySlotClass);
+
 	for (int32 row = 0; row < Row; row++)
 	{
 		for (int32 col = 0; col < SlotGridColRange; col++)
@@ -35,20 +44,59 @@ void UInventoryWidget::CreateSlotWidgets(int32 Row)
 	}
 }
 
-void UInventoryWidget::AddNewItemToSlot(const int32& ItemID)
+void UInventoryWidget::BindInventoryCompEvents()
+{
+	AItem_FHPlayerController* PC = GetOwningPlayer<AItem_FHPlayerController>();
+
+	if (IsValid(PC))
+	{
+		InventoryComp = PC->GetInventoryComp();
+		if (IsValid(InventoryComp))
+		{
+			InventoryComp->ItemUpdateDelegate.AddUObject(this, &UInventoryWidget::OnItemUpdate);
+			InventoryComp->ItemRegisterDelegate.AddUObject(this, &UInventoryWidget::);
+
+			return;
+		}
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(InitTimerHandle, this, &UInventoryWidget::BindInventoryCompEvents, 0.1f, false);
+}
+
+void UInventoryWidget::OnItemUpdate(const int32& UpdateItemID, const int32& UpdateValue)
+{
+	// If Item is Equipment Item, Add Item to New Slot
+	// UpdateValue = Item idx
+	if (InventoryComp->GetItemType(UpdateItemID) == EItemType::Equipment)
+	{
+		AddNewItemToSlot(UpdateItemID, UpdateValue);
+		return;
+	}
+
+	// Check Item already exist in slot
+	for (auto& InventorySlot : InventorySlotArray)
+	{
+		if (InventorySlot->GetSlotItemID() == UpdateItemID)
+		{
+
+		}
+	}
+}
+
+void UInventoryWidget::AddNewItemToSlot(const int32& ItemID, const int32& ItemValue)
 {
 	for (auto slot : InventorySlotArray)
 	{
 		if (slot->IsEmpty())
 		{
-			slot->SetSlot(ItemID);
+			slot->SetSlot(ItemID, ItemValue);
 			return;
 		}
 	}
 
-	//If All Slots are Full, Make New Slots Row
+	//If All Slots are Full, Make New Slots On New Row
 	CreateSlotWidgets(1);
-	AddNewItemToSlot(ItemID);
+	AddNewItemToSlot(ItemID, ItemValue);
 }
 
 // Sort according to IsEmpty()

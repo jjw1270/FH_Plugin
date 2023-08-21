@@ -1,5 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+using System.IO;
 using UnrealBuildTool;
 
 public class Item : ModuleRules
@@ -10,15 +11,19 @@ public class Item : ModuleRules
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
-				// ... add public include paths required here ...
-			}
-			);
+                Path.Combine(ModuleDirectory, "Public"),
+                Path.Combine(ModuleDirectory, "Public/Framework"),
+                Path.Combine(ModuleDirectory, "Public/InventorySystem"),
+                Path.Combine(ModuleDirectory, "Public/QuickSlotSystem"),
+                Path.Combine(ModuleDirectory, "Public/EquipmentSystem"),
+				
+            }
+            );
 				
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				// ... add other private include paths required here ...
-			}
+            }
 			);
 			
 		

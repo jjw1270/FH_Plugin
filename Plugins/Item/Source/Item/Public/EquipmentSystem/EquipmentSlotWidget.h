@@ -59,7 +59,7 @@ protected:
 	class UImage* Image_Equip;
 
 protected:
-	void OnEquipmentChanged(const EEquipmentType& EquipType, const int32& ItemID);
+	void OnEquipmentChanged(const EEquipmentType& EquipType, const int32& ItemID, const bool& bEquip);
 
 	void SetWidgetBindVariables(FEquipmentItemData* ItemData);
 

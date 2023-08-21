@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
-#include "ItemType.h"
 #include "AnimNotify_Looting.generated.h"
 
 /**
@@ -25,7 +24,7 @@ protected:
 protected:
 	int32 GetRandomItemOnItemDropTable();
 
-	FItemDropData* GetItemDropData(const int32& DungeonID);
+	struct FItemDropData* GetItemDropData(const int32& DungeonID);
 
 	int32 GetTotalItemDropWeight(TMap<int32, int32>& InItemDropWeightsMap);
 

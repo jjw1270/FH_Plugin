@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ItemInterface.h"
+#include "InteractionInterface.h"
 #include "DropItem.generated.h"
 
 UCLASS()
-class ITEM_API ADropItem : public AActor, public IItemInterface
+class ITEM_API ADropItem : public AActor, public IInteractionInterface
 {
 	GENERATED_BODY()
 	
@@ -56,8 +56,8 @@ protected:
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void EventLoot(ACharacter* OwnCharacter);
+	void EventInteraction(ACharacter* OwnCharacter);
 
-	virtual void EventLoot_Implementation(ACharacter* OwnCharacter) override;
+	virtual void EventInteraction_Implementation(ACharacter* OwnCharacter) override;
 
 };

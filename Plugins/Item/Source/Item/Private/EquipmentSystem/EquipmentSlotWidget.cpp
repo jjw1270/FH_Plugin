@@ -8,6 +8,7 @@
 #include "Item_FHPlayerController.h"
 #include "InventoryComponent.h"
 #include "Item_HUDWidget.h"
+#include "InventoryWidget.h"
 
 void UEquipmentSlotWidget::NativeOnInitialized()
 {
@@ -32,8 +33,6 @@ void UEquipmentSlotWidget::InitSlot()
 			EquipComp = PS->GetEquipmentComp();
 			if (IsValid(EquipComp))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("BA"));
-
 				EquipComp->OnEquipmentChangedDelegate.AddUObject(this, &UEquipmentSlotWidget::OnEquipmentChanged);
 				return;
 			}
@@ -43,7 +42,7 @@ void UEquipmentSlotWidget::InitSlot()
 	GetWorld()->GetTimerManager().SetTimer(th_InitSlot, this, &UEquipmentSlotWidget::InitSlot, 0.1f, false);
 }
 
-void UEquipmentSlotWidget::OnEquipmentChanged(const EEquipmentType& EquipType, const int32& ItemID)
+void UEquipmentSlotWidget::OnEquipmentChanged(const EEquipmentType& EquipType, const int32& ItemID, const bool& bEquip)
 {
 	if (EquipType != EquipmentType)
 	{
@@ -51,20 +50,17 @@ void UEquipmentSlotWidget::OnEquipmentChanged(const EEquipmentType& EquipType, c
 	}
 
 	// if UnEquip
-	if (ItemID == 0)
+	if (!bEquip)
 	{
 		ClearSlot(ItemID);
+		// inventory widget -> AddNewItemToSlot();
+		PC->GetHUDWidget()->GetInventoryWidget()->AddNewItemToSlot(ItemID);
 		return;
 	}
 
 	FEquipmentItemData* ItemData = InventoryComp->GetEquipmentItemInfo(ItemID);
 
 	SetWidgetBindVariables(ItemData);
-
-	if (EquipComp->OnInventoryItemEquipDelegate.IsBound())
-	{
-		EquipComp->OnInventoryItemEquipDelegate.Broadcast(ItemID, true);
-	}
 }
 
 void UEquipmentSlotWidget::SetWidgetBindVariables(FEquipmentItemData* ItemData)
@@ -80,9 +76,4 @@ void UEquipmentSlotWidget::ClearSlot(const int32& ItemID)
 {
 	Image_Equip->SetBrushFromTexture(nullptr);
 	Image_Equip->SetVisibility(ESlateVisibility::Collapsed);
-
-	if (EquipComp->OnInventoryItemEquipDelegate.IsBound())
-	{
-		EquipComp->OnInventoryItemEquipDelegate.Broadcast(ItemID, false);
-	}
 }
