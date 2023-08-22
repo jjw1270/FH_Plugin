@@ -25,15 +25,13 @@ protected:
 	class UInventoryComponent* InventoryComp;
 
 protected:
-	int32 ItemID;
+	UPROPERTY()
+	class UItemData* ItemData;
 
-protected:
 	UPROPERTY(BlueprintReadOnly)
 	int32 MaxAmount;
 
-	UPROPERTY(BlueprintReadOnly)
-	FString ItemName;
-
+protected:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* Image_Item;
 
@@ -56,4 +54,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void OnCancel();
+
+	void ClearWidget();
 };

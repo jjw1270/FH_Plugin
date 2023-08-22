@@ -2,30 +2,83 @@
 
 
 #include "QuickSlotWidget.h"
+#include "Item.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+
+#include "Item_FHPlayerController.h"
+#include "QuickSlotComponent.h"
 #include "QuickSlotSlotWidget.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Components/UniformGridPanel.h"
-#include "Components/TextBlock.h"
+#include "Components/Button.h"
 
 void UQuickSlotWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	check(QuickSlotSlotClass);
+	// Create QuickSlot Slots
+	CHECK_VALID(QuickSlotSlotClass);
 	for (int32 col = 0; col < 6; col++)
 	{
 		UQuickSlotSlotWidget* NewQuickSlotSlot = Cast<UQuickSlotSlotWidget>(CreateWidget(GetOwningPlayer(), QuickSlotSlotClass));
-		NewQuickSlotSlot->QuickSlotSlotNum = col + 1;
+		NewQuickSlotSlot->SetIndex(col);
+
 		QuickSlotGrid->AddChildToUniformGrid(NewQuickSlotSlot, 0, col);
-		QuickSlotSlots.Add(NewQuickSlotSlot);
+		QuickSlotSlotArray.Add(NewQuickSlotSlot);
 	}
+
+	// Bind UI Drag Event
+	UIDragBtn->OnPressed.AddDynamic(this, &UQuickSlotWidget::OnDragBtnPressed);
+	UIDragBtn->OnReleased.AddDynamic(this, &UQuickSlotWidget::OnDragBtnReleased);
+
+	// Bind QuickSlotComponent Delegates
+	BindQuickSlotCompEvents();
 }
 
-TArray<class UQuickSlotSlotWidget*>* UQuickSlotWidget::GetQuickSlotSlotArray()
+void UQuickSlotWidget::BindQuickSlotCompEvents()
 {
-	return &QuickSlotSlots;
+	AItem_FHPlayerController* PC = GetOwningPlayer<AItem_FHPlayerController>();
+
+	if (IsValid(PC))
+	{
+		QuickSlotComp = PC->GetQuickSlotComp();
+		if (IsValid(QuickSlotComp))
+		{
+			QuickSlotComp->QuickSlotUpdateDelegate.AddUObject(this, &UQuickSlotWidget::OnQuickSlotUpdated);
+
+			return;
+		}
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(InitTimerHandle, this, &UQuickSlotWidget::BindQuickSlotCompEvents, 0.1f, false);
 }
 
-UQuickSlotSlotWidget* UQuickSlotWidget::GetQuickSlotSlot(int32 SlotNum)
+void UQuickSlotWidget::OnQuickSlotUpdated(const int32& QuickSlotIndex, UItemData* NewItemData, const int32& NewItemAmount)
 {
-	return QuickSlotSlots[SlotNum-1];
+	UQuickSlotSlotWidget* QuickSlotSlot = QuickSlotSlotArray[QuickSlotIndex - 1];
+
+	QuickSlotSlot->SetSlot(NewItemData, NewItemAmount);
+}
+
+void UQuickSlotWidget::OnDragBtnPressed()
+{
+	MousePosOnDragStart = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld())
+		- Cast<UCanvasPanelSlot>(QuickSlotUI->Slot)->GetPosition();
+
+	GetWorld()->GetTimerManager().SetTimer(DragTimerHandle, this, &UQuickSlotWidget::DragUI, 0.01f, true);
+}
+
+void UQuickSlotWidget::DragUI()
+{
+	FVector2D UIPos = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()) - MousePosOnDragStart;
+
+	Cast<UCanvasPanelSlot>(QuickSlotUI->Slot)->SetPosition(UIPos);
+}
+
+void UQuickSlotWidget::OnDragBtnReleased()
+{
+	if (DragTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(DragTimerHandle);
+	}
 }

@@ -2,8 +2,10 @@
 
 
 #include "QuickSlotSlotWidget.h"
-#include "ItemType.h"
+#include "Item.h"
+#include "ItemData.h"
 #include "InventoryComponent.h"
+#include "QuickSlotComponent.h"
 #include "Item_FHPlayerController.h"
 #include "Item_HUDWidget.h"
 #include "QuickSlotWidget.h"
@@ -16,24 +18,12 @@ void UQuickSlotSlotWidget::NativeOnInitialized()
 	Super::NativeOnInitialized();
 
 	InventoryComp = Cast<UInventoryComponent>(GetOwningPlayer()->GetComponentByClass(UInventoryComponent::StaticClass()));
-	ensureMsgf(InventoryComp, TEXT("InventoryComp is nullptr"));
+	CHECK_VALID(InventoryComp);
+
+	QuickSlotComp = InventoryComp->GetQuickSlotComp();
+	CHECK_VALID(QuickSlotComp);
 
 	ClearSlot();
-}
-
-FReply UQuickSlotSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
-
-	if (InMouseEvent.GetPressedButtons().Contains(EKeys::RightMouseButton))
-	{
-		if (!IsEmpty())
-		{
-			ClearSlot();
-		}
-	}
-
-	return FReply::Handled();
 }
 
 // Only for inventory slot to quick slot
@@ -48,78 +38,87 @@ bool UQuickSlotSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 	}
 
 	// Quick slot is only for Consumalbe Items
-	if (InventoryComp->GetItemType(DDOperation->DragingItemID) != EItemType::Consumable)
+	FBaseItemData DraggedBaseIteData;
+
+	if (!DDOperation->DraggingItemData->GetBaseData(DraggedBaseIteData) || DraggedBaseIteData.ItemType != EItemType::Consumable)
 	{
 		return false;
 	}
 
-	// check quickslotslots in quickslotslotarray has same Item : clear prev quick slot item
-	if (!QuickSlotWidget)
-	{
-		QuickSlotWidget = GetOwningPlayer<AItem_FHPlayerController>()->GetHUDWidget()->GetQuickSlotWidget();
-	}
-
-	for (auto& QuickSlotSlot : *QuickSlotWidget->GetQuickSlotSlotArray())
-	{
-		if (QuickSlotSlot->GetSlotItemID() == DDOperation->DragingItemID)
-		{
-			QuickSlotSlot->ClearSlot();
-		}
-	}
-
-	//duplicate inventory slot to quick slot
-	SetSlot(DDOperation->DragingItemID);
+	QuickSlotComp->SetItemToQuickSlot(Index, DDOperation->DraggingItemData, DDOperation->DraggingItemAmount); 
 
 	return false;
 }
 
-void UQuickSlotSlotWidget::SetSlot(const int32& NewItemID)
+FReply UQuickSlotSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	if (!OnInventoryItemChangedHandle.IsValid())
+	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+
+	if (IsEmpty())
 	{
-		OnInventoryItemChangedHandle = InventoryComp->OnInventoryItemChangedDelegate.AddUObject(this, &UQuickSlotSlotWidget::OnUpdateItem);
+		return FReply::Unhandled();
 	}
 
-	ItemID = NewItemID;
-
-	ItemImageWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
-
-	SetWidgetBindVariables();
-}
-
-void UQuickSlotSlotWidget::OnUpdateItem(const int32& UpdateItemID)
-{
-	if (ItemID == UpdateItemID)
+	//check left mouse double clicked
+	TSet<FKey> PressedBtns = InMouseEvent.GetPressedButtons();
+	for (const auto& pb : PressedBtns)
 	{
-		// if This Item Fully Removed
-		if (!InventoryComp->GetInventoryItems()->Contains(ItemID))
+		if (pb != EKeys::LeftMouseButton)
 		{
-			ClearSlot();
-			return;
+			return FReply::Unhandled();
 		}
+	}
 
-		SetWidgetBindVariables();
+	QuickSlotComp->DeleteItemFromQuickSlot(Index, SlotItemData);
+
+	return FReply::Handled();
+}
+
+void UQuickSlotSlotWidget::SetSlot(class UItemData* NewItemData, const int32& NewItemAmount)
+{
+	if (NewItemAmount <= 0)
+	{
+		ClearSlot();
+		return;
+	}
+
+	if (!NewItemData)
+	{
+		ItemImageWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
+	}
+
+	SlotItemData = NewItemData;
+	SlotItemAmount = NewItemAmount;
+
+	FBaseItemData BaseItemData;
+	if (SlotItemData->GetBaseData(BaseItemData))
+	{
+		ItemImageWidget->SetBrushFromTexture(BaseItemData.Icon2D);
+	}
+
+	// bind ItemUpdateDelegate
+	if (!ItemUpdateDelegateHandle.IsValid())
+	{
+		ItemUpdateDelegateHandle = InventoryComp->ItemUpdateDelegate.AddUObject(this, &UQuickSlotSlotWidget::OnUpdateItem);
 	}
 }
 
-void UQuickSlotSlotWidget::SetWidgetBindVariables()
+void UQuickSlotSlotWidget::OnUpdateItem(class UItemData* UpdateItemData, const int32& UpdateAmount)
 {
-	Amount = *InventoryComp->GetInventoryItems()->Find(ItemID);
-
-	FConsumableItemData* ItemData = InventoryComp->GetConsumableItemInfo(ItemID);
-	ItemImageWidget->SetBrushFromTexture(ItemData->ItemImage);
+	SlotItemData = UpdateItemData;
+	SlotItemAmount = UpdateAmount;
 }
 
 void UQuickSlotSlotWidget::ClearSlot()
 {
-	ItemID = 0;
+	SlotItemData = nullptr;
+	SlotItemAmount = 0;
 
-	if (!OnInventoryItemChangedHandle.IsValid())
-	{
-		InventoryComp->OnInventoryItemChangedDelegate.Remove(OnInventoryItemChangedHandle);
-	}
-
-	Amount = 0;
 	ItemImageWidget->SetBrushFromTexture(nullptr);
 	ItemImageWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
+
+	if (ItemUpdateDelegateHandle.IsValid())
+	{
+		InventoryComp->ItemUpdateDelegate.Remove(ItemUpdateDelegateHandle);
+	}
 }

@@ -61,7 +61,7 @@ protected:
 	FTimerHandle DragTimerHandle;
 
 public:
-	void AddNewItemToSlot(const int32& ItemID, const int32& ItemValue);
+	void AddNewItemToSlot(class UItemData* NewItemData, const int32& NewItemAmount);
 
 protected:
 	void CreateSlotWidgets(int32 Row);
@@ -69,10 +69,10 @@ protected:
 	void BindInventoryCompEvents();
 
 	UFUNCTION()
-	void OnItemUpdate(const int32& UpdateItemID, const int32& UpdateValue);
+	void OnItemUpdated(class UItemData* UpdateItemData, const int32& UpdateAmount);
 
 	UFUNCTION()
-	void OnItemRegister(const int32& UpdateItemID, const bool& bIsRegist, const int32& UpdateItemIdx);
+	void OnItemRegister(class UItemData* UpdateItemData, const bool& bIsRegist);
 
 	UFUNCTION(BlueprintCallable)
 	void SortItemSlot();

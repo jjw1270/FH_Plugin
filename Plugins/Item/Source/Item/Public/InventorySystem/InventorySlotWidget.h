@@ -26,8 +26,7 @@ protected:
 
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
-	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
-
+	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -39,13 +38,10 @@ public:
 	FORCEINLINE UInventoryWidget* GetOwningInventoryWidget() const { return InventoryWidget; }
 
 public:
-	void SetSlot(const int32& NewItemID, const int32& ItemValue);
-
-	void OnUpdateItem(const int32& UpdateItemID);
+	UFUNCTION(BlueprintCallable)
+	void SetSlot(class UItemData* NewItemData, const int32& NewAmount);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void SetWidgetBindVariables();
-
 	virtual void ClearSlot();
 
 protected:
@@ -55,38 +51,26 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	class UInventoryWidget* InventoryWidget;
 
-// FInventoryItem In this Slot
-protected:
-	int32 ItemID;
-
-	FDelegateHandle OnInventoryItemChangedHandle;
-
 // Variables to Bind UMG Components
-private:
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	int32 Amount;
-
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	EItemType ItemType;
-
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	FString ItemName;
-
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	int32 ItemPrice;
-
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	FString ItemInfo;
-
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* ItemImageWidget;
 
+protected:
+	UPROPERTY()
+	class UItemData* SlotItemData;
+
+	UPROPERTY()
+	int32 SlotItemAmount;
+
 public:	
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE bool IsEmpty() const { return Amount <= 0; }
+	FORCEINLINE bool IsEmpty() const { return !IsValid(SlotItemData); }
 
-	FORCEINLINE int32 GetSlotItemID() const { return ItemID; }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE class UItemData* GetSlotItemData() const { return SlotItemData; }
 
-	UTexture2D* GetItemImage();
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE int32 GetSlotItemAmount() const { return SlotItemAmount; }
+
 };

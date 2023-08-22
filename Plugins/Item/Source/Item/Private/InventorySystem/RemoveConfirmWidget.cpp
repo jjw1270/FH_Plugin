@@ -2,6 +2,7 @@
 
 
 #include "RemoveConfirmWidget.h"
+#include "ItemData.h"
 #include "Components/Image.h"
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
@@ -24,40 +25,20 @@ void URemoveConfirmWidget::NativeOnInitialized()
 
 void URemoveConfirmWidget::ShowRemoveConfirm(UItemDragDropOperation* NewDragDropOperation)
 {
-	ItemID = NewDragDropOperation->DragingItemID;
+	ItemData = NewDragDropOperation->DraggingItemData;
+	MaxAmount = NewDragDropOperation->DraggingItemAmount;
 
-	MaxAmount = *InventoryComp->GetInventoryItems()->Find(ItemID);
-	
-	EItemType ItemType = InventoryComp->GetItemType(ItemID);
-	switch (ItemType)
+	Slider_Amount->SetMaxValue(MaxAmount);
+
+	FBaseItemData BaseItemData;
+	if (!ItemData->GetBaseData(BaseItemData))
 	{
-	case EItemType::Consumable:
-	{
-		FConsumableItemData* ItemData = InventoryComp->GetConsumableItemInfo(ItemID);
-		ItemName = ItemData->Name;
-		Image_Item->SetBrushFromTexture(ItemData->ItemImage);
-		break;
-	}
-	case EItemType::Equipment:
-	{
-		FEquipmentItemData* ItemData = InventoryComp->GetEquipmentItemInfo(ItemID);
-		ItemName = ItemData->Name;
-		Image_Item->SetBrushFromTexture(ItemData->ItemImage);
-		break;
-	}
-	default:
-		break;
+		return;
 	}
 
-	Slider_Amount->SetValue(1.f);
+	Image_Item->SetBrushFromTexture(BaseItemData.Icon2D);
 
-	if (MaxAmount > 1)
-	{
-		Text_Amount->SetText(FText::FromString(TEXT("1")));
-
-		Slider_Amount->SetMaxValue(MaxAmount);
-	}
-	else
+	if (MaxAmount == 1)
 	{
 		SetAmountBox->SetVisibility(ESlateVisibility::Collapsed);
 	}
@@ -81,4 +62,11 @@ void URemoveConfirmWidget::OnCancel()
 
 	SetAmountBox->SetVisibility(ESlateVisibility::Visible);
 	GetParent()->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void URemoveConfirmWidget::ClearWidget()
+{
+	Slider_Amount->SetValue(1.f);
+
+	Text_Amount->SetText(FText::FromString(TEXT("1")));
 }

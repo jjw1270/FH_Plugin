@@ -2,33 +2,96 @@
 
 
 #include "QuickSlotSystem/QuickSlotComponent.h"
+#include "Item.h"
+#include "ItemData.h"
+#include "Item_FHPlayerController.h"
+#include "InventoryComponent.h"
 
-// Sets default values for this component's properties
 UQuickSlotComponent::UQuickSlotComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
-// Called when the game starts
 void UQuickSlotComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	InitComponent();
 }
 
-
-// Called every frame
-void UQuickSlotComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UQuickSlotComponent::InitComponent()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetOwner());
+	CHECK_VALID(PC);
 
-	// ...
+	InventoryComp = PC->GetInventoryComp();
+	CHECK_VALID(InventoryComp);
 }
 
+void UQuickSlotComponent::SetItemToQuickSlot(const int32& NewQuickSlotIndex, class UItemData* NewItemData, const int32& NewItemAmount)
+{
+	// Check item already exist in quick slots
+	// if true, delete exist item.
+	for (auto& MyQuickslot : QuickSlotItems)
+	{
+		if (MyQuickslot.Value == NewItemData)
+		{
+			DeleteItemFromQuickSlot(MyQuickslot.Key, NewItemData);
+		}
+	}
+	
+	// if Item Exist in NewQuickSlotIndex, delete exist item
+	DeleteItemFromQuickSlot(NewQuickSlotIndex, NewItemData);
+
+	QuickSlotItems.Add(NewQuickSlotIndex, NewItemData);
+
+	//BroadCast to Inventory Widget
+	if (InventoryComp->ItemRegisterDelegate.IsBound())
+	{
+		InventoryComp->ItemRegisterDelegate.Broadcast(NewItemData, true);
+	}
+
+	//BroadCast to QuickSlot Widget
+	if (QuickSlotUpdateDelegate.IsBound())
+	{
+		QuickSlotUpdateDelegate.Broadcast(NewQuickSlotIndex, NewItemData, NewItemAmount);
+	}
+}
+
+void UQuickSlotComponent::DeleteItemFromQuickSlot(const int32& NewQuickSlotIndex, class UItemData* NewItemData)
+{
+	if (QuickSlotItems.Contains(NewQuickSlotIndex))
+	{
+		QuickSlotItems.Remove(NewQuickSlotIndex);
+
+		//BroadCast to Inventory Widget
+		if (InventoryComp->ItemRegisterDelegate.IsBound())
+		{
+			InventoryComp->ItemRegisterDelegate.Broadcast(NewItemData, false);
+		}
+
+		//BroadCast to QuickSlot Widget
+		if (QuickSlotUpdateDelegate.IsBound())
+		{
+			QuickSlotUpdateDelegate.Broadcast(NewQuickSlotIndex, nullptr, 0);
+		}
+	}
+}
+
+int32 UQuickSlotComponent::GetEmptyQuickSlotSlotIndex()
+{
+	int32 EmptyIndex = -1;
+
+	// Max Slot Length is 6
+	for (int i = 0; i < 6; i++)
+	{
+		if (QuickSlotItems.Contains(i))
+		{
+			continue;
+		}
+
+		EmptyIndex = i;
+	}
+
+	return EmptyIndex;
+}

@@ -22,7 +22,7 @@ protected:
 	class UDataTable* ItemDropDataTable;
 	
 protected:
-	int32 GetRandomItemOnItemDropTable();
+	int32 GetRandomItemOnItemDropTable(const int32& DungeonID);
 
 	struct FItemDropData* GetItemDropData(const int32& DungeonID);
 

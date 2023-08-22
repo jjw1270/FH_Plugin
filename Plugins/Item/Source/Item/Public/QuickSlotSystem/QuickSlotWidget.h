@@ -17,18 +17,49 @@ class ITEM_API UQuickSlotWidget : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
+	void BindQuickSlotCompEvents();
+
 private:
 	UPROPERTY()
-	TArray<class UQuickSlotSlotWidget*> QuickSlotSlots;
+	class UQuickSlotComponent* QuickSlotComp;
+
+	FTimerHandle InitTimerHandle;
+
+// Blueprint Bind Widgets
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UQuickSlotSlotWidget> QuickSlotSlotClass;
+
+	UPROPERTY()
+	TArray<class UQuickSlotSlotWidget*> QuickSlotSlotArray;
+
+protected:
+	UPROPERTY(meta = (BindWidget))
+	class UHorizontalBox* QuickSlotUI;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* UIDragBtn;
 
 	UPROPERTY(meta = (BindWidget))
 	class UUniformGridPanel* QuickSlotGrid;
 
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class UQuickSlotSlotWidget> QuickSlotSlotClass;
+protected:
+	FVector2D MousePosOnDragStart;
 
-public:
-	TArray<class UQuickSlotSlotWidget*>* GetQuickSlotSlotArray();
+	FTimerHandle DragTimerHandle;
 
-	class UQuickSlotSlotWidget* GetQuickSlotSlot(int32 SlotNum);
+protected:
+	UFUNCTION()
+	void OnQuickSlotUpdated(const int32& QuickSlotIndex, class UItemData* NewItemData, const int32& NewItemAmount);
+
+//Drag Func
+protected:
+	UFUNCTION()
+	void OnDragBtnPressed();
+
+	void DragUI();
+
+	UFUNCTION()
+	void OnDragBtnReleased();
+
 };

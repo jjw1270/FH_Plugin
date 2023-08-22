@@ -7,22 +7,46 @@
 #include "QuickSlotComponent.generated.h"
 
 
+// Delegate called when an QuickSlot Item Changed
+// const int32& QuickSlotIndex, UItemData* ItemData, const int32& ItemAmount
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FDele_Multi_QuickSlotUpdate, const int32&, class UItemData*, const int32&);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ITEM_API UQuickSlotComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UQuickSlotComponent();
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+protected:
+	void InitComponent();
 		
+protected:
+	UPROPERTY()
+	class UInventoryComponent* InventoryComp;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TMap<int32, class UItemData*> QuickSlotItems;
+
+// UI Delegate
+public:
+	FDele_Multi_QuickSlotUpdate QuickSlotUpdateDelegate;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void SetItemToQuickSlot(const int32& NewQuickSlotIndex, class UItemData* NewItemData, const int32& NewItemAmount);
+
+	UFUNCTION(BlueprintCallable)
+	void DeleteItemFromQuickSlot(const int32& NewQuickSlotIndex, class UItemData* NewItemData);
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetEmptyQuickSlotSlotIndex();
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE TMap<int32, class UItemData*>& GetQuickSlotItems() { return QuickSlotItems; }
 };

@@ -11,9 +11,9 @@
 USTRUCT(Atomic, BlueprintType)
 struct FItemDropData : public FTableRowBase
 {
-	GENERATED_BODY()
+	GENERATED_USTRUCT_BODY()
 
-	public:
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 DungeonID;
 
@@ -28,23 +28,30 @@ UCLASS()
 class ITEM_API UItemDataManager : public UObject
 {
 	GENERATED_BODY()
-	
-public:
-	UItemDataManager();
 
 //Item DataTables
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly)
 	class UDataTable* ConsumableItemDataTable;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UDataTable* EquipmentItemDataTable;
+	UPROPERTY(EditDefaultsOnly)
+	class UDataTable* WeaponItemDataTable;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UDataTable* ArmorItemDataTable;
 
 public:
-	struct FConsumableItemData* GetConsumableItemInfo(const int32& ItemID);
+	UFUNCTION(BlueprintCallable)
+	bool GetConsumableItemInfo(const int32& ItemID, FConsumableItemData& OutData);
 
-	struct FEquipmentItemData* GetEquipmentItemInfo(const int32& ItemID);
+	UFUNCTION(BlueprintCallable)
+	bool GetWeaponItemInfo(const int32& ItemID, FWeaponItemData& OutData);
 
+	UFUNCTION(BlueprintCallable)
+	bool GetArmorItemInfo(const int32& ItemID, FArmorItemData& OutData);
+
+	UFUNCTION(BlueprintCallable)
+	EItemType GetItemType(const int32& ItemID);
 };
 
 UENUM(BlueprintType)
@@ -64,13 +71,13 @@ struct FBaseItemData
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 ItemID;
+    int32 ID;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EItemType ItemType;
+	EItemType Type;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 BasePrice;
@@ -79,10 +86,18 @@ public:
 	int32 UpgradeValue;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString ItemTextInfo;
+    FString TextInfo;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UTexture2D* Icon2D;
+
+public:
+	bool IsValid() const
+	{
+		FBaseItemData NullData = FBaseItemData();
+
+		return !(ID == NullData.ID);
+	}
 };
 
 UENUM(BlueprintType)
@@ -118,6 +133,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float EffectValue;
 
+public:
+	bool IsValid() const
+	{
+		return BaseData.IsValid();
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -142,6 +162,12 @@ public:
 	// Max : 1.0f
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BaseCriticalChance;
+
+public:
+	bool IsValid() const
+	{
+		return BaseData.IsValid();
+	}
 };
 
 
@@ -189,4 +215,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 DefensivePower;
+
+public:
+	bool IsValid() const
+	{
+		return BaseData.IsValid();
+	}
 };

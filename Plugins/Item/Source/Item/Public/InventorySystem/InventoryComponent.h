@@ -4,17 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "ItemType.h"
 #include "InventoryComponent.generated.h"
 
-// Delegate called when an inventory item changes
-// const int32& ItemID, const int32& ItemAmount
-DECLARE_MULTICAST_DELEGATE_TwoParams(FDele_Multi_ItemUpdate, const int32&, const int32&);
+// Delegate called when an inventory item changed
+// UItemData* ItemData, const int32& ItemAmount
+DECLARE_MULTICAST_DELEGATE_TwoParams(FDele_Multi_ItemUpdate, class UItemData*, const int32&);
 
 // Delegate called when inventory item is registered
-// const int32& ItemID, const bool& bIsRegist, const int32& ItemIdx
-// Third Parameter is used for Cant Stackable Item(ex. Equipment Item) Idx Only!
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FDele_Multi_ItemRegister, const int32&, const bool&, const int32&);
+// UItemData* ItemData, const int32& UniqueID, const bool& bIsRegist
+DECLARE_MULTICAST_DELEGATE_TwoParams(FDele_Multi_ItemRegister, class UItemData*, const bool&);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ITEM_API UInventoryComponent : public UActorComponent
@@ -28,38 +26,48 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
-	void Init();
+	void InitComponent();
 
 protected:
+	UPROPERTY()
+	class UItemDataManager* ItemDataManager;
+
 	UPROPERTY()
 	class UEquipmentComponent* EquipComp;
 
 	UPROPERTY()
 	class UQuickSlotComponent* QuickSlotComp;
+	
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TMap<class UItemData*, int32> InventoryItems;
 
 // UI delegate
 public:
 	FDele_Multi_ItemUpdate ItemUpdateDelegate;
 
 	FDele_Multi_ItemRegister ItemRegisterDelegate;
-	
+
 // Inventory func
-private:
-	UPROPERTY()
-	TMap<int32, int32>* InventoryItems;
+public:
+	UFUNCTION(BlueprintCallable)
+	void AddItemToInventory(const int32& NewItemID, const int32& NewAmount);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveItemFromInventory(const int32& ItemID, const int32& UniqueID, const int32& Amount);
+
+	int32 MakeUniqueID();
+
+	//UFUNCTION(BlueprintCallable)
+	//void ManageItem(const int32& ItemID, const int32& NewAmount);
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void AddItemToInventory(const int32& ItemID, const int32& NewValue);
+	FORCEINLINE TMap<class UItemData*, int32>& GetInventoryItems() { return InventoryItems; }
 
-	UFUNCTION(BlueprintCallable)
-	void RemoveItemFromInventory(const int32& ItemID, const int32& NewValue);
+public:
+	FORCEINLINE class UEquipmentComponent* GetEquipComp() const { return EquipComp; }
 
-	FORCEINLINE TMap<int32, int32>* GetInventoryItems() { return InventoryItems; }
-
-	EItemType GetItemType(const int32& ItemID);
-
-	UFUNCTION(BlueprintCallable)
-	void ManageItem(const int32& ItemID, const int32& NewValue);
+	FORCEINLINE class UQuickSlotComponent* GetQuickSlotComp() const{ return QuickSlotComp; }
 
 };

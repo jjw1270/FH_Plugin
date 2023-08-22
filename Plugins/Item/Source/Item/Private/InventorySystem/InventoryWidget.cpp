@@ -14,6 +14,8 @@
 #include "InventoryComponent.h"
 #include "Item_FHPlayerController.h"
 
+#include "ItemData.h"
+
 void UInventoryWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -38,6 +40,7 @@ void UInventoryWidget::CreateSlotWidgets(int32 Row)
 		{
 			UInventorySlotWidget* NewInventorySlot = Cast<UInventorySlotWidget>(CreateWidget(GetOwningPlayer(), InventorySlotClass));
 			NewInventorySlot->SetOwningInventoryWidget(this);
+
 			InventorySlotGrid->AddChildToUniformGrid(NewInventorySlot, row, col);
 			InventorySlotArray.Add(NewInventorySlot);
 		}
@@ -53,7 +56,7 @@ void UInventoryWidget::BindInventoryCompEvents()
 		InventoryComp = PC->GetInventoryComp();
 		if (IsValid(InventoryComp))
 		{
-			InventoryComp->ItemUpdateDelegate.AddUObject(this, &UInventoryWidget::OnItemUpdate);
+			InventoryComp->ItemUpdateDelegate.AddUObject(this, &UInventoryWidget::OnItemUpdated);
 			InventoryComp->ItemRegisterDelegate.AddUObject(this, &UInventoryWidget::OnItemRegister);
 
 			return;
@@ -63,46 +66,50 @@ void UInventoryWidget::BindInventoryCompEvents()
 	GetWorld()->GetTimerManager().SetTimer(InitTimerHandle, this, &UInventoryWidget::BindInventoryCompEvents, 0.1f, false);
 }
 
-void UInventoryWidget::OnItemUpdate(const int32& UpdateItemID, const int32& UpdateValue)
+void UInventoryWidget::OnItemUpdated(class UItemData* UpdateItemData, const int32& UpdateAmount)
 {
-	// If Item is Equipment Item, Add Item to New Slot
-	// UpdateValue = Item idx
-	if (InventoryComp->GetItemType(UpdateItemID) == EItemType::Equipment)
+	// If Item is NonStackable, Add Item to New Slot
+	if (UpdateItemData->GetUniqueID() > 1000)
 	{
-		AddNewItemToSlot(UpdateItemID, UpdateValue);
+		AddNewItemToSlot(UpdateItemData, UpdateAmount);
+
 		return;
 	}
 
 	// Check Item already exist in slot
 	for (auto& InventorySlot : InventorySlotArray)
 	{
-		if (InventorySlot->GetSlotItemID() == UpdateItemID)
+		if (InventorySlot->GetSlotItemData() == UpdateItemData)
 		{
-			InventorySlot->SetSlot(UpdateItemID, UpdateValue);
+			InventorySlot->SetSlot(UpdateItemData, UpdateAmount);
+
 			return;
 		}
 	}
+
+	// else Add Item to New Slot
+	AddNewItemToSlot(UpdateItemData, UpdateAmount);
 }
 
-void UInventoryWidget::OnItemRegister(const int32& UpdateItemID, const bool& bIsRegist, const int32& UpdateItemIdx)
-{
-
-}
-
-void UInventoryWidget::AddNewItemToSlot(const int32& ItemID, const int32& ItemValue)
+void UInventoryWidget::AddNewItemToSlot(class UItemData* NewItemData, const int32& NewItemAmount)
 {
 	for (auto slot : InventorySlotArray)
 	{
 		if (slot->IsEmpty())
 		{
-			slot->SetSlot(ItemID, ItemValue);
+			slot->SetSlot(NewItemData, NewItemAmount);
 			return;
 		}
 	}
 
 	//If All Slots are Full, Make New Slots On New Row
 	CreateSlotWidgets(1);
-	AddNewItemToSlot(ItemID, ItemValue);
+	AddNewItemToSlot(NewItemData, NewItemAmount);
+}
+
+void UInventoryWidget::OnItemRegister(class UItemData* UpdateItemData, const bool& bIsRegist)
+{
+	// Set Register Image visibility
 }
 
 // Sort according to IsEmpty()
@@ -119,7 +126,7 @@ void UInventoryWidget::SortItemSlot()
 		{
 			if (!InventorySlotArray[j]->IsEmpty())
 			{
-				InventorySlotArray[i]->SetSlot(InventorySlotArray[j]->GetSlotItemID());
+				InventorySlotArray[i]->SetSlot(InventorySlotArray[j]->GetSlotItemData(), InventorySlotArray[j]->GetSlotItemAmount());
 				InventorySlotArray[j]->ClearSlot();
 
 				break;

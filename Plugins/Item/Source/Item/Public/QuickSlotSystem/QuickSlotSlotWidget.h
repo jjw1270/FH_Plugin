@@ -18,46 +18,58 @@ class ITEM_API UQuickSlotSlotWidget : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
+	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
 public:
-	void SetSlot(const int32& NewItemID);
+	UFUNCTION(BlueprintCallable)
+	void SetSlot(class UItemData* NewItemData, const int32& NewItemAmount);
 
-	void OnUpdateItem(const int32& UpdateItemID);
-
-	void SetWidgetBindVariables();
-
+	UFUNCTION(BlueprintCallable)
 	void ClearSlot();
 
 protected:
-	UPROPERTY(BlueprintReadOnly)
-	class UQuickSlotWidget* QuickSlotWidget;
+	UFUNCTION()
+	void OnUpdateItem(class UItemData* UpdateItemData, const int32& UpdateAmount);
 
+protected:
 	UPROPERTY(BlueprintReadOnly)
 	class UInventoryComponent* InventoryComp;
 
-protected:
-	int32 ItemID;
-
-	FDelegateHandle OnInventoryItemChangedHandle;
-
-// bind widget vars
-public:
 	UPROPERTY(BlueprintReadOnly)
-	int32 QuickSlotSlotNum;
+	class UQuickSlotComponent* QuickSlotComp;
 
+	UPROPERTY(BlueprintReadOnly)
+	class UQuickSlotWidget* QuickSlotWidget;
+
+	FDelegateHandle ItemUpdateDelegateHandle;
+
+// Variables to Bind UMG Components
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* ItemImageWidget;
 
-	UPROPERTY(BlueprintReadOnly)
-	int32 Amount;
+protected:
+	UPROPERTY()
+	int32 Index;
+
+	UPROPERTY()
+	class UItemData* SlotItemData;
+
+	UPROPERTY()
+	int32 SlotItemAmount;
 
 public:
-	FORCEINLINE int32 GetSlotItemID() const { return ItemID; }
+	FORCEINLINE void SetIndex(const int32& NewIndex) { Index = NewIndex; }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE bool IsEmpty() const { return Amount <= 0; }
+	FORCEINLINE bool IsEmpty() const { return !IsValid(SlotItemData); }
+	
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE class UItemData* GetSlotItemData() const { return SlotItemData; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE int32 GetSlotItemAmount() const { return SlotItemAmount; }
+
 };

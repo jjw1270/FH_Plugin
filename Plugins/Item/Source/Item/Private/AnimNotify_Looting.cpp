@@ -2,7 +2,9 @@
 
 
 #include "AnimNotify_Looting.h"
-#include "ItemType.h"
+#include "Item.h"
+#include "ItemDataManager.h"
+#include "Item_FHGameInstance.h"
 #include "Item_PlayableCharacter.h"
 #include "Item_FHPlayerController.h"
 #include "InventoryComponent.h"
@@ -16,17 +18,20 @@ UAnimNotify_Looting::UAnimNotify_Looting(const FObjectInitializer& ObjectInitial
 void UAnimNotify_Looting::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(MeshComp->GetOwner()->GetInstigatorController());
-	ensureMsgf(PC, TEXT("PC is nullptr"));
+	CHECK_VALID(PC);
 
-	PC->GetInventoryComp()->AddItemToInventory(GetRandomItemOnItemDropTable(), 1);
+	UItem_FHGameInstance* GI = PC->GetGameInstance<UItem_FHGameInstance>();
+	CHECK_VALID(GI);
+
+	PC->GetInventoryComp()->AddItemToInventory(GetRandomItemOnItemDropTable(GI->GetCurrentDungeonID()), 1);
 
 	DestroyLootItem(MeshComp->GetOwner());
 }
 
-int32 UAnimNotify_Looting::GetRandomItemOnItemDropTable()
+int32 UAnimNotify_Looting::GetRandomItemOnItemDropTable(const int32& DungeonID)
 {
-	FItemDropData* ItemDropData = GetItemDropData(201);  //Should Set Params Later!
-	ensureMsgf(ItemDropData, TEXT("ItemDropTable is nullptr"));
+	FItemDropData* ItemDropData = GetItemDropData(DungeonID);
+	CHECK_VALID(ItemDropData);
 
 	// Sort ItemDropMap by Weight
 	ItemDropData->ItemDropWeightsMap.ValueSort([](const int32& A, const int32& B) { return A < B; });
@@ -49,7 +54,7 @@ int32 UAnimNotify_Looting::GetRandomItemOnItemDropTable()
 
 FItemDropData* UAnimNotify_Looting::GetItemDropData(const int32& DungeonID)
 {
-	ensureMsgf(IsValid(ItemDropDataTable), TEXT("ItemDropDataTable is nullptr"));
+	CHECK_VALID(ItemDropDataTable);
 
 	return ItemDropDataTable->FindRow<FItemDropData>(*FString::FromInt(DungeonID), TEXT(""));
 }

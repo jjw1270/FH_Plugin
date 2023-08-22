@@ -16,6 +16,9 @@ class ITEM_API UItemDragDropOperation : public UDragDropOperation
 	
 public:
 	UPROPERTY(BlueprintReadOnly)
-	int32 DragingItemID;
+	class UItemData* DraggingItemData;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 DraggingItemAmount;
 
 };

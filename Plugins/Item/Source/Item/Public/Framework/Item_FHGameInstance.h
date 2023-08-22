@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "ItemType.h"
 #include "Item_FHGameInstance.generated.h"
 
 /**
@@ -16,22 +15,51 @@ class ITEM_API UItem_FHGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
+	UItem_FHGameInstance();
+
 	//test
-	UFUNCTION(BlueprintCallable)
-	void TESTss();
+	//UFUNCTION(BlueprintCallable)
+	//void TESTss();
 
 protected:
-	// TMap<ItemID, ItemAmount>
-	UPROPERTY()
-	TMap<int32, int32> InventoryItems;
-
-	// TMap<EquipType, ItemID>
-	UPROPERTY()
-	TMap<EEquipmentType, int32> Equiments;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 CurrentDungeonID;
 
 public:
-	FORCEINLINE TMap<int32, int32>* GetInventoryItems() { return &InventoryItems; }
+	UFUNCTION(BlueprintCallable)
+	void SetCurrentDungeonID(const int32& DungeonID);
 
-	FORCEINLINE TMap<EEquipmentType, int32>* GetEquipments() { return &Equiments; }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE int32 GetCurrentDungeonID() const { return CurrentDungeonID; }
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UItemDataManager> ItemDataManagerClass;
+
+	UPROPERTY()
+	class UItemDataManager* ItemDataManager;
+
+public:
+	FORCEINLINE class UItemDataManager* GetItemDataManager() const { return ItemDataManager; }
+
+	// TMap<ItemData, ItemAmount>
+	UPROPERTY()
+	TMap<class UItemData*, int32> InventoryItems;
+
+	// TMap<QuickSlotIdx, ItemData>
+	UPROPERTY()
+	TMap<int32, class UItemData*> QuickSlotItems;
+
+
+	//// TMap<EquipType, ItemID>
+	//UPROPERTY()
+	//TMap<EEquipmentType, int32> Equiments;
+
+public:
+	FORCEINLINE TMap<class UItemData*, int32>& GetInventoryItems() { return InventoryItems; }
+
+	FORCEINLINE TMap<int32, class UItemData*>& GetQuickSlotItems() { return QuickSlotItems; }
+
+	//FORCEINLINE TMap<EEquipmentType, int32>* GetEquipments() { return &Equiments; }
 
 };

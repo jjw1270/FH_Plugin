@@ -2,11 +2,25 @@
 
 
 #include "Item_FHGameInstance.h"
+#include "ItemDataManager.h"
 
-void UItem_FHGameInstance::TESTss()
+UItem_FHGameInstance::UItem_FHGameInstance()
 {
-	for (auto& a : Equiments)
+	if (ItemDataManagerClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%d"), a.Value);
+		ItemDataManager = NewObject<UItemDataManager>(this, ItemDataManagerClass);
 	}
 }
+
+void UItem_FHGameInstance::SetCurrentDungeonID(const int32& DungeonID)
+{
+	CurrentDungeonID = DungeonID;
+}
+
+//void UItem_FHGameInstance::TESTss()
+//{
+//	for (auto& a : Equiments)
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("%d"), a.Value);
+//	}
+//}
