@@ -2,6 +2,7 @@
 
 
 #include "EquipmentSlotWidget.h"
+#include "ItemData.h"
 #include "Components/Image.h"
 #include "Item_FHPlayerState.h"
 #include "EquipmentComponent.h"
@@ -16,10 +17,10 @@ void UEquipmentSlotWidget::NativeOnInitialized()
 
 	Image_BackIcon->SetBrushFromTexture(BackIconTexture);
 
-	InitSlot();
+	BindEquipmentCompEvents();
 }
 
-void UEquipmentSlotWidget::InitSlot()
+void UEquipmentSlotWidget::BindEquipmentCompEvents()
 {
 	PC = GetOwningPlayer<AItem_FHPlayerController>();
 
@@ -33,18 +34,39 @@ void UEquipmentSlotWidget::InitSlot()
 			EquipComp = PS->GetEquipmentComp();
 			if (IsValid(EquipComp))
 			{
-				EquipComp->OnEquipmentChangedDelegate.AddUObject(this, &UEquipmentSlotWidget::OnEquipmentChanged);
-				return;
+				if (ItemType == EItemType::Weapon)
+				{
+					EquipComp->WeaponUpdateDelegate.AddUObject(this, &UEquipmentSlotWidget::OnWeaponUpdate);
+					return;
+				}
+				if (ItemType == EItemType::Armor)
+				{
+					EquipComp->ArmorUpdateDelegate.AddUObject(this, &UEquipmentSlotWidget::OnArmorUpdate);
+					return;
+				}
 			}
 		}
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(th_InitSlot, this, &UEquipmentSlotWidget::InitSlot, 0.1f, false);
+	GetWorld()->GetTimerManager().SetTimer(InitTimerHandle, this, &UEquipmentSlotWidget::BindEquipmentCompEvents, 0.1f, false);
 }
 
-void UEquipmentSlotWidget::OnEquipmentChanged(const EEquipmentType& EquipType, const int32& ItemID, const bool& bEquip)
+void UEquipmentSlotWidget::OnWeaponUpdate(class UItemData* UpdateItemData, const bool& bEquip)
 {
-	if (EquipType != EquipmentType)
+	// if UnEquip
+	if (!bEquip)
+	{
+		ClearSlot();
+		return;
+	}
+
+	SetSlot(UpdateItemData);
+}
+
+void UEquipmentSlotWidget::OnArmorUpdate(const EArmorType& UpdateArmorType, UItemData* UpdateItemData, const bool& bEquip)
+{
+	//Check ArmorType
+	if (ArmorType != UpdateArmorType)
 	{
 		return;
 	}
@@ -52,28 +74,31 @@ void UEquipmentSlotWidget::OnEquipmentChanged(const EEquipmentType& EquipType, c
 	// if UnEquip
 	if (!bEquip)
 	{
-		ClearSlot(ItemID);
-		// inventory widget -> AddNewItemToSlot();
-		PC->GetHUDWidget()->GetInventoryWidget()->AddNewItemToSlot(ItemID);
+		ClearSlot();
+		return;
+	}
+	
+	SetSlot(UpdateItemData);
+}
+
+void UEquipmentSlotWidget::SetSlot(class UItemData* UpdateItemData)
+{
+	EquippedItemData = UpdateItemData;
+
+	FBaseItemData EquippedBaseItemData;
+	if (!EquippedItemData->GetBaseData(EquippedBaseItemData))
+	{
 		return;
 	}
 
-	FEquipmentItemData* ItemData = InventoryComp->GetEquipmentItemInfo(ItemID);
-
-	SetWidgetBindVariables(ItemData);
-}
-
-void UEquipmentSlotWidget::SetWidgetBindVariables(FEquipmentItemData* ItemData)
-{
-	ItemName = ItemData->Name;
-	ItemPrice = ItemData->Price;
-	ItemInfo = ItemData->ItemTextInfo;
-	Image_Equip->SetBrushFromTexture(ItemData->ItemImage);
+	Image_Equip->SetBrushFromTexture(EquippedBaseItemData.Icon2D);
 	Image_Equip->SetVisibility(ESlateVisibility::Visible);
 }
 
-void UEquipmentSlotWidget::ClearSlot(const int32& ItemID)
+void UEquipmentSlotWidget::ClearSlot()
 {
+	EquippedItemData = nullptr;
+
 	Image_Equip->SetBrushFromTexture(nullptr);
 	Image_Equip->SetVisibility(ESlateVisibility::Collapsed);
 }

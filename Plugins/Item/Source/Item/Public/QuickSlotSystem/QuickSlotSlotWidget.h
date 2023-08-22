@@ -51,13 +51,13 @@ protected:
 	class UImage* ItemImageWidget;
 
 protected:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	int32 Index;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	class UItemData* SlotItemData;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	int32 SlotItemAmount;
 
 public:

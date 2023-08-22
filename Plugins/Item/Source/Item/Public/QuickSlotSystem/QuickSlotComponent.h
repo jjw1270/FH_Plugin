@@ -49,4 +49,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE TMap<int32, class UItemData*>& GetQuickSlotItems() { return QuickSlotItems; }
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void UseQuickSlotItem(int32 TargetQuickSlotIndex);
 };

@@ -65,7 +65,7 @@ protected:
 
 public:	
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE bool IsEmpty() const { return !IsValid(SlotItemData); }
+	bool IsEmpty();
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE class UItemData* GetSlotItemData() const { return SlotItemData; }

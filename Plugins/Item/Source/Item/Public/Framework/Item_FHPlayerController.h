@@ -26,13 +26,13 @@ protected:
 
 // Player Input
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input|UI")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputMappingContext* UIMappingContext;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input|UI")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* InventoryUIAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input|UI")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* EquipmentUIAction;
 
 // Input Func
@@ -42,10 +42,10 @@ public:
 
 // Components
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component)
 	class UInventoryComponent* InventoryComp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component)
 	class UQuickSlotComponent* QuickSlotComp;
 
 // Component Getter

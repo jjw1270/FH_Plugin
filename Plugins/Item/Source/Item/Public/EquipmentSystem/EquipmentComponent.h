@@ -4,19 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "ItemType.h"
+#include "ItemDataManager.h"
 #include "EquipmentComponent.generated.h"
 
 /*
 * <EquipmentItemID>
-* Helmet : 21nn
-* Upper  : 22nn
-* Lower  : 23nn
-* Shoes  : 24nn
-* Weapon : 25nn
+* Weapon : 2nnnn
+* 
+* <Armor>
+* Helmet : 31nnn
+* Upper  : 32nnn
+* Gloves : 33nnn
+* Lower  : 34nnn
+* Shoes  : 35nnn
 */
 
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FDele_Multi_EquipmentChange, const EEquipmentType&, const int32&, const bool&);
+// Delegate called when an Equipment Weapon Item Changed
+// UItemData* ItemData, const bool& bEquip
+DECLARE_MULTICAST_DELEGATE_TwoParams(FDele_Multi_WeaponUpdate, class UItemData*, const bool&);
+
+// Delegate called when an Equipment Armor Item Changed
+// const EArmorType& ArmorType, UItemData* ItemData, const bool& bEquip
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FDele_Multi_ArmorUpdate, const EArmorType&, class UItemData*, const bool&);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ITEM_API UEquipmentComponent : public UActorComponent
@@ -30,29 +39,30 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
-	void Init();
+	void InitComponent();
 
 protected:
 	UPROPERTY()
 	class UInventoryComponent* InventoryComp;
 
 protected:
-	TMap<EEquipmentType, int32>* EquipmentItems;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<class UItemData*> EquipmentItems;
+
+// UI Delegate
+public:
+	FDele_Multi_WeaponUpdate WeaponUpdateDelegate;
+
+	FDele_Multi_ArmorUpdate ArmorUpdateDelegate;
 
 public:
-	FDele_Multi_EquipmentChange EquipmentChangedDelegate;
+	UFUNCTION(BlueprintCallable)
+	void Equip(class UItemData* NewItemData);
 
-public:
-	FORCEINLINE TMap<EEquipmentType, int32>* GetEquipments() { return EquipmentItems; }
+	UFUNCTION(BlueprintCallable)
+	void UnEquip(class UItemData* TargetItemData);
 
-	void Equip(const int32& ItemID);
-
-	void UnEquip(EEquipmentType EquipType, const int32& ItemID);
-
-	EEquipmentType GetEquipmentType(const int32& ItemID);
-
-protected:
-	// bool IsEquipmentsHasThisEquipmentType();
-
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE TArray<class UItemData*>& GetEquipmentItems() { return EquipmentItems; }
 
 };

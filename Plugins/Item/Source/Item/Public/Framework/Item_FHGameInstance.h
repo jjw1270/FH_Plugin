@@ -15,8 +15,6 @@ class ITEM_API UItem_FHGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
-	UItem_FHGameInstance();
-
 	//test
 	//UFUNCTION(BlueprintCallable)
 	//void TESTss();
@@ -27,21 +25,12 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void SetCurrentDungeonID(const int32& DungeonID);
+	FORCEINLINE void SetCurrentDungeonID(const int32& NewDungeonID) { CurrentDungeonID = NewDungeonID; }
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE int32 GetCurrentDungeonID() const { return CurrentDungeonID; }
 
-protected:
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UItemDataManager> ItemDataManagerClass;
-
-	UPROPERTY()
-	class UItemDataManager* ItemDataManager;
-
 public:
-	FORCEINLINE class UItemDataManager* GetItemDataManager() const { return ItemDataManager; }
-
 	// TMap<ItemData, ItemAmount>
 	UPROPERTY()
 	TMap<class UItemData*, int32> InventoryItems;
@@ -50,16 +39,15 @@ public:
 	UPROPERTY()
 	TMap<int32, class UItemData*> QuickSlotItems;
 
-
-	//// TMap<EquipType, ItemID>
-	//UPROPERTY()
-	//TMap<EEquipmentType, int32> Equiments;
+	// TArray<ItemData>
+	UPROPERTY()
+	TArray<class UItemData*> EquipmentItems;
 
 public:
 	FORCEINLINE TMap<class UItemData*, int32>& GetInventoryItems() { return InventoryItems; }
 
 	FORCEINLINE TMap<int32, class UItemData*>& GetQuickSlotItems() { return QuickSlotItems; }
 
-	//FORCEINLINE TMap<EEquipmentType, int32>* GetEquipments() { return &Equiments; }
+	FORCEINLINE TArray<class UItemData*>& GetEquipments() { return EquipmentItems; }
 
 };

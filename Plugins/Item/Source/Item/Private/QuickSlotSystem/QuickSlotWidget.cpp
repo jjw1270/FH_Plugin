@@ -4,13 +4,13 @@
 #include "QuickSlotWidget.h"
 #include "Item.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
-
 #include "Item_FHPlayerController.h"
 #include "QuickSlotComponent.h"
 #include "QuickSlotSlotWidget.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/Button.h"
+#include "Components/Border.h"
 
 void UQuickSlotWidget::NativeOnInitialized()
 {

@@ -4,6 +4,7 @@
 #include "QuickSlotSystem/QuickSlotComponent.h"
 #include "Item.h"
 #include "ItemData.h"
+#include "Item_FHGameInstance.h"
 #include "Item_FHPlayerController.h"
 #include "InventoryComponent.h"
 
@@ -21,8 +22,13 @@ void UQuickSlotComponent::BeginPlay()
 
 void UQuickSlotComponent::InitComponent()
 {
+	UItem_FHGameInstance* GI = Cast<UItem_FHGameInstance>(GetOwner()->GetGameInstance());
+	CHECK_VALID(GI);
+
 	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetOwner());
 	CHECK_VALID(PC);
+
+	QuickSlotItems = GI->GetQuickSlotItems();
 
 	InventoryComp = PC->GetInventoryComp();
 	CHECK_VALID(InventoryComp);
@@ -94,4 +100,9 @@ int32 UQuickSlotComponent::GetEmptyQuickSlotSlotIndex()
 	}
 
 	return EmptyIndex;
+}
+
+void UQuickSlotComponent::UseQuickSlotItem(int32 TargetQuickSlotIndex)
+{
+	/////////////////////////////////////////////////////////////
 }

@@ -6,6 +6,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+
+#include "Item.h"
 //Enhanced Input
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -15,7 +17,7 @@
 #include "Components/CapsuleComponent.h"
 
 #include "Item_FHPlayerController.h"
-#include "InventoryComponent.h"
+#include "QuickSlotComponent.h"
 
 // Sets default values
 AItem_PlayableCharacter::AItem_PlayableCharacter()
@@ -157,7 +159,7 @@ void AItem_PlayableCharacter::Interaction(const FInputActionValue& Value)
 		}
 
 		// Check If Actor Inherits any Interfaces
-		if (Cast<IInteractionInterface>(Actor))  // ... || Cast<IAInterface>(Actor) || Cast<IBInterface>(Actor))
+		if (Cast<IInteractionInterface>(Actor))
 		{
 			NearestLength = distance;
 			InteractingActor = Actor;
@@ -168,10 +170,6 @@ void AItem_PlayableCharacter::Interaction(const FInputActionValue& Value)
 	{
 		NearestItemInterfaceObj->Execute_EventInteraction(InteractingActor, this);
 	}
-	else
-	{
-		// Other Interface Events
-	}
 
 	return;
 }
@@ -179,10 +177,10 @@ void AItem_PlayableCharacter::Interaction(const FInputActionValue& Value)
 void AItem_PlayableCharacter::UseQuickSlot(int32 SlotNum)
 {
 	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetController());
-	if (!PC)
-	{
-		return;
-	}
+	CHECK_VALID(PC);
 
-	PC->GetInventoryComp()->UseQuickSlotItem(SlotNum);
+	UQuickSlotComponent* QuickSlotComp = PC->GetQuickSlotComp();
+	CHECK_VALID(QuickSlotComp);
+
+	QuickSlotComp->UseQuickSlotItem(SlotNum - 1);
 }

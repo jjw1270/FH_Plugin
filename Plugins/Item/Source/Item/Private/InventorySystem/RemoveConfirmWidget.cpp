@@ -2,6 +2,7 @@
 
 
 #include "RemoveConfirmWidget.h"
+#include "Item.h"
 #include "ItemData.h"
 #include "Components/Image.h"
 #include "Components/Slider.h"
@@ -16,11 +17,13 @@ void URemoveConfirmWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	PC = Cast<AItem_FHPlayerController>(GetOwningPlayer());
-	ensureMsgf(PC, TEXT("PC is nullptr"));
+	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetOwningPlayer());
+	CHECK_VALID(PC);
 
 	InventoryComp = PC->GetInventoryComp();
-	ensureMsgf(InventoryComp, TEXT("InventoryComp is nullptr"));
+	CHECK_VALID(InventoryComp);
+
+	ClearWidget();
 }
 
 void URemoveConfirmWidget::ShowRemoveConfirm(UItemDragDropOperation* NewDragDropOperation)
@@ -50,22 +53,27 @@ void URemoveConfirmWidget::RemoveItem()
 {
 	int32 Amount = Slider_Amount->GetValue();
 
-	InventoryComp->RemoveItemFromInventory(ItemID, Amount);
+	InventoryComp->RemoveItemFromInventory(ItemData, Amount);
 
 	SetAmountBox->SetVisibility(ESlateVisibility::Visible);
 	GetParent()->SetVisibility(ESlateVisibility::Collapsed);
+
+	ClearWidget();
 }
 
 void URemoveConfirmWidget::OnCancel()
 {
-	ItemID = 0;
-
 	SetAmountBox->SetVisibility(ESlateVisibility::Visible);
 	GetParent()->SetVisibility(ESlateVisibility::Collapsed);
+
+	ClearWidget();
 }
 
 void URemoveConfirmWidget::ClearWidget()
 {
+	ItemData = nullptr;
+	MaxAmount = 0;
+
 	Slider_Amount->SetValue(1.f);
 
 	Text_Amount->SetText(FText::FromString(TEXT("1")));

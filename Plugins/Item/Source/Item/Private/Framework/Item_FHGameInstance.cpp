@@ -2,20 +2,6 @@
 
 
 #include "Item_FHGameInstance.h"
-#include "ItemDataManager.h"
-
-UItem_FHGameInstance::UItem_FHGameInstance()
-{
-	if (ItemDataManagerClass)
-	{
-		ItemDataManager = NewObject<UItemDataManager>(this, ItemDataManagerClass);
-	}
-}
-
-void UItem_FHGameInstance::SetCurrentDungeonID(const int32& DungeonID)
-{
-	CurrentDungeonID = DungeonID;
-}
 
 //void UItem_FHGameInstance::TESTss()
 //{

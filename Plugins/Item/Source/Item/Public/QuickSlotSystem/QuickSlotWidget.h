@@ -19,7 +19,7 @@ protected:
 
 	void BindQuickSlotCompEvents();
 
-private:
+protected:
 	UPROPERTY()
 	class UQuickSlotComponent* QuickSlotComp;
 
@@ -35,7 +35,7 @@ protected:
 
 protected:
 	UPROPERTY(meta = (BindWidget))
-	class UHorizontalBox* QuickSlotUI;
+	class UBorder* QuickSlotUI;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* UIDragBtn;

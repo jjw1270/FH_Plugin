@@ -31,7 +31,7 @@ void UAnimNotify_Looting::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
 int32 UAnimNotify_Looting::GetRandomItemOnItemDropTable(const int32& DungeonID)
 {
 	FItemDropData* ItemDropData = GetItemDropData(DungeonID);
-	CHECK_VALID(ItemDropData);
+	check(ItemDropData);
 
 	// Sort ItemDropMap by Weight
 	ItemDropData->ItemDropWeightsMap.ValueSort([](const int32& A, const int32& B) { return A < B; });
@@ -54,7 +54,7 @@ int32 UAnimNotify_Looting::GetRandomItemOnItemDropTable(const int32& DungeonID)
 
 FItemDropData* UAnimNotify_Looting::GetItemDropData(const int32& DungeonID)
 {
-	CHECK_VALID(ItemDropDataTable);
+	check(ItemDropDataTable);
 
 	return ItemDropDataTable->FindRow<FItemDropData>(*FString::FromInt(DungeonID), TEXT(""));
 }

@@ -6,7 +6,7 @@
 
 bool UItemDataManager::GetConsumableItemInfo(const int32& ItemID, FConsumableItemData& OutData)
 {
-	CHECK_VALID(ConsumableItemDataTable);
+	check(ConsumableItemDataTable);
 
 	FConsumableItemData* pData = ConsumableItemDataTable->FindRow<FConsumableItemData>(*FString::FromInt(ItemID), TEXT(""), false);
 
@@ -21,7 +21,7 @@ bool UItemDataManager::GetConsumableItemInfo(const int32& ItemID, FConsumableIte
 
 bool UItemDataManager::GetWeaponItemInfo(const int32& ItemID, FWeaponItemData& OutData)
 {
-	CHECK_VALID(WeaponItemDataTable);
+	check(WeaponItemDataTable);
 
 	FWeaponItemData* pData = WeaponItemDataTable->FindRow<FWeaponItemData>(*FString::FromInt(ItemID), TEXT(""), false);
 
@@ -36,9 +36,9 @@ bool UItemDataManager::GetWeaponItemInfo(const int32& ItemID, FWeaponItemData& O
 
 bool UItemDataManager::GetArmorItemInfo(const int32& ItemID, FArmorItemData& OutData)
 {
-	CHECK_VALID(ArmorItemDataTable);
+	check(ArmorItemDataTable);
 
-	FArmorItemData * pData = ArmorItemDataTable->FindRow<FArmorItemData>(*FString::FromInt(ItemID), TEXT(""), false);
+	FArmorItemData* pData = ArmorItemDataTable->FindRow<FArmorItemData>(*FString::FromInt(ItemID), TEXT(""), false);
 
 	if (pData == nullptr)
 	{

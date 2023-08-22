@@ -46,11 +46,11 @@ void AItem_FHPlayerController::WidgetOnOff(FName WidgetName)
 
 UItem_HUDWidget* AItem_FHPlayerController::GetHUDWidget()
 {
-	AItem_FHHUD* MyHUD = GetHUD<AItem_FHHUD>();
-	if (!MyHUD)
+	AItem_FHHUD* FHHUD = GetHUD<AItem_FHHUD>();
+	if (!FHHUD)
 	{
 		return nullptr;
 	}
 
-	return MyHUD->GetHUDWidget();
+	return FHHUD->GetHUDWidget();
 }

@@ -13,7 +13,6 @@ void UEquipmentWidget::NativeOnInitialized()
 
 	UIDragBtn->OnPressed.AddDynamic(this, &UEquipmentWidget::OnDragBtnPressed);
 	UIDragBtn->OnReleased.AddDynamic(this, &UEquipmentWidget::OnDragBtnReleased);
-
 }
 
 void UEquipmentWidget::OnDragBtnPressed()

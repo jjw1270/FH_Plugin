@@ -152,38 +152,9 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InG
 		}
 	}
 
-	FBaseItemData BaseItemData;
-	if (!SlotItemData->GetBaseData(BaseItemData))
-	{
-		return FReply::Unhandled();
-	}
+	InventoryComp->ManageItem(SlotItemData, SlotItemAmount);
 
-	// Consumable Items
-	if (BaseItemData.ItemType == EItemType::Consumable)
-	{
-		UQuickSlotComponent* QuickSlotComponent = InventoryComp->GetQuickSlotComp();
-		if (!QuickSlotComponent)
-		{
-			return FReply::Unhandled();
-		}
-
-		// Check QuickSlot is empty
-		int32 QuickSlotIndex = QuickSlotComponent->GetEmptyQuickSlotSlotIndex();
-		if (QuickSlotIndex < 0)
-		{
-			return FReply::Unhandled();
-		}
-
-		QuickSlotComponent->SetItemToQuickSlot(QuickSlotIndex, SlotItemData, SlotItemAmount);
-
-		return FReply::Handled();
-	}
-
-	// Weapon, Armor Items
-	if (BaseItemData.ItemType == EItemType::Weapon || BaseItemData.ItemType == EItemType::Armor)
-	{
-		///////////////////////////////////////////////////////////////////////////
-	}
+	return FReply::Handled();
 }
 
 void UInventorySlotWidget::SetOwningInventoryWidget(UInventoryWidget* NewInventoryWidget)
@@ -231,4 +202,9 @@ void UInventorySlotWidget::ClearSlot()
 
 	ItemImageWidget->SetBrushFromTexture(nullptr);
 	ItemImageWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
+}
+
+bool UInventorySlotWidget::IsEmpty()
+{
+	return !IsValid(SlotItemData);
 }

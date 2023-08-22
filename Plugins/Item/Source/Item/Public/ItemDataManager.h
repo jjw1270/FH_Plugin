@@ -8,7 +8,7 @@
 #include "ItemDataManager.generated.h"
 
 // Item drop data by dungeon struct
-USTRUCT(Atomic, BlueprintType)
+USTRUCT(BlueprintType)
 struct FItemDropData : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
@@ -22,36 +22,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<int32, int32> ItemDropWeightsMap;
-};
-
-UCLASS()
-class ITEM_API UItemDataManager : public UObject
-{
-	GENERATED_BODY()
-
-//Item DataTables
-protected:
-	UPROPERTY(EditDefaultsOnly)
-	class UDataTable* ConsumableItemDataTable;
-
-	UPROPERTY(EditDefaultsOnly)
-	class UDataTable* WeaponItemDataTable;
-
-	UPROPERTY(EditDefaultsOnly)
-	class UDataTable* ArmorItemDataTable;
-
-public:
-	UFUNCTION(BlueprintCallable)
-	bool GetConsumableItemInfo(const int32& ItemID, FConsumableItemData& OutData);
-
-	UFUNCTION(BlueprintCallable)
-	bool GetWeaponItemInfo(const int32& ItemID, FWeaponItemData& OutData);
-
-	UFUNCTION(BlueprintCallable)
-	bool GetArmorItemInfo(const int32& ItemID, FArmorItemData& OutData);
-
-	UFUNCTION(BlueprintCallable)
-	EItemType GetItemType(const int32& ItemID);
 };
 
 UENUM(BlueprintType)
@@ -83,7 +53,7 @@ public:
     int32 BasePrice;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 UpgradeValue;
+	int32 UpgradeValue = 1;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString TextInfo;
@@ -170,7 +140,6 @@ public:
 	}
 };
 
-
 UENUM(BlueprintType)
 enum class EArmorType : uint8
 {
@@ -182,7 +151,6 @@ enum class EArmorType : uint8
 	Shoes       UMETA(DisplayName = "Shoes"),
 
 };
-
 
 USTRUCT(BlueprintType)
 struct FArmorItemData : public FTableRowBase
@@ -221,4 +189,34 @@ public:
 	{
 		return BaseData.IsValid();
 	}
+};
+
+UCLASS(BlueprintType, Blueprintable)
+class ITEM_API UItemDataManager : public UObject
+{
+	GENERATED_BODY()
+
+	//Item DataTables
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	class UDataTable* ConsumableItemDataTable;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UDataTable* WeaponItemDataTable;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UDataTable* ArmorItemDataTable;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	bool GetConsumableItemInfo(const int32& ItemID, FConsumableItemData& OutData);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetWeaponItemInfo(const int32& ItemID, FWeaponItemData& OutData);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetArmorItemInfo(const int32& ItemID, FArmorItemData& OutData);
+
+	UFUNCTION(BlueprintCallable)
+	EItemType GetItemType(const int32& ItemID);
 };

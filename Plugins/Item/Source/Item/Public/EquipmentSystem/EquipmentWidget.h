@@ -7,7 +7,7 @@
 #include "EquipmentWidget.generated.h"
 
 /**
- * 
+ * Equipment Widget doesnt take any equipment events, but equipment slot Widget Do.
  */
 UCLASS()
 class ITEM_API UEquipmentWidget : public UUserWidget
@@ -25,10 +25,12 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* UIDragBtn;
 
+protected:
 	FVector2D MousePosOnDragStart;
 
 	FTimerHandle DragTimerHandle;
 
+//Drag Func
 protected:
 	UFUNCTION()
 	void OnDragBtnPressed();

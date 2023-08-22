@@ -19,13 +19,10 @@ protected:
 	
 protected:
 	UPROPERTY()
-	class AItem_FHPlayerController* PC;
-
-	UPROPERTY()
 	class UInventoryComponent* InventoryComp;
 
 protected:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	class UItemData* ItemData;
 
 	UPROPERTY(BlueprintReadOnly)

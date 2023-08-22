@@ -3,6 +3,8 @@
 
 #include "EquipmentComponent.h"
 #include "Item.h"
+#include "ItemData.h"
+#include "ItemDataManager.h"
 #include "Item_FHPlayerState.h"
 #include "InventoryComponent.h"
 #include "Item_FHGameInstance.h"
@@ -17,10 +19,10 @@ void UEquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Init();
+	InitComponent();
 }
 
-void UEquipmentComponent::Init()
+void UEquipmentComponent::InitComponent()
 {
 	UItem_FHGameInstance* GI = Cast<UItem_FHGameInstance>(GetOwner()->GetGameInstance());
 	CHECK_VALID(GI);
@@ -37,71 +39,92 @@ void UEquipmentComponent::Init()
 	CHECK_VALID(InventoryComp);
 }
 
-void UEquipmentComponent::Equip(const int32& ItemID)
+void UEquipmentComponent::Equip(class UItemData* NewItemData)
 {
-	//check already equipped at EquipType. if true : unequip prevEquipment
-	EEquipmentType EquipType = GetEquipmentType(ItemID);
-	
-	// if already has equipped item, unequip first
-	if (EquipmentItems->Contains(EquipType))
+	EItemType NewItemType = NewItemData->GetItemType();
+	FArmorItemData NewArmorData;
+
+	// Check Already Equipped at SameEquipType
+	// if True : UnEquip Equipped Item
+	for (auto& EquippedItem : EquipmentItems)
 	{
-		int32* PrevItemID = EquipmentItems->Find(EquipType);
-		UnEquip(EquipType, *PrevItemID);
+		if (NewItemType != EquippedItem->GetItemType())
+		{
+			continue;
+		}
+
+		//Weapon Item
+		if (NewItemType == EItemType::Weapon)
+		{
+			UnEquip(EquippedItem);
+			break;
+		}
+
+		// Armor Item
+		if (!NewItemData->GetArmorData(NewArmorData))
+		{
+			return;
+		}
+
+		FArmorItemData EquippedArmorData;
+		if (!NewItemData->GetArmorData(EquippedArmorData))
+		{
+			return;
+		}
+
+		if (NewArmorData.ArmorType == EquippedArmorData.ArmorType)
+		{
+			UnEquip(EquippedItem);
+			break;
+		}
 	}
 
-	EquipmentItems->Add(EquipType, ItemID);
+	//Equip Item
+	EquipmentItems.Add(NewItemData);
 
-	if (EquipmentChangedDelegate.IsBound())
+	// boradcast
+	if (NewItemType == EItemType::Weapon)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("A"));
-		EquipmentChangedDelegate.Broadcast(EquipType, ItemID, true);
+		if (WeaponUpdateDelegate.IsBound())
+		{
+			WeaponUpdateDelegate.Broadcast(NewItemData, true);
+		}
+	}
+	else if (NewItemType == EItemType::Armor)
+	{
+		if (ArmorUpdateDelegate.IsBound())
+		{
+			ArmorUpdateDelegate.Broadcast(NewArmorData.ArmorType, NewItemData, true);
+		}
 	}
 }
 
-void UEquipmentComponent::UnEquip(EEquipmentType EquipType, const int32& ItemID)
+void UEquipmentComponent::UnEquip(class UItemData* TargetItemData)
 {
-	if (!EquipmentItems->Contains(EquipType))
+	EItemType TargetItemType = TargetItemData->GetItemType();
+
+	if (TargetItemType == EItemType::Weapon)
 	{
-		return;
+		// boradcast
+		if (WeaponUpdateDelegate.IsBound())
+		{
+			WeaponUpdateDelegate.Broadcast(TargetItemData, false);
+		}
+	}
+	else if (TargetItemType == EItemType::Armor)
+	{
+		FArmorItemData TargetArmorData;
+		if (!TargetItemData->GetArmorData(TargetArmorData))
+		{
+			return;
+		}
+
+		// boradcast
+		if (ArmorUpdateDelegate.IsBound())
+		{
+			ArmorUpdateDelegate.Broadcast(TargetArmorData.ArmorType, TargetItemData, false);
+		}
 	}
 
-	EquipmentItems->Remove(EquipType);
-	
-	// return item to inventory
-
-	InventoryComp->AddItemToInventory(ItemID, 1);
-
-	if (EquipmentChangedDelegate.IsBound())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("B"));
-		EquipmentChangedDelegate.Broadcast(EquipType, ItemID, false);
-	}
-}
-
-EEquipmentType UEquipmentComponent::GetEquipmentType(const int32& ItemID)
-{
-	EEquipmentType EquipmentType = EEquipmentType::None;
-
-	switch ((ItemID - 2000)/100)
-	{
-	case 1:
-		EquipmentType = EEquipmentType::Helmet;
-		break;
-	case 2:
-		EquipmentType = EEquipmentType::Upper;
-		break;
-	case 3:
-		EquipmentType = EEquipmentType::Lower;
-		break;
-	case 4:
-		EquipmentType = EEquipmentType::Shoes;
-		break;
-	case 5:
-		EquipmentType = EEquipmentType::Weapon;
-		break;
-	default:
-		break;
-	}
-
-	return EquipmentType;
+	EquipmentItems.Remove(TargetItemData);
 }

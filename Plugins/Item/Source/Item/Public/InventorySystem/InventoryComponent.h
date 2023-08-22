@@ -29,6 +29,10 @@ protected:
 	void InitComponent();
 
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UItemDataManager> ItemDataManagerClass;
+
+protected:
 	UPROPERTY()
 	class UItemDataManager* ItemDataManager;
 
@@ -54,12 +58,12 @@ public:
 	void AddItemToInventory(const int32& NewItemID, const int32& NewAmount);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveItemFromInventory(const int32& ItemID, const int32& UniqueID, const int32& Amount);
+	void RemoveItemFromInventory(class UItemData* ItemData, const int32& Amount);
 
 	int32 MakeUniqueID();
 
-	//UFUNCTION(BlueprintCallable)
-	//void ManageItem(const int32& ItemID, const int32& NewAmount);
+	UFUNCTION(BlueprintCallable)
+	void ManageItem(class UItemData* TargetItemData, const int32& TargetItemAmount);
 
 public:
 	UFUNCTION(BlueprintCallable)

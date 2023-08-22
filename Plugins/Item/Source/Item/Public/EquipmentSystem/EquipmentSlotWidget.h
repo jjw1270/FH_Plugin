@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "ItemType.h"
+#include "ItemDataManager.h"
 #include "EquipmentSlotWidget.generated.h"
 
 /**
@@ -18,10 +18,13 @@ class ITEM_API UEquipmentSlotWidget : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
-	void InitSlot();
+	void BindEquipmentCompEvents();
 
 protected:
-	FTimerHandle th_InitSlot;
+	UPROPERTY()
+	class UEquipmentComponent* EquipComp;
+
+	FTimerHandle InitTimerHandle;
 
 	UPROPERTY()
 	class UInventoryComponent* InventoryComp;
@@ -29,28 +32,22 @@ protected:
 	UPROPERTY()
 	class AItem_FHPlayerController* PC;
 
-	UPROPERTY()
-	class UEquipmentComponent* EquipComp;
-
+//Need Edit Vars
 protected:
-	UPROPERTY(EditAnywhere)
-	EEquipmentType EquipmentType;
-
 	UPROPERTY(EditAnywhere)
 	UTexture2D* BackIconTexture;
 
-	UPROPERTY(BlueprintReadOnly)
-	EItemType ItemType = EItemType::Equipment;
-
-	UPROPERTY(BlueprintReadOnly)
-	FString ItemName;
-
-	UPROPERTY(BlueprintReadOnly)
-	int32 ItemPrice;
-
-	UPROPERTY(BlueprintReadOnly)
-	FString ItemInfo;
+	UPROPERTY(EditAnywhere)
+	EItemType ItemType;
 	
+	UPROPERTY(EditAnywhere)
+	EArmorType ArmorType;
+
+protected:
+	UPROPERTY()
+	class UItemData* EquippedItemData;
+
+// Variables to Bind UMG Components
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* Image_BackIcon;
@@ -59,9 +56,16 @@ protected:
 	class UImage* Image_Equip;
 
 protected:
-	void OnEquipmentChanged(const EEquipmentType& EquipType, const int32& ItemID, const bool& bEquip);
+	UFUNCTION()
+	void OnWeaponUpdate(class UItemData* UpdateItemData, const bool& bEquip);
 
-	void SetWidgetBindVariables(FEquipmentItemData* ItemData);
+	UFUNCTION()
+	void OnArmorUpdate(const EArmorType& UpdateArmorType, UItemData* UpdateItemData, const bool& bEquip);
 
-	void ClearSlot(const int32& ItemID);
+public:
+	UFUNCTION(BlueprintCallable)
+	void SetSlot(class UItemData* UpdateItemData);
+
+	UFUNCTION(BlueprintCallable)
+	void ClearSlot();
 };

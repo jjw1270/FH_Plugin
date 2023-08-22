@@ -45,7 +45,7 @@ public:
 	bool GetBaseData(FBaseItemData& OutData);
 
 	UFUNCTION(BlueprintCallable)
-	EItemType CheckItemType();
+	EItemType GetItemType();
 
 	UFUNCTION(BlueprintCallable)
 	bool GetConsumableData(FConsumableItemData& OutData);

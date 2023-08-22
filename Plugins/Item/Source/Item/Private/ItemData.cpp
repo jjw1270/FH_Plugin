@@ -48,19 +48,19 @@ bool UItemData::GetBaseData(FBaseItemData& OutData)
 	return false;;
 }
 
-EItemType UItemData::CheckItemType()
+EItemType UItemData::GetItemType()
 {
 	if (ConsumableData.IsValid())
 	{
-		return ConsumableData.BaseData.ItemType;
+		return ConsumableData.BaseData.Type;
 	}
 	if (WeaponData.IsValid())
 	{
-		return WeaponData.BaseData.ItemType;
+		return WeaponData.BaseData.Type;
 	}
 	if (ArmorData.IsValid())
 	{
-		return ArmorData.BaseData.ItemType;
+		return ArmorData.BaseData.Type;
 	}
 
 	return EItemType::None;

@@ -40,7 +40,7 @@ bool UQuickSlotSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 	// Quick slot is only for Consumalbe Items
 	FBaseItemData DraggedBaseIteData;
 
-	if (!DDOperation->DraggingItemData->GetBaseData(DraggedBaseIteData) || DraggedBaseIteData.ItemType != EItemType::Consumable)
+	if (!DDOperation->DraggingItemData->GetBaseData(DraggedBaseIteData) || DraggedBaseIteData.Type != EItemType::Consumable)
 	{
 		return false;
 	}
@@ -107,6 +107,11 @@ void UQuickSlotSlotWidget::OnUpdateItem(class UItemData* UpdateItemData, const i
 {
 	SlotItemData = UpdateItemData;
 	SlotItemAmount = UpdateAmount;
+
+	if (SlotItemAmount <= 0)
+	{
+		QuickSlotComp->DeleteItemFromQuickSlot(Index, SlotItemData);
+	}
 }
 
 void UQuickSlotSlotWidget::ClearSlot()
