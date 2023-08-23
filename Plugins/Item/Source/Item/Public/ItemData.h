@@ -18,6 +18,17 @@ class ITEM_API UItemData : public UObject
 public:
 	UItemData();
 
+public:
+	bool operator==(const UItemData& Other) const
+	{
+		if (UniqueID > 1000)
+		{
+			return BaseData.ID == Other.BaseData.ID && UniqueID == Other.UniqueID;
+		}
+
+		return BaseData.ID == Other.BaseData.ID;
+	}
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FConsumableItemData ConsumableData;
@@ -27,6 +38,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FArmorItemData ArmorData;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FBaseItemData BaseData;
 
 	// UniqueID for Prevent Item Data Overlaping ( 1001 ~ 9999 )
 	// Only for NonStackable Items!
@@ -42,7 +56,7 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	bool GetBaseData(FBaseItemData& OutData);
+	FBaseItemData& GetBaseData();
 
 	UFUNCTION(BlueprintCallable)
 	EItemType GetItemType();

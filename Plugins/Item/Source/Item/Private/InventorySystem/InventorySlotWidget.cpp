@@ -53,11 +53,7 @@ void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, con
 	CHECK_VALID(DragWidgetClass);
 	UOnDragWidget* DragWidget = Cast<UOnDragWidget>(CreateWidget(GetOwningPlayer(), DragWidgetClass));
 
-	FBaseItemData BaseItemData;
-	if (!SlotItemData->GetBaseData(BaseItemData))
-	{
-		return;
-	}
+	FBaseItemData BaseItemData = SlotItemData->GetBaseData();
 
 	DragWidget->SetItemImage(BaseItemData.Icon2D);
 
@@ -172,17 +168,13 @@ void UInventorySlotWidget::SetSlot(class UItemData* NewItemData, const int32& Ne
 
 	if (!SlotItemData)
 	{
-		ItemImageWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
+		Image_Item->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
 	}
 
 	SlotItemData = NewItemData;
 	SlotItemAmount = NewAmount;
 
-	FBaseItemData BaseItemData;
-	if (SlotItemData->GetBaseData(BaseItemData))
-	{
-		ItemImageWidget->SetBrushFromTexture(BaseItemData.Icon2D);
-	}
+	Image_Item->SetBrushFromTexture(SlotItemData->GetBaseData().Icon2D);
 
 	// If InfoBox is on Visible, Set Collapsed
 	if (InventoryWidget)
@@ -200,8 +192,20 @@ void UInventorySlotWidget::ClearSlot()
 	SlotItemData = nullptr;
 	SlotItemAmount = 0;
 
-	ItemImageWidget->SetBrushFromTexture(nullptr);
-	ItemImageWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
+	Image_Item->SetBrushFromTexture(nullptr);
+	Image_Item->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
+}
+
+void UInventorySlotWidget::SetOnRegistImageVisibility(const bool& bIsRegist)
+{
+	if (bIsRegist)
+	{
+		Image_OnRegist->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		Image_OnRegist->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 bool UInventorySlotWidget::IsEmpty()

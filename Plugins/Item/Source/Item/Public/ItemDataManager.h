@@ -52,7 +52,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 BasePrice;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 	int32 UpgradeValue = 1;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)

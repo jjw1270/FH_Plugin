@@ -79,7 +79,13 @@ void UInventoryWidget::OnItemUpdated(class UItemData* UpdateItemData, const int3
 	// Check Item already exist in slot
 	for (auto& InventorySlot : InventorySlotArray)
 	{
-		if (InventorySlot->GetSlotItemData() == UpdateItemData)
+		UItemData* InventorySlotItemData = InventorySlot->GetSlotItemData();
+		if (!InventorySlotItemData)
+		{
+			continue;
+		}
+
+		if (InventorySlotItemData == UpdateItemData)
 		{
 			InventorySlot->SetSlot(UpdateItemData, UpdateAmount);
 
@@ -93,7 +99,7 @@ void UInventoryWidget::OnItemUpdated(class UItemData* UpdateItemData, const int3
 
 void UInventoryWidget::AddNewItemToSlot(class UItemData* NewItemData, const int32& NewItemAmount)
 {
-	for (auto slot : InventorySlotArray)
+	for (auto& slot : InventorySlotArray)
 	{
 		if (slot->IsEmpty())
 		{
@@ -110,6 +116,20 @@ void UInventoryWidget::AddNewItemToSlot(class UItemData* NewItemData, const int3
 void UInventoryWidget::OnItemRegister(class UItemData* UpdateItemData, const bool& bIsRegist)
 {
 	// Set Register Image visibility
+	for (auto& slot : InventorySlotArray)
+	{
+		UItemData* SlotItemData = slot->GetSlotItemData();
+		if (!SlotItemData)
+		{
+			continue;
+		}
+
+		if (SlotItemData == UpdateItemData)
+		{
+			slot->SetOnRegistImageVisibility(bIsRegist);
+			return;
+		}
+	}
 }
 
 // Sort according to IsEmpty()

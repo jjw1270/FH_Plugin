@@ -16,7 +16,7 @@ class ITEM_API UItem_HUDWidget : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void SwichWidgetVisibility(const FName& WidgetName);
+	void SwichWidgetVisibility(class APlayerController* TargetPlayerController, const FName& WidgetName);
 	
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))

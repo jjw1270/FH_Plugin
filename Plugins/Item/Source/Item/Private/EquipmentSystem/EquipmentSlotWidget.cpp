@@ -85,11 +85,7 @@ void UEquipmentSlotWidget::SetSlot(class UItemData* UpdateItemData)
 {
 	EquippedItemData = UpdateItemData;
 
-	FBaseItemData EquippedBaseItemData;
-	if (!EquippedItemData->GetBaseData(EquippedBaseItemData))
-	{
-		return;
-	}
+	FBaseItemData EquippedBaseItemData = EquippedItemData->GetBaseData();
 
 	Image_Equip->SetBrushFromTexture(EquippedBaseItemData.Icon2D);
 	Image_Equip->SetVisibility(ESlateVisibility::Visible);

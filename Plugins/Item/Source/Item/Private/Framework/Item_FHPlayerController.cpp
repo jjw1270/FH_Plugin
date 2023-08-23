@@ -41,16 +41,14 @@ void AItem_FHPlayerController::SetupInputComponent()
 
 void AItem_FHPlayerController::WidgetOnOff(FName WidgetName)
 {
-	GetHUDWidget()->SwichWidgetVisibility(WidgetName);
-}
-
-UItem_HUDWidget* AItem_FHPlayerController::GetHUDWidget()
-{
-	AItem_FHHUD* FHHUD = GetHUD<AItem_FHHUD>();
-	if (!FHHUD)
+	if (!HUDWidget)
 	{
-		return nullptr;
+		AItem_FHHUD* FHHUD = GetHUD<AItem_FHHUD>();
+		check(FHHUD);
+
+		HUDWidget = FHHUD->GetHUDWidget();
+		check(HUDWidget);
 	}
 
-	return FHHUD->GetHUDWidget();
+	HUDWidget->SwichWidgetVisibility(this, WidgetName);
 }

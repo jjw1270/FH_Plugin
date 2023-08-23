@@ -23,7 +23,11 @@ void UAnimNotify_Looting::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
 	UItem_FHGameInstance* GI = PC->GetGameInstance<UItem_FHGameInstance>();
 	CHECK_VALID(GI);
 
-	PC->GetInventoryComp()->AddItemToInventory(GetRandomItemOnItemDropTable(GI->GetCurrentDungeonID()), 1);
+	int32 CurrentDungeonID = GI->GetCurrentDungeonID();
+
+	int32 LootItemID = GetRandomItemOnItemDropTable(CurrentDungeonID);
+
+	PC->GetInventoryComp()->AddItemToInventory(LootItemID, 1);
 
 	DestroyLootItem(MeshComp->GetOwner());
 }
@@ -33,18 +37,31 @@ int32 UAnimNotify_Looting::GetRandomItemOnItemDropTable(const int32& DungeonID)
 	FItemDropData* ItemDropData = GetItemDropData(DungeonID);
 	check(ItemDropData);
 
-	// Sort ItemDropMap by Weight
-	ItemDropData->ItemDropWeightsMap.ValueSort([](const int32& A, const int32& B) { return A < B; });
+	int32 TotDropWeight = GetTotalItemDropWeight(ItemDropData->ItemDropWeightsMap);
 
-	// Random Item By Weights
-	int32 RandomInt = FMath::RandRange(1, GetTotalItemDropWeight(ItemDropData->ItemDropWeightsMap));
+	// Replace the given weight with a percentage (DropWeightByItem / TotDropWeight)
+	TMap<int32, float> NewItemDropWeightMap;
+	for (auto& DropWeightByItem : ItemDropData->ItemDropWeightsMap)
+	{
+		NewItemDropWeightMap.Add(DropWeightByItem.Key, static_cast<float>(DropWeightByItem.Value) / TotDropWeight);
+	}
+
+	// Sort ItemDropMap by Weight
+	NewItemDropWeightMap.ValueSort([](const float& A, const float& B) { return A < B; });
+
+	// get 0.f ~ 1.f random point
+	float RandomPoint = FMath::FRand();
 
 	int32 ItemID = 0;
-	for (const auto& DropWeightByItem : ItemDropData->ItemDropWeightsMap)
+	float AccumulatedWeight = 0.f;
+
+	for (const auto& DropWeightByItem : NewItemDropWeightMap)
 	{
-		ItemID = DropWeightByItem.Key;
-		if (RandomInt <= DropWeightByItem.Value)
+		AccumulatedWeight += DropWeightByItem.Value;
+
+		if (RandomPoint <= AccumulatedWeight)
 		{
+			ItemID = DropWeightByItem.Key;
 			break;
 		}
 	}

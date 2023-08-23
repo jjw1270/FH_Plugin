@@ -3,14 +3,19 @@
 
 #include "Item_HUDWidget.h"
 #include "Item.h"
-#include "Item_FHPlayerController.h"
+#include "GameFramework/PlayerController.h"
 
-void UItem_HUDWidget::SwichWidgetVisibility(const FName& WidgetName)
+#include "QuickSlotWidget.h"
+#include "InventoryWidget.h"
+#include "EquipmentWidget.h"
+
+void UItem_HUDWidget::SwichWidgetVisibility(class APlayerController* TargetPlayerController, const FName& WidgetName)
 {
-	AItem_FHPlayerController* PC = GetOwningPlayer<AItem_FHPlayerController>();
-	CHECK_VALID(PC);
-
 	UUserWidget* Widget = GetUserwidgetFromFName(WidgetName);
+	if (Widget == nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("AASFD"));
+		return;
+	}
 	CHECK_VALID(Widget);
 
 	switch (Widget->GetVisibility())
@@ -18,14 +23,14 @@ void UItem_HUDWidget::SwichWidgetVisibility(const FName& WidgetName)
 	//Open widget
 	case ESlateVisibility::Collapsed:
 		Widget->SetVisibility(ESlateVisibility::Visible);
-		PC->SetShowMouseCursor(true);
-		PC->SetInputMode(FInputModeGameAndUI());
+		TargetPlayerController->SetShowMouseCursor(true);
+		TargetPlayerController->SetInputMode(FInputModeGameAndUI());
 		break;
 	//Close widget
 	case ESlateVisibility::Visible:
 		Widget->SetVisibility(ESlateVisibility::Collapsed);
-		PC->SetShowMouseCursor(false);
-		PC->SetInputMode(FInputModeGameOnly());
+		TargetPlayerController->SetShowMouseCursor(false);
+		TargetPlayerController->SetInputMode(FInputModeGameOnly());
 		break;
 	default:
 		break;
@@ -34,20 +39,18 @@ void UItem_HUDWidget::SwichWidgetVisibility(const FName& WidgetName)
 
 UUserWidget* UItem_HUDWidget::GetUserwidgetFromFName(const FName& WidgetName)
 {
-	if (WidgetName == Cast<UUserWidget>(QuickSlotWidget)->GetFName())
+	if (WidgetName == QuickSlotWidget->GetFName())
 	{
-		return Cast<UUserWidget>(QuickSlotWidget);
+		return QuickSlotWidget;
 	}
-	else if(WidgetName == Cast<UUserWidget>(InventoryWidget)->GetFName())
+	if(WidgetName == InventoryWidget->GetFName())
 	{
-		return Cast<UUserWidget>(InventoryWidget);
+		return InventoryWidget;
 	}
-	else if (WidgetName == Cast<UUserWidget>(EquipmentWidget)->GetFName())
+	if (WidgetName == EquipmentWidget->GetFName())
 	{
-		return Cast<UUserWidget>(EquipmentWidget);
+		return EquipmentWidget;
 	}
-	else
-	{
-		return nullptr;
-	}
+
+	return nullptr;
 }

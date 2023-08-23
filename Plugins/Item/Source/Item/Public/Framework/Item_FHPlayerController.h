@@ -61,7 +61,4 @@ protected:
 	UPROPERTY()
 	class UItem_HUDWidget* HUDWidget;
 
-public:
-	class UItem_HUDWidget* GetHUDWidget();
-
 };

@@ -42,7 +42,10 @@ public:
 	void SetSlot(class UItemData* NewItemData, const int32& NewAmount);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void ClearSlot();
+	void ClearSlot();
+
+	UFUNCTION(BlueprintCallable)
+	void SetOnRegistImageVisibility(const bool& bIsRegist);
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
@@ -54,8 +57,11 @@ protected:
 // Variables to Bind UMG Components
 protected:
 	UPROPERTY(meta = (BindWidget))
-	class UImage* ItemImageWidget;
+	class UImage* Image_Item;
 
+	UPROPERTY(meta = (BindWidget))
+	class UImage* Image_OnRegist;
+	
 protected:
 	UPROPERTY()
 	class UItemData* SlotItemData;

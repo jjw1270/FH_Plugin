@@ -55,7 +55,7 @@ void UQuickSlotWidget::BindQuickSlotCompEvents()
 
 void UQuickSlotWidget::OnQuickSlotUpdated(const int32& QuickSlotIndex, UItemData* NewItemData, const int32& NewItemAmount)
 {
-	UQuickSlotSlotWidget* QuickSlotSlot = QuickSlotSlotArray[QuickSlotIndex - 1];
+	UQuickSlotSlotWidget* QuickSlotSlot = QuickSlotSlotArray[QuickSlotIndex];
 
 	QuickSlotSlot->SetSlot(NewItemData, NewItemAmount);
 }

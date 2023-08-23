@@ -16,11 +16,6 @@
 UInventoryComponent::UInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
-	if (ItemDataManagerClass)
-	{
-		ItemDataManager = NewObject<UItemDataManager>(this, ItemDataManagerClass);
-	}
 }
 
 void UInventoryComponent::BeginPlay()
@@ -48,6 +43,11 @@ void UInventoryComponent::InitComponent()
 
 	EquipComp = PS->GetEquipmentComp();
 	CHECK_VALID(EquipComp);
+
+	if (ItemDataManagerClass)
+	{
+		ItemDataManager = NewObject<UItemDataManager>(this, ItemDataManagerClass);
+	}
 }
 
 void UInventoryComponent::AddItemToInventory(const int32& NewItemID, const int32& NewAmount)
@@ -109,12 +109,7 @@ void UInventoryComponent::AddItemToInventory(const int32& NewItemID, const int32
 	case EItemType::Consumable:
 		for (auto& MyItem : InventoryItems)
 		{
-			FBaseItemData BaseItemData;
-			if (!MyItem.Key->GetBaseData(BaseItemData))
-			{
-				UE_LOG(LogTemp, Error, TEXT("CRITICAL ERROR in Inventory!!!"));
-				return;
-			}
+			FBaseItemData BaseItemData = MyItem.Key->GetBaseData();
 
 			// Check Item is already in Inventory and add Amount if true
 			if (BaseItemData.ID == NewItemID)
@@ -123,7 +118,7 @@ void UInventoryComponent::AddItemToInventory(const int32& NewItemID, const int32
 
 				if (ItemUpdateDelegate.IsBound())
 				{
-					ItemUpdateDelegate.Broadcast(MyItem.Key, NewAmount);
+					ItemUpdateDelegate.Broadcast(MyItem.Key, MyItem.Value);
 				}
 
 				return;
@@ -207,11 +202,7 @@ int32 UInventoryComponent::MakeUniqueID()
 
 void UInventoryComponent::ManageItem(class UItemData* TargetItemData, const int32& TargetItemAmount)
 {
-	FBaseItemData BaseItemData;
-	if (!TargetItemData->GetBaseData(BaseItemData))
-	{
-		return;
-	}
+	FBaseItemData BaseItemData = TargetItemData->GetBaseData();
 
 	// Consumable Items
 	if (BaseItemData.Type == EItemType::Consumable)

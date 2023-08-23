@@ -64,7 +64,7 @@ public:
 	FORCEINLINE void SetIndex(const int32& NewIndex) { Index = NewIndex; }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE bool IsEmpty() const { return !IsValid(SlotItemData); }
+	bool IsEmpty();
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE class UItemData* GetSlotItemData() const { return SlotItemData; }

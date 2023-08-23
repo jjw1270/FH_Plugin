@@ -33,13 +33,7 @@ void URemoveConfirmWidget::ShowRemoveConfirm(UItemDragDropOperation* NewDragDrop
 
 	Slider_Amount->SetMaxValue(MaxAmount);
 
-	FBaseItemData BaseItemData;
-	if (!ItemData->GetBaseData(BaseItemData))
-	{
-		return;
-	}
-
-	Image_Item->SetBrushFromTexture(BaseItemData.Icon2D);
+	Image_Item->SetBrushFromTexture(ItemData->GetBaseData().Icon2D);
 
 	if (MaxAmount == 1)
 	{

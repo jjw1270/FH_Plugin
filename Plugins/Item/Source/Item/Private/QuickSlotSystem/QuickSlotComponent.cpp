@@ -86,7 +86,7 @@ void UQuickSlotComponent::DeleteItemFromQuickSlot(const int32& NewQuickSlotIndex
 
 int32 UQuickSlotComponent::GetEmptyQuickSlotSlotIndex()
 {
-	int32 EmptyIndex = -1;
+	int32 EmptyIndex = -99;
 
 	// Max Slot Length is 6
 	for (int i = 0; i < 6; i++)

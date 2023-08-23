@@ -11,6 +11,8 @@ UItemData::UItemData()
 void UItemData::SetConsumableData(FConsumableItemData& NewConsumableData)
 {
 	ConsumableData = NewConsumableData;
+
+	BaseData = ConsumableData.BaseData;
 }
 
 void UItemData::SetWeaponData(FWeaponItemData& NewWeaponData, int32 NewUniqueID)
@@ -18,6 +20,8 @@ void UItemData::SetWeaponData(FWeaponItemData& NewWeaponData, int32 NewUniqueID)
 	WeaponData = NewWeaponData;
 
 	UniqueID = NewUniqueID;
+
+	BaseData = WeaponData.BaseData;
 }
 
 void UItemData::SetArmorData(FArmorItemData& NewArmorData, int32 NewUniqueID)
@@ -25,27 +29,13 @@ void UItemData::SetArmorData(FArmorItemData& NewArmorData, int32 NewUniqueID)
 	ArmorData = NewArmorData;
 
 	UniqueID = NewUniqueID;
+
+	BaseData = ArmorData.BaseData;
 }
 
-bool UItemData::GetBaseData(FBaseItemData& OutData)
+FBaseItemData& UItemData::GetBaseData()
 {
-	if (ConsumableData.IsValid())
-	{
-		OutData = ConsumableData.BaseData;
-		return true;
-	}
-	if (WeaponData.IsValid())
-	{
-		OutData = WeaponData.BaseData;
-		return true;
-	}
-	if (ArmorData.IsValid())
-	{
-		OutData = ArmorData.BaseData;
-		return true;
-	}
-
-	return false;;
+	return BaseData;
 }
 
 EItemType UItemData::GetItemType()
