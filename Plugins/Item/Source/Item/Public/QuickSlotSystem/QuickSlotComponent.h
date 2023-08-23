@@ -39,10 +39,13 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable)
+	bool IsItemExistInQuickSlot(class UItemData* TargetItemData, int32& OutIndex);
+
+	UFUNCTION(BlueprintCallable)
 	void SetItemToQuickSlot(const int32& NewQuickSlotIndex, class UItemData* NewItemData, const int32& NewItemAmount);
 
 	UFUNCTION(BlueprintCallable)
-	void DeleteItemFromQuickSlot(const int32& NewQuickSlotIndex, class UItemData* NewItemData);
+	void DeleteItemFromQuickSlot(const int32& NewQuickSlotIndex);
 
 	UFUNCTION(BlueprintCallable)
 	int32 GetEmptyQuickSlotSlotIndex();

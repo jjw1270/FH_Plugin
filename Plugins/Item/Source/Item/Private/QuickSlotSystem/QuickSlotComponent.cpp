@@ -34,20 +34,33 @@ void UQuickSlotComponent::InitComponent()
 	CHECK_VALID(InventoryComp);
 }
 
+bool UQuickSlotComponent::IsItemExistInQuickSlot(UItemData* TargetItemData, int32& OutIndex)
+{
+	for (auto& MyQuickslot : QuickSlotItems)
+	{
+		if (MyQuickslot.Value == TargetItemData)
+		{
+			OutIndex = MyQuickslot.Key;
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void UQuickSlotComponent::SetItemToQuickSlot(const int32& NewQuickSlotIndex, class UItemData* NewItemData, const int32& NewItemAmount)
 {
 	// Check item already exist in quick slots
 	// if true, delete exist item.
-	for (auto& MyQuickslot : QuickSlotItems)
+	int32 ItemExistInQuickSlotIndex;
+	if (IsItemExistInQuickSlot(NewItemData, ItemExistInQuickSlotIndex))
 	{
-		if (MyQuickslot.Value == NewItemData)
-		{
-			DeleteItemFromQuickSlot(MyQuickslot.Key, NewItemData);
-		}
+		DeleteItemFromQuickSlot(ItemExistInQuickSlotIndex);
 	}
 	
-	// if Item Exist in NewQuickSlotIndex, delete exist item
-	DeleteItemFromQuickSlot(NewQuickSlotIndex, NewItemData);
+	// if Item Exist in NewQuickSlotIndex, delete item
+	DeleteItemFromQuickSlot(NewQuickSlotIndex);
 
 	QuickSlotItems.Add(NewQuickSlotIndex, NewItemData);
 
@@ -64,16 +77,18 @@ void UQuickSlotComponent::SetItemToQuickSlot(const int32& NewQuickSlotIndex, cla
 	}
 }
 
-void UQuickSlotComponent::DeleteItemFromQuickSlot(const int32& NewQuickSlotIndex, class UItemData* NewItemData)
+void UQuickSlotComponent::DeleteItemFromQuickSlot(const int32& NewQuickSlotIndex)
 {
 	if (QuickSlotItems.Contains(NewQuickSlotIndex))
 	{
+		UItemData* DeleteItemData = QuickSlotItems[NewQuickSlotIndex];
+
 		QuickSlotItems.Remove(NewQuickSlotIndex);
 
 		//BroadCast to Inventory Widget
 		if (InventoryComp->ItemRegisterDelegate.IsBound())
 		{
-			InventoryComp->ItemRegisterDelegate.Broadcast(NewItemData, false);
+			InventoryComp->ItemRegisterDelegate.Broadcast(DeleteItemData, false);
 		}
 
 		//BroadCast to QuickSlot Widget
@@ -91,12 +106,12 @@ int32 UQuickSlotComponent::GetEmptyQuickSlotSlotIndex()
 	// Max Slot Length is 6
 	for (int i = 0; i < 6; i++)
 	{
-		if (QuickSlotItems.Contains(i))
+		if (!QuickSlotItems.Contains(i))
 		{
-			continue;
-		}
+			EmptyIndex = i;
 
-		EmptyIndex = i;
+			break;
+		}
 	}
 
 	return EmptyIndex;

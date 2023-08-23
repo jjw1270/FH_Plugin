@@ -43,8 +43,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	class UQuickSlotWidget* QuickSlotWidget;
 
-	FDelegateHandle ItemUpdateDelegateHandle;
-
 // Variables to Bind UMG Components
 protected:
 	UPROPERTY(meta = (BindWidget))

@@ -23,6 +23,9 @@ void UQuickSlotSlotWidget::NativeOnInitialized()
 	QuickSlotComp = InventoryComp->GetQuickSlotComp();
 	CHECK_VALID(QuickSlotComp);
 
+	// bind ItemUpdateDelegate
+	InventoryComp->ItemUpdateDelegate.AddUObject(this, &UQuickSlotSlotWidget::OnUpdateItem);
+
 	ClearSlot();
 }
 
@@ -67,7 +70,7 @@ FReply UQuickSlotSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InG
 		}
 	}
 
-	QuickSlotComp->DeleteItemFromQuickSlot(Index, SlotItemData);
+	QuickSlotComp->DeleteItemFromQuickSlot(Index);
 
 	return FReply::Handled();
 }
@@ -80,31 +83,30 @@ void UQuickSlotSlotWidget::SetSlot(class UItemData* NewItemData, const int32& Ne
 		return;
 	}
 
-	if (!NewItemData)
-	{
-		ItemImageWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
-	}
-
 	SlotItemData = NewItemData;
 	SlotItemAmount = NewItemAmount;
 
+	ItemImageWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
 	ItemImageWidget->SetBrushFromTexture(SlotItemData->GetBaseData().Icon2D);
-
-	// bind ItemUpdateDelegate
-	if (!ItemUpdateDelegateHandle.IsValid())
-	{
-		ItemUpdateDelegateHandle = InventoryComp->ItemUpdateDelegate.AddUObject(this, &UQuickSlotSlotWidget::OnUpdateItem);
-	}
 }
 
 void UQuickSlotSlotWidget::OnUpdateItem(class UItemData* UpdateItemData, const int32& UpdateAmount)
 {
-	SlotItemData = UpdateItemData;
+	if (IsEmpty())
+	{
+		return;
+	}
+
+	if (SlotItemData != UpdateItemData)
+	{
+		return;
+	}
+
 	SlotItemAmount = UpdateAmount;
 
 	if (SlotItemAmount <= 0)
 	{
-		QuickSlotComp->DeleteItemFromQuickSlot(Index, SlotItemData);
+		QuickSlotComp->DeleteItemFromQuickSlot(Index);
 	}
 }
 
@@ -120,9 +122,4 @@ void UQuickSlotSlotWidget::ClearSlot()
 
 	ItemImageWidget->SetBrushFromTexture(nullptr);
 	ItemImageWidget->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
-
-	if (ItemUpdateDelegateHandle.IsValid())
-	{
-		InventoryComp->ItemUpdateDelegate.Remove(ItemUpdateDelegateHandle);
-	}
 }

@@ -209,12 +209,24 @@ void UInventoryComponent::ManageItem(class UItemData* TargetItemData, const int3
 	{
 		// Check QuickSlot is empty
 		int32 QuickSlotIndex = QuickSlotComp->GetEmptyQuickSlotSlotIndex();
+
 		// If QuickSlot is Full, Do Nothing
 		if (QuickSlotIndex < 0)
 		{
 			return;
 		}
+		
+		// check item is already in quickslot
+		// if true, unregist quickslot item
+		int32 ItemExistInQuickSlotIndex;
+		if (QuickSlotComp->IsItemExistInQuickSlot(TargetItemData, ItemExistInQuickSlotIndex))
+		{
+			QuickSlotComp->DeleteItemFromQuickSlot(ItemExistInQuickSlotIndex);
 
+			return;
+		}
+
+		// else regist item to quickslot
 		QuickSlotComp->SetItemToQuickSlot(QuickSlotIndex, TargetItemData, TargetItemAmount);
 
 		return;
@@ -223,6 +235,7 @@ void UInventoryComponent::ManageItem(class UItemData* TargetItemData, const int3
 	// Weapon, Armor Items
 	if (BaseItemData.Type == EItemType::Weapon || BaseItemData.Type == EItemType::Armor)
 	{
+		////////////////////////////////////////////////
 		EquipComp->Equip(TargetItemData);
 	}
 }
