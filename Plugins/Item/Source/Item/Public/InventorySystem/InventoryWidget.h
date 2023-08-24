@@ -23,6 +23,9 @@ protected:
 
 	FTimerHandle InitTimerHandle;
 
+	UPROPERTY(BlueprintReadOnly)
+	class UItem_HUDWidget* HUDWidget;
+
 // Blueprint Bind Widgets
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -56,10 +59,6 @@ protected:
 
 	int32 SlotGridColRange{ 5 };
 
-	FVector2D MousePosOnDragStart;
-
-	FTimerHandle DragTimerHandle;
-
 public:
 	void AddNewItemToSlot(class UItemData* NewItemData, const int32& NewItemAmount);
 
@@ -80,8 +79,6 @@ protected:
 //Drag Func
 	UFUNCTION()
 	void OnDragBtnPressed();
-
-	void DragUI();
 
 	UFUNCTION()
 	void OnDragBtnReleased();

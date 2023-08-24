@@ -17,6 +17,10 @@ class ITEM_API UEquipmentWidget : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
+protected:
+	UPROPERTY(BlueprintReadOnly)
+	class UItem_HUDWidget* HUDWidget;
+
 	// Blueprint Bind Widgets
 protected:
 	UPROPERTY(meta = (BindWidget))
@@ -25,17 +29,10 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* UIDragBtn;
 
-protected:
-	FVector2D MousePosOnDragStart;
-
-	FTimerHandle DragTimerHandle;
-
 //Drag Func
 protected:
 	UFUNCTION()
 	void OnDragBtnPressed();
-
-	void DragUI();
 
 	UFUNCTION()
 	void OnDragBtnReleased();

@@ -21,4 +21,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	int32 DraggingItemAmount;
 
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsRegist;
+
 };

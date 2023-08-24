@@ -49,10 +49,7 @@ void URemoveConfirmWidget::RemoveItem()
 
 	InventoryComp->RemoveItemFromInventory(ItemData, Amount);
 
-	SetAmountBox->SetVisibility(ESlateVisibility::Visible);
-	GetParent()->SetVisibility(ESlateVisibility::Collapsed);
-
-	ClearWidget();
+	OnCancel();
 }
 
 void URemoveConfirmWidget::OnCancel()

@@ -18,6 +18,26 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SwichWidgetVisibility(class APlayerController* TargetPlayerController, const FName& WidgetName);
 	
+	UFUNCTION(BlueprintCallable)
+	void SetWidgetZOrderToTop(UUserWidget* TargetWidget);
+
+	void WidgetDragStart(UUserWidget* TargetWidget);
+
+	void DragWidget();
+
+	void WidgetDragEnd();
+
+protected:
+	bool CheckAllHandleableWidgetCollapsed();
+
+protected:
+	UPROPERTY()
+	class UCanvasPanelSlot* DragTargetSlot;
+
+	FVector2D MousePosOnDragStart;
+
+	FTimerHandle DragTimerHandle;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UQuickSlotWidget* QuickSlotWidget;

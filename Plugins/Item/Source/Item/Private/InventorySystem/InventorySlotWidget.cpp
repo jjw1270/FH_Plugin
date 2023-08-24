@@ -37,6 +37,8 @@ void UInventorySlotWidget::NativeOnInitialized()
 
 FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
 	FEventReply reply = UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 	return reply.NativeReply;
 }
@@ -63,6 +65,10 @@ void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, con
 	DDOperation->DefaultDragVisual = DragWidget;
 	DDOperation->DraggingItemData = SlotItemData;
 	DDOperation->DraggingItemAmount = SlotItemAmount;
+	if (Image_OnRegist->GetVisibility() == ESlateVisibility::Visible)
+	{
+		DDOperation->bIsRegist = true;
+	}
 	
 	DDOperation->Payload = this;
 
@@ -111,6 +117,8 @@ bool UInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 	if (IsEmpty())
 	{	
 		SetSlot(DDOperation->DraggingItemData, DDOperation->DraggingItemAmount);
+		SetOnRegistImageVisibility(DDOperation->bIsRegist);
+
 		return true;
 	}
 
@@ -122,9 +130,14 @@ bool UInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 	}
 
 	PrevInventorySlot->SetSlot(SlotItemData, SlotItemAmount);
+	if (Image_OnRegist->GetVisibility() == ESlateVisibility::Visible)
+	{
+		PrevInventorySlot->SetOnRegistImageVisibility(true);
+	}
 	
 	ClearSlot();
 	SetSlot(DDOperation->DraggingItemData, DDOperation->DraggingItemAmount);
+	SetOnRegistImageVisibility(DDOperation->bIsRegist);
 
 	return true;
 }
@@ -194,6 +207,8 @@ void UInventorySlotWidget::ClearSlot()
 
 	Image_Item->SetBrushFromTexture(nullptr);
 	Image_Item->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
+
+	SetOnRegistImageVisibility(false);
 }
 
 void UInventorySlotWidget::SetOnRegistImageVisibility(const bool& bIsRegist)

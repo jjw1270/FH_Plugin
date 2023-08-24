@@ -3,18 +3,17 @@
 
 #include "InventoryWidget.h"
 #include "Item.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
-// Widget Components
-#include "Components/UniformGridPanel.h"
-#include "Components/Button.h"
-#include "Components/CanvasPanelSlot.h"
-#include "Components/HorizontalBox.h"
-#include "InventorySlotWidget.h"
+#include "ItemData.h"
 
 #include "InventoryComponent.h"
 #include "Item_FHPlayerController.h"
+// Widget Components
+#include "Components/UniformGridPanel.h"
+#include "Components/Button.h"
+#include "InventorySlotWidget.h"
 
-#include "ItemData.h"
+#include "Item_FHHUD.h"
+#include "Item_HUDWidget.h"
 
 void UInventoryWidget::NativeOnInitialized()
 {
@@ -68,20 +67,14 @@ void UInventoryWidget::BindInventoryCompEvents()
 
 void UInventoryWidget::OnItemUpdated(class UItemData* UpdateItemData, const int32& UpdateAmount)
 {
-	// If Item is NonStackable, Add Item to New Slot
-	if (UpdateItemData->GetUniqueID() > 1000)
-	{
-		AddNewItemToSlot(UpdateItemData, UpdateAmount);
-
-		return;
-	}
-
-	// Check Item already exist in slot
+	// Check Item already exist in slot, stack item
+	// If Item is NonStackable, Item will be AddNewItemToSlot cause of UniqueID
 	for (auto& InventorySlot : InventorySlotArray)
 	{
 		UItemData* InventorySlotItemData = InventorySlot->GetSlotItemData();
 		if (!InventorySlotItemData)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("ERROR in InventorySlotItemData"));
 			continue;
 		}
 
@@ -130,6 +123,12 @@ void UInventoryWidget::OnItemRegister(class UItemData* UpdateItemData, const boo
 			return;
 		}
 	}
+
+	// for Item in Inventory is dragged to QuickSlot slot
+	GetWorld()->GetTimerManager().SetTimerForNextTick([this, UpdateItemData, bIsRegist]()
+		{
+			OnItemRegister(UpdateItemData, bIsRegist);
+		});
 }
 
 // Sort according to IsEmpty()
@@ -157,23 +156,20 @@ void UInventoryWidget::SortItemSlot()
 
 void UInventoryWidget::OnDragBtnPressed()
 {
-	MousePosOnDragStart = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld())
-		- Cast<UCanvasPanelSlot>(InventoryUI->Slot)->GetPosition();
+	if (!HUDWidget)
+	{
+		AItem_FHHUD* HUD = Cast<AItem_FHHUD>(GetOwningPlayer()->GetHUD());
+		CHECK_VALID(HUD);
 
-	GetWorld()->GetTimerManager().SetTimer(DragTimerHandle, this, &UInventoryWidget::DragUI, 0.01f, true);
-}
+		HUDWidget = HUD->GetHUDWidget();
+	}
 
-void UInventoryWidget::DragUI()
-{
-	FVector2D UIPos = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()) - MousePosOnDragStart;
-
-	Cast<UCanvasPanelSlot>(InventoryUI->Slot)->SetPosition(UIPos);
+	HUDWidget->WidgetDragStart(this);
 }
 
 void UInventoryWidget::OnDragBtnReleased()
 {
-	if (DragTimerHandle.IsValid())
-	{
-		GetWorld()->GetTimerManager().ClearTimer(DragTimerHandle);
-	}
+	CHECK_VALID(HUDWidget);
+
+	HUDWidget->WidgetDragEnd();
 }
