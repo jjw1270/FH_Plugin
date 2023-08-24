@@ -121,8 +121,6 @@ FReply UEquipmentSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InG
 
 void UEquipmentSlotWidget::OnWeaponUpdate(class UItemData* UpdateItemData, const bool& bEquip)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnWeaponUpdate"));
-
 	// if UnEquip
 	if (!bEquip)
 	{
