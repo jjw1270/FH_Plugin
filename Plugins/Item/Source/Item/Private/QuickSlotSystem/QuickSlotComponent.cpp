@@ -36,15 +36,6 @@ void UQuickSlotComponent::InitComponent()
 
 void UQuickSlotComponent::ManageQuickSlot(UItemData* TargetItemData, const int32& TargetItemAmount)
 {
-	// Check QuickSlot is empty
-	int32 QuickSlotIndex = GetEmptyQuickSlotSlotIndex();
-
-	// If QuickSlot is Full, Do Nothing
-	if (QuickSlotIndex < 0)
-	{
-		return;
-	}
-
 	// check item is already in quickslot
 	// if true, Delete QuickSlot Item
 	int32 ItemExistInQuickSlotIndex;
@@ -55,7 +46,15 @@ void UQuickSlotComponent::ManageQuickSlot(UItemData* TargetItemData, const int32
 		return;
 	}
 
-	// else Set Item to QuickSlot
+	// else Check QuickSlot is empty
+	// If QuickSlot is Full, Do Nothing
+	int32 QuickSlotIndex = GetEmptyQuickSlotSlotIndex();
+	if (QuickSlotIndex < 0)
+	{
+		return;
+	}
+
+	// Set Item to QuickSlot
 	SetItemToQuickSlot(QuickSlotIndex, TargetItemData, TargetItemAmount);
 }
 

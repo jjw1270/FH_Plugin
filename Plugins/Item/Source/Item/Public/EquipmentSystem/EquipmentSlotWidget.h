@@ -16,21 +16,21 @@ class ITEM_API UEquipmentSlotWidget : public UUserWidget
 	GENERATED_BODY()
 	
 protected:
+	virtual void NativePreConstruct() override;
+
 	virtual void NativeConstruct() override;
 
 	void BindEquipmentCompEvents();
+
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
+	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 protected:
 	UPROPERTY()
 	class UEquipmentComponent* EquipComp;
 
 	FTimerHandle InitTimerHandle;
-
-	UPROPERTY()
-	class UInventoryComponent* InventoryComp;
-
-	UPROPERTY()
-	class AItem_FHPlayerController* PC;
 
 //Need Edit Vars
 protected:
@@ -68,4 +68,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ClearSlot();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsEmpty();
 };

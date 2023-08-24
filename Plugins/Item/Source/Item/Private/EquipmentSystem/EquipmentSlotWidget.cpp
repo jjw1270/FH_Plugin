@@ -7,27 +7,28 @@
 #include "Item_FHPlayerState.h"
 #include "EquipmentComponent.h"
 #include "Item_FHPlayerController.h"
-#include "InventoryComponent.h"
-#include "Item_HUDWidget.h"
-#include "InventoryWidget.h"
+#include "ItemDragDropOperation.h"
+
+void UEquipmentSlotWidget::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+
+	Image_BackIcon->SetBrushFromTexture(BackIconTexture);
+}
 
 void UEquipmentSlotWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	Image_BackIcon->SetBrushFromTexture(BackIconTexture);
 
 	BindEquipmentCompEvents();
 }
 
 void UEquipmentSlotWidget::BindEquipmentCompEvents()
 {
-	PC = GetOwningPlayer<AItem_FHPlayerController>();
+	AItem_FHPlayerController* PC = GetOwningPlayer<AItem_FHPlayerController>();
 
 	if (IsValid(PC))
 	{
-		InventoryComp = PC->GetInventoryComp();
-
 		AItem_FHPlayerState* PS = PC->GetPlayerState<AItem_FHPlayerState>();
 		if (IsValid(PS))
 		{
@@ -51,8 +52,77 @@ void UEquipmentSlotWidget::BindEquipmentCompEvents()
 	GetWorld()->GetTimerManager().SetTimer(InitTimerHandle, this, &UEquipmentSlotWidget::BindEquipmentCompEvents, 0.1f, false);
 }
 
+bool UEquipmentSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+
+	UItemDragDropOperation* DDOperation = Cast<UItemDragDropOperation>(InOperation);
+	if (!DDOperation)
+	{
+		return false;
+	}
+
+	UItemData* DraggedItemData = DDOperation->DraggingItemData;
+	if (!DraggedItemData)
+	{
+		return false;
+	}
+
+	// Equipment is only for Weapon/Armor Items
+	if (DraggedItemData->GetItemType() != ItemType)
+	{
+		return false;
+	}
+
+	// Weapon
+	if (ItemType == EItemType::Weapon)
+	{
+		EquipComp->ManageEquipment(DraggedItemData);
+
+		return false;
+	}
+
+	// Armor
+	FArmorItemData DraggedArmorItemData;
+	DraggedItemData->GetArmorData(DraggedArmorItemData);
+	if (DraggedArmorItemData.ArmorType == ArmorType)
+	{
+		EquipComp->ManageEquipment(DraggedItemData);
+
+		return false;
+	}
+
+	return false;
+}
+
+FReply UEquipmentSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+
+	if (IsEmpty())
+	{
+		return FReply::Unhandled();
+	}
+
+	//check left mouse double clicked
+	TSet<FKey> PressedBtns = InMouseEvent.GetPressedButtons();
+	for (const auto& pb : PressedBtns)
+	{
+		if (pb != EKeys::LeftMouseButton)
+		{
+			return FReply::Unhandled();
+		}
+	}
+
+	EquipComp->ManageEquipment(EquippedItemData);
+
+	return FReply::Handled();
+}
+
 void UEquipmentSlotWidget::OnWeaponUpdate(class UItemData* UpdateItemData, const bool& bEquip)
 {
+	UE_LOG(LogTemp, Warning, TEXT("OnWeaponUpdate"));
+
 	// if UnEquip
 	if (!bEquip)
 	{
@@ -70,6 +140,8 @@ void UEquipmentSlotWidget::OnArmorUpdate(const EArmorType& UpdateArmorType, UIte
 	{
 		return;
 	}
+
+	// UE_LOG(LogTemp, Warning, TEXT("OnArmorUpdate"));
 
 	// if UnEquip
 	if (!bEquip)
@@ -97,4 +169,9 @@ void UEquipmentSlotWidget::ClearSlot()
 
 	Image_Equip->SetBrushFromTexture(nullptr);
 	Image_Equip->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+bool UEquipmentSlotWidget::IsEmpty()
+{
+	return !IsValid(EquippedItemData);
 }

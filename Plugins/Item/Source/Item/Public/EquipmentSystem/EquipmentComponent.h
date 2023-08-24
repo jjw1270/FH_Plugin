@@ -59,12 +59,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ManageEquipment(class UItemData* TargetItemData);
 
-	UFUNCTION(BlueprintCallable)
+protected:
 	void Equip(class UItemData* NewItemData);
 
-	UFUNCTION(BlueprintCallable)
 	void UnEquip(class UItemData* TargetItemData);
 
+	bool IsItemExistInEquipmentSlot(class UItemData* TargetItemData, EItemType& OutItemType, EArmorType& OutArmorType);
+
+public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE TArray<class UItemData*>& GetEquipmentItems() { return EquipmentItems; }
 
