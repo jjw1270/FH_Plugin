@@ -16,7 +16,7 @@ class ITEM_API UEquipmentSlotWidget : public UUserWidget
 	GENERATED_BODY()
 	
 protected:
-	virtual void NativeOnInitialized() override;
+	virtual void NativeConstruct() override;
 
 	void BindEquipmentCompEvents();
 

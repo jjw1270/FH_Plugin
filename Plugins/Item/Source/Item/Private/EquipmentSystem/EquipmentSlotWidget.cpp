@@ -11,9 +11,9 @@
 #include "Item_HUDWidget.h"
 #include "InventoryWidget.h"
 
-void UEquipmentSlotWidget::NativeOnInitialized()
+void UEquipmentSlotWidget::NativeConstruct()
 {
-	Super::NativeOnInitialized();
+	Super::NativeConstruct();
 
 	Image_BackIcon->SetBrushFromTexture(BackIconTexture);
 

@@ -15,7 +15,7 @@ class ITEM_API URemoveConfirmWidget : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	virtual void NativeOnInitialized() override;
+	virtual void NativeConstruct() override;
 	
 protected:
 	UPROPERTY()

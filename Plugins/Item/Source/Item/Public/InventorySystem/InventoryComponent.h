@@ -65,6 +65,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ManageItem(class UItemData* TargetItemData, const int32& TargetItemAmount);
 
+protected:
+	class UItemData* GetWeaponItemData(const int32& TargetItemID);
+
+	class UItemData* GetArmorItemData(const int32& TargetItemID);
+
+	class UItemData* GetConsumableItemData(const int32& TargetItemID);
+
 public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE TMap<class UItemData*, int32>& GetInventoryItems() { return InventoryItems; }

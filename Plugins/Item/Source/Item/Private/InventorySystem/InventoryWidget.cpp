@@ -15,9 +15,9 @@
 #include "Item_FHHUD.h"
 #include "Item_HUDWidget.h"
 
-void UInventoryWidget::NativeOnInitialized()
+void UInventoryWidget::NativeConstruct()
 {
-	Super::NativeOnInitialized();
+	Super::NativeConstruct();
 
 	CreateSlotWidgets(DefaultSlotGridRowRange);
 
@@ -74,7 +74,6 @@ void UInventoryWidget::OnItemUpdated(class UItemData* UpdateItemData, const int3
 		UItemData* InventorySlotItemData = InventorySlot->GetSlotItemData();
 		if (!InventorySlotItemData)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("ERROR in InventorySlotItemData"));
 			continue;
 		}
 

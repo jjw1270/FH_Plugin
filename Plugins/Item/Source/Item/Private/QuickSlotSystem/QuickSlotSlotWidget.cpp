@@ -13,9 +13,9 @@
 #include "ItemDragDropOperation.h"
 #include "Components/Image.h"
 
-void UQuickSlotSlotWidget::NativeOnInitialized()
+void UQuickSlotSlotWidget::NativeConstruct()
 {
-	Super::NativeOnInitialized();
+	Super::NativeConstruct();
 
 	InventoryComp = Cast<UInventoryComponent>(GetOwningPlayer()->GetComponentByClass(UInventoryComponent::StaticClass()));
 	CHECK_VALID(InventoryComp);

@@ -94,6 +94,10 @@ protected:
 	/** Called for Quick Slot inputs */
 	void UseQuickSlot(int32 SlotNum);
 
+protected:
+	UPROPERTY()
+	class UQuickSlotComponent* QuickSlotComp;
+
 public:
 	UPROPERTY(BlueprintReadOnly)
 	AActor* InteractingActor;  // For AnimNotify on Interaction Montage Playing, Delete when Notify End Execution.

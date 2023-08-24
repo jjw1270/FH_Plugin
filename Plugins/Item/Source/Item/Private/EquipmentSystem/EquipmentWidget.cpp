@@ -7,9 +7,9 @@
 #include "Item_FHHUD.h"
 #include "Item_HUDWidget.h"
 
-void UEquipmentWidget::NativeOnInitialized()
+void UEquipmentWidget::NativeConstruct()
 {
-	Super::NativeOnInitialized();
+	Super::NativeConstruct();
 
 	UIDragBtn->OnPressed.AddDynamic(this, &UEquipmentWidget::OnDragBtnPressed);
 	UIDragBtn->OnReleased.AddDynamic(this, &UEquipmentWidget::OnDragBtnReleased);

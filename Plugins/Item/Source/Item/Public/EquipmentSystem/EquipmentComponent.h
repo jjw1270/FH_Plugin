@@ -57,6 +57,9 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable)
+	void ManageEquipment(class UItemData* TargetItemData);
+
+	UFUNCTION(BlueprintCallable)
 	void Equip(class UItemData* NewItemData);
 
 	UFUNCTION(BlueprintCallable)

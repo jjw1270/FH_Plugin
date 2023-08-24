@@ -15,7 +15,7 @@ class ITEM_API UQuickSlotWidget : public UUserWidget
 	GENERATED_BODY()
 	
 protected:
-	virtual void NativeOnInitialized() override;
+	virtual void NativeConstruct() override;
 
 	void BindQuickSlotCompEvents();
 

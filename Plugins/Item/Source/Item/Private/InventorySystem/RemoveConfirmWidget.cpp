@@ -13,9 +13,9 @@
 #include "InventoryComponent.h"
 #include "InventorySlotWidget.h"
 
-void URemoveConfirmWidget::NativeOnInitialized()
+void URemoveConfirmWidget::NativeConstruct()
 {
-	Super::NativeOnInitialized();
+	Super::NativeConstruct();
 
 	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetOwningPlayer());
 	CHECK_VALID(PC);

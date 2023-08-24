@@ -12,9 +12,9 @@
 #include "Components/Button.h"
 #include "Components/Border.h"
 
-void UQuickSlotWidget::NativeOnInitialized()
+void UQuickSlotWidget::NativeConstruct()
 {
-	Super::NativeOnInitialized();
+	Super::NativeConstruct();
 
 	// Create QuickSlot Slots
 	CHECK_VALID(QuickSlotSlotClass);

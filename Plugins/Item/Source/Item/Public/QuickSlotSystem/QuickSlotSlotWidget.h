@@ -16,7 +16,7 @@ class ITEM_API UQuickSlotSlotWidget : public UUserWidget
 	
 // Native Func
 protected:
-	virtual void NativeOnInitialized() override;
+	virtual void NativeConstruct() override;
 
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 

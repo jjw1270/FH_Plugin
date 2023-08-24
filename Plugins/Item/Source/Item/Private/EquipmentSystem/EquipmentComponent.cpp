@@ -39,6 +39,14 @@ void UEquipmentComponent::InitComponent()
 	CHECK_VALID(InventoryComp);
 }
 
+void UEquipmentComponent::ManageEquipment(UItemData* TargetItemData)
+{
+	// check Item is already regist
+	// if true, UnEquip target Item
+
+	// else, EquipItem
+}
+
 void UEquipmentComponent::Equip(class UItemData* NewItemData)
 {
 	EItemType NewItemType = NewItemData->GetItemType();

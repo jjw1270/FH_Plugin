@@ -176,11 +176,14 @@ void AItem_PlayableCharacter::Interaction(const FInputActionValue& Value)
 
 void AItem_PlayableCharacter::UseQuickSlot(int32 SlotNum)
 {
-	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetController());
-	CHECK_VALID(PC);
+	if (!QuickSlotComp)
+	{
+		AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetController());
+		CHECK_VALID(PC);
 
-	UQuickSlotComponent* QuickSlotComp = PC->GetQuickSlotComp();
+		QuickSlotComp = PC->GetQuickSlotComp();
+	}
 	CHECK_VALID(QuickSlotComp);
-
+	
 	QuickSlotComp->UseQuickSlotItem(SlotNum - 1);
 }

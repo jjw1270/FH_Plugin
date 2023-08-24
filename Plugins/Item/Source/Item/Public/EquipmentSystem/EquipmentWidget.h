@@ -15,7 +15,7 @@ class ITEM_API UEquipmentWidget : public UUserWidget
 	GENERATED_BODY()
 	
 protected:
-	virtual void NativeOnInitialized() override;
+	virtual void NativeConstruct() override;
 
 protected:
 	UPROPERTY(BlueprintReadOnly)

@@ -25,9 +25,9 @@
 #include "EquipmentComponent.h"
 #include "Item_FHPlayerState.h"
 
-void UInventorySlotWidget::NativeOnInitialized()
+void UInventorySlotWidget::NativeConstruct()
 {
-	Super::NativeOnInitialized();
+	Super::NativeConstruct();
 
 	InventoryComp = Cast<UInventoryComponent>(GetOwningPlayer()->GetComponentByClass(UInventoryComponent::StaticClass()));
 	ensureMsgf(InventoryComp, TEXT("InventoryComp is nullptr"));
