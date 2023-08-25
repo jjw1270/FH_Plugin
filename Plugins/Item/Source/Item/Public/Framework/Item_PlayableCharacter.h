@@ -55,7 +55,49 @@ protected:
 ////////////////////////////
 ////////////////////////////
 
+/*
+Modular Mesh Components
+<LowerBody>
+	<Shoes>
+	<UpperBody>
+		<Back>
+		<Glove_L>
+			<Weapon_L>
+		<Glove_R>
+			<Weapon_R>
+		<Head>
+			<Hair>
+			<Helmet>
+*/ 
+
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	class USkeletalMeshComponent* Shoes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	class USkeletalMeshComponent* UpperBody;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	class USkeletalMeshComponent* Glove_L;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	class USkeletalMeshComponent* Glove_R;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	class USkeletalMeshComponent* Weapon_R;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	class USkeletalMeshComponent* Head;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	class USkeletalMeshComponent* Hair;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	class USkeletalMeshComponent* Helmet;
+
+
+
+// Components
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
 	TObjectPtr<UCapsuleComponent> InteractCollision;
 

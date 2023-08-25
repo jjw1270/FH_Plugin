@@ -41,11 +41,14 @@ AItem_PlayableCharacter::AItem_PlayableCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
+	// Set Modular Meshes
+	MeshComponentName = TEXT("LowerBody");
+
+
 	// Interact Collision
 	InteractCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("InteractCollision"));
 	InteractCollision->SetupAttachment(RootComponent);
 	InteractCollision->SetCapsuleSize(60.f, 120.f);
-
 }
 
 // Called when the game starts or when spawned
