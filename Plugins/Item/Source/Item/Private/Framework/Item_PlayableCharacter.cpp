@@ -14,6 +14,7 @@
 #include "InteractionInterface.h"
 #include "Item_FHPlayerController.h"
 #include "QuickSlotComponent.h"
+#include "EquipmentComponent.h"
 
 // Sets default values
 AItem_PlayableCharacter::AItem_PlayableCharacter()
@@ -60,6 +61,19 @@ void AItem_PlayableCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	PC = Cast<AItem_FHPlayerController>(GetController());
+	CHECK_VALID(PC);
+
+	QuickSlotComp = PC->GetQuickSlotComp();
+	CHECK_VALID(QuickSlotComp);
+
+	UEquipmentComponent* EquipmentComp = PC->GetEquipmentComp();
+	CHECK_VALID(EquipmentComp);
+
+	// Bind Equipment Update Delegates
+	EquipmentComp->WeaponUpdateDelegate.AddUObject(this, &AItem_PlayableCharacter::OnWeaponUpdate);
+	EquipmentComp->ArmorUpdateDelegate.AddUObject(this, &AItem_PlayableCharacter::OnArmorUpdate);
 }
 
 // Called every frame
@@ -172,14 +186,15 @@ void AItem_PlayableCharacter::Interaction(const FInputActionValue& Value)
 
 void AItem_PlayableCharacter::UseQuickSlot(int32 SlotNum)
 {
-	if (!QuickSlotComp)
-	{
-		AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetController());
-		CHECK_VALID(PC);
-
-		QuickSlotComp = PC->GetQuickSlotComp();
-	}
-	CHECK_VALID(QuickSlotComp);
-	
 	QuickSlotComp->UseQuickSlotItem(SlotNum - 1);
+}
+
+void AItem_PlayableCharacter::OnWeaponUpdate(UItemData* UpdateEquipItem, const bool& bIsEquip)
+{
+	
+}
+
+void AItem_PlayableCharacter::OnArmorUpdate(const EArmorType& UpdateArmorType, UItemData* UpdateEquipItem, const bool& bIsEquip)
+{
+
 }

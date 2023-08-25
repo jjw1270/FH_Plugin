@@ -95,6 +95,16 @@ protected:
 	void UseQuickSlot(int32 SlotNum);
 
 protected:
+	UFUNCTION()
+	void OnWeaponUpdate(class UItemData* UpdateEquipItem, const bool& bIsEquip);
+
+	UFUNCTION()
+	void OnArmorUpdate(const EArmorType& UpdateArmorType, class UItemData* UpdateEquipItem, const bool& bIsEquip);
+
+protected:
+	UPROPERTY()
+	class AItem_FHPlayerController* PC;
+
 	UPROPERTY()
 	class UQuickSlotComponent* QuickSlotComp;
 
