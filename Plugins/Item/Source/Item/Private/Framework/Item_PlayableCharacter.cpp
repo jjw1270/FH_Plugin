@@ -10,11 +10,14 @@
 //Enhanced Input
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-//Interfaces
+
 #include "InteractionInterface.h"
 #include "Item_FHPlayerController.h"
 #include "QuickSlotComponent.h"
 #include "EquipmentComponent.h"
+
+#include "ItemData.h"
+#include "ModularSkeletalMeshComponent.h"
 
 // Sets default values
 AItem_PlayableCharacter::AItem_PlayableCharacter()
@@ -42,13 +45,60 @@ AItem_PlayableCharacter::AItem_PlayableCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	// Set Modular Meshes
-	MeshComponentName = TEXT("LowerBody");
+	LowerBody = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("LowerBody"));
+	LowerBody->SetupAttachment(GetMesh());
+	InitModularMeshComp(LowerBody, EArmorType::Lower, false);
 
+	Shoes = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Shoes"));
+	InitModularMeshComp(Shoes, EArmorType::Shoes, true);
+
+	UpperBody = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("UpperBody"));
+	InitModularMeshComp(UpperBody, EArmorType::Upper, true);
+
+	Cloak = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Cloak"));
+	InitModularMeshComp(Cloak, EArmorType::None, true);
+
+	Glove_L = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Glove_L"));
+	InitModularMeshComp(Glove_L, EArmorType::Gloves, true);
+
+	Glove_R = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Glove_R"));
+	InitModularMeshComp(Glove_R, EArmorType::None, true);
+
+	Head = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Head"));
+	InitModularMeshComp(Head, EArmorType::None, true);
+
+	Hair = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Hair"));
+	InitModularMeshComp(Hair, EArmorType::None, true);
+
+	Helmet = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Helmet"));
+	InitModularMeshComp(Helmet, EArmorType::Helmet, false);
+
+	Weapon = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Weapon"));
+	InitModularMeshComp(Weapon, EArmorType::None, false);
 
 	// Interact Collision
 	InteractCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("InteractCollision"));
 	InteractCollision->SetupAttachment(RootComponent);
 	InteractCollision->SetCapsuleSize(60.f, 120.f);
+}
+
+void AItem_PlayableCharacter::InitModularMeshComp(UModularSkeletalMeshComponent* ModularMeshComp, const EArmorType& NewArmorType, const bool& bSetLeaderPoseComp)
+{
+	if (ModularMeshComp != LowerBody)
+	{
+		ModularMeshComp->SetupAttachment(LowerBody);
+	}
+	ModularMeshComp->SetArmorType(NewArmorType);
+
+	if (NewArmorType != EArmorType::None)
+	{
+		ArmorMSMCompArray.Add(ModularMeshComp);
+	}
+
+	if (bSetLeaderPoseComp)
+	{
+		ModularMeshComp->SetLeaderPoseComponent(LowerBody);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -65,6 +115,13 @@ void AItem_PlayableCharacter::BeginPlay()
 		}
 	}
 
+	TArray<UModularSkeletalMeshComponent*> MSMCArray;
+	GetComponents<UModularSkeletalMeshComponent*>(MSMCArray);
+	for (auto MSMC : MSMCArray)
+	{
+		MSMC->InitDefaultSkeletalMesh();
+	}
+
 	PC = Cast<AItem_FHPlayerController>(GetController());
 	CHECK_VALID(PC);
 
@@ -77,6 +134,8 @@ void AItem_PlayableCharacter::BeginPlay()
 	// Bind Equipment Update Delegates
 	EquipmentComp->WeaponUpdateDelegate.AddUObject(this, &AItem_PlayableCharacter::OnWeaponUpdate);
 	EquipmentComp->ArmorUpdateDelegate.AddUObject(this, &AItem_PlayableCharacter::OnArmorUpdate);
+
+	CloakUpdateDelegate.AddDynamic(this, &AItem_PlayableCharacter::OnCloakUpdate);
 }
 
 // Called every frame
@@ -194,10 +253,62 @@ void AItem_PlayableCharacter::UseQuickSlot(int32 SlotNum)
 
 void AItem_PlayableCharacter::OnWeaponUpdate(UItemData* UpdateEquipItem, const bool& bIsEquip)
 {
-	
+	FWeaponItemData UpdateWeaponItemData;
+	if (!UpdateEquipItem->GetWeaponData(UpdateWeaponItemData))
+	{
+		return;
+	}
+
+	Weapon->SetEquipMesh(UpdateWeaponItemData.WeaponMesh, bIsEquip);
 }
 
 void AItem_PlayableCharacter::OnArmorUpdate(const EArmorType& UpdateArmorType, UItemData* UpdateEquipItem, const bool& bIsEquip)
 {
+	FArmorItemData UpdateArmorItemData;
+	if (!UpdateEquipItem->GetArmorData(UpdateArmorItemData))
+	{
+		return;
+	}
 
+	for (auto ArmorMSMComp : ArmorMSMCompArray)
+	{
+		if (ArmorMSMComp->GetArmorType() != UpdateArmorType)
+		{
+			continue;
+		}
+
+		ArmorMSMComp->SetEquipMesh(UpdateArmorItemData.ArmorMesh, bIsEquip);
+
+		// if Gloves
+		if (UpdateArmorType == EArmorType::Gloves)
+		{
+			Glove_R->SetEquipMesh(UpdateArmorItemData.AdditionalArmorMesh, bIsEquip);
+			return;
+		}
+
+		// if Upper
+		if (UpdateArmorType == EArmorType::Upper)
+		{
+			Cloak->SetVisibility(true);
+
+			if (UpdateArmorItemData.bShouldSwitchBetweenAdditionalMesh)
+			{
+				Cloak->SetEquipMesh(UpdateArmorItemData.AdditionalArmorMesh, !bIsEquip);
+				return;
+			}
+
+			Cloak->SetEquipMesh(UpdateArmorItemData.AdditionalArmorMesh, bIsEquip);
+			return;
+		}
+	}
+}
+
+void AItem_PlayableCharacter::OnCloakUpdate(bool bVisibility)
+{
+	if (!Cloak->GetSkeletalMeshAsset())
+	{
+		return;
+	}
+
+	Cloak->SetVisibility(bVisibility);
 }

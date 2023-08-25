@@ -133,6 +133,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BaseCriticalChance;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USkeletalMesh* WeaponMesh;
+
 public:
 	bool IsValid() const
 	{
@@ -186,6 +189,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class USkeletalMesh* ArmorMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bShouldSwitchBetweenAdditionalMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USkeletalMesh* AdditionalArmorMesh;
 
 public:
 	bool IsValid() const

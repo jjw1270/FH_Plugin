@@ -7,24 +7,24 @@
 #include "InputActionValue.h"
 #include "Item_PlayableCharacter.generated.h"
 
+class UModularSkeletalMeshComponent;
+
+// Delegate called when Cloak Visibility button Pressed
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDele_Multi_CloakUpdate, bool, bVisibility);
+
 UCLASS()
 class ITEM_API AItem_PlayableCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AItem_PlayableCharacter();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
+	
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
@@ -60,7 +60,7 @@ Modular Mesh Components
 <LowerBody>
 	<Shoes>
 	<UpperBody>
-		<Back>
+		<Cloak>
 		<Glove_L>
 			<Weapon_L>
 		<Glove_R>
@@ -71,31 +71,41 @@ Modular Mesh Components
 */ 
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
-	class USkeletalMeshComponent* Shoes;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UModularSkeletalMeshComponent* LowerBody;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
-	class USkeletalMeshComponent* UpperBody;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UModularSkeletalMeshComponent* Shoes;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
-	class USkeletalMeshComponent* Glove_L;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UModularSkeletalMeshComponent* UpperBody;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
-	class USkeletalMeshComponent* Glove_R;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UModularSkeletalMeshComponent* Cloak;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
-	class USkeletalMeshComponent* Weapon_R;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UModularSkeletalMeshComponent* Glove_L;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
-	class USkeletalMeshComponent* Head;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UModularSkeletalMeshComponent* Glove_R;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
-	class USkeletalMeshComponent* Hair;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UModularSkeletalMeshComponent* Head;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
-	class USkeletalMeshComponent* Helmet;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UModularSkeletalMeshComponent* Hair;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UModularSkeletalMeshComponent* Helmet;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UModularSkeletalMeshComponent* Weapon;
+
+	UPROPERTY()
+	TArray<UModularSkeletalMeshComponent*> ArmorMSMCompArray;
+
+protected:
+	void InitModularMeshComp(UModularSkeletalMeshComponent* ModularMeshComp, const EArmorType& NewArmorType, const bool& bSetLeaderPoseComp);
 
 // Components
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
@@ -143,6 +153,9 @@ protected:
 	UFUNCTION()
 	void OnArmorUpdate(const EArmorType& UpdateArmorType, class UItemData* UpdateEquipItem, const bool& bIsEquip);
 
+	UFUNCTION()
+	void OnCloakUpdate(bool bVisibility);
+
 protected:
 	UPROPERTY()
 	class AItem_FHPlayerController* PC;
@@ -156,4 +169,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	AActor* LootingEffect;
+
+	UPROPERTY(BlueprintAssignable)
+	FDele_Multi_CloakUpdate CloakUpdateDelegate;
+
 };
