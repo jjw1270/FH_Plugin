@@ -184,6 +184,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 DefensivePower;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USkeletalMesh* ArmorMesh;
+
 public:
 	bool IsValid() const
 	{
