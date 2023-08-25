@@ -8,22 +8,11 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "ItemDragDropOperation.h"
 #include "OnDragWidget.h"
-// Components
+
 #include "InventoryComponent.h"
-#include "QuickSlotComponent.h"
-
-
 #include "InventoryWidget.h"
 
 #include "Components/Image.h"
-
-#include "Components/TextBlock.h"
-// #include "Item_FHPlayerController.h"
-#include "Item_HUDWidget.h"
-#include "QuickSlotWidget.h"
-#include "QuickSlotSlotWidget.h"
-#include "EquipmentComponent.h"
-#include "Item_FHPlayerState.h"
 
 void UInventorySlotWidget::NativeConstruct()
 {

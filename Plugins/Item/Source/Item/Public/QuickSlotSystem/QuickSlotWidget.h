@@ -25,6 +25,9 @@ protected:
 
 	FTimerHandle InitTimerHandle;
 
+	UPROPERTY(BlueprintReadOnly)
+	class UItem_HUDWidget* HUDWidget;
+
 // Blueprint Bind Widgets
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -57,9 +60,6 @@ protected:
 	UFUNCTION()
 	void OnDragBtnPressed();
 
-	void DragUI();
-
 	UFUNCTION()
 	void OnDragBtnReleased();
-
 };

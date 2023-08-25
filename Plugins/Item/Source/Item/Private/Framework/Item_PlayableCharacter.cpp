@@ -2,20 +2,16 @@
 
 
 #include "Item_PlayableCharacter.h"
-//Temp
+#include "Item.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
-#include "Item.h"
 //Enhanced Input
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 //Interfaces
 #include "InteractionInterface.h"
-//Components
-#include "Components/CapsuleComponent.h"
-
 #include "Item_FHPlayerController.h"
 #include "QuickSlotComponent.h"
 

@@ -34,6 +34,9 @@ protected:
 
 protected:
 	UPROPERTY()
+	class UItem_FHGameInstance* GI;
+
+	UPROPERTY()
 	class UItemDataManager* ItemDataManager;
 
 	UPROPERTY()
@@ -42,10 +45,6 @@ protected:
 	UPROPERTY()
 	class UQuickSlotComponent* QuickSlotComp;
 	
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TMap<class UItemData*, int32> InventoryItems;
-
 // UI delegate
 public:
 	FDele_Multi_ItemUpdate ItemUpdateDelegate;
@@ -71,14 +70,5 @@ protected:
 	class UItemData* GetArmorItemData(const int32& TargetItemID);
 
 	class UItemData* GetConsumableItemData(const int32& TargetItemID);
-
-public:
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE TMap<class UItemData*, int32>& GetInventoryItems() { return InventoryItems; }
-
-public:
-	FORCEINLINE class UEquipmentComponent* GetEquipComp() const { return EquipComp; }
-
-	FORCEINLINE class UQuickSlotComponent* GetQuickSlotComp() const{ return QuickSlotComp; }
 
 };

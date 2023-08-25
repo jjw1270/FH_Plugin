@@ -8,6 +8,7 @@
 // Components
 #include "InventoryComponent.h"
 #include "QuickSlotComponent.h"
+#include "EquipmentComponent.h"
 // UI
 #include "Item_FHHUD.h"
 #include "Item_HUDWidget.h"
@@ -16,6 +17,7 @@ AItem_FHPlayerController::AItem_FHPlayerController()
 {
 	InventoryComp = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComp"));
 	QuickSlotComp = CreateDefaultSubobject<UQuickSlotComponent>(TEXT("QuickSlotComp"));
+	EquipmentComp = CreateDefaultSubobject<UEquipmentComponent>(TEXT("EquipmentComp"));
 }
 
 void AItem_FHPlayerController::BeginPlay()

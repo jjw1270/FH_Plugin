@@ -43,11 +43,10 @@ protected:
 
 protected:
 	UPROPERTY()
-	class UInventoryComponent* InventoryComp;
+	class UItem_FHGameInstance* GI;
 
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<class UItemData*> EquipmentItems;
+	UPROPERTY()
+	class UInventoryComponent* InventoryComp;
 
 // UI Delegate
 public:
@@ -65,9 +64,5 @@ protected:
 	void UnEquip(class UItemData* TargetItemData);
 
 	bool IsItemExistInEquipmentSlot(class UItemData* TargetItemData, EItemType& OutItemType, EArmorType& OutArmorType);
-
-public:
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE TArray<class UItemData*>& GetEquipmentItems() { return EquipmentItems; }
 
 };

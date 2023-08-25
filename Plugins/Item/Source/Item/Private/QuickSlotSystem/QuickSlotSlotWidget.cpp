@@ -7,9 +7,6 @@
 #include "InventoryComponent.h"
 #include "QuickSlotComponent.h"
 #include "Item_FHPlayerController.h"
-#include "Item_HUDWidget.h"
-#include "QuickSlotWidget.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "ItemDragDropOperation.h"
 #include "Components/Image.h"
 
@@ -17,10 +14,13 @@ void UQuickSlotSlotWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	InventoryComp = Cast<UInventoryComponent>(GetOwningPlayer()->GetComponentByClass(UInventoryComponent::StaticClass()));
+	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetOwningPlayer());
+	CHECK_VALID(PC);
+
+	InventoryComp = PC->GetInventoryComp();
 	CHECK_VALID(InventoryComp);
 
-	QuickSlotComp = InventoryComp->GetQuickSlotComp();
+	QuickSlotComp = PC->GetQuickSlotComp();
 	CHECK_VALID(QuickSlotComp);
 
 	// bind ItemUpdateDelegate

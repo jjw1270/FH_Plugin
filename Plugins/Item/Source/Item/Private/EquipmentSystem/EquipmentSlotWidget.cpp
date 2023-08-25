@@ -4,7 +4,6 @@
 #include "EquipmentSlotWidget.h"
 #include "ItemData.h"
 #include "Components/Image.h"
-#include "Item_FHPlayerState.h"
 #include "EquipmentComponent.h"
 #include "Item_FHPlayerController.h"
 #include "ItemDragDropOperation.h"
@@ -29,22 +28,19 @@ void UEquipmentSlotWidget::BindEquipmentCompEvents()
 
 	if (IsValid(PC))
 	{
-		AItem_FHPlayerState* PS = PC->GetPlayerState<AItem_FHPlayerState>();
-		if (IsValid(PS))
+		
+		EquipComp = PC->GetEquipmentComp();
+		if (IsValid(EquipComp))
 		{
-			EquipComp = PS->GetEquipmentComp();
-			if (IsValid(EquipComp))
+			if (ItemType == EItemType::Weapon)
 			{
-				if (ItemType == EItemType::Weapon)
-				{
-					EquipComp->WeaponUpdateDelegate.AddUObject(this, &UEquipmentSlotWidget::OnWeaponUpdate);
-					return;
-				}
-				if (ItemType == EItemType::Armor)
-				{
-					EquipComp->ArmorUpdateDelegate.AddUObject(this, &UEquipmentSlotWidget::OnArmorUpdate);
-					return;
-				}
+				EquipComp->WeaponUpdateDelegate.AddUObject(this, &UEquipmentSlotWidget::OnWeaponUpdate);
+				return;
+			}
+			if (ItemType == EItemType::Armor)
+			{
+				EquipComp->ArmorUpdateDelegate.AddUObject(this, &UEquipmentSlotWidget::OnArmorUpdate);
+				return;
 			}
 		}
 	}

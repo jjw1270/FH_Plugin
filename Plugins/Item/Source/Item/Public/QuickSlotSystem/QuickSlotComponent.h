@@ -27,11 +27,10 @@ protected:
 		
 protected:
 	UPROPERTY()
-	class UInventoryComponent* InventoryComp;
+	class UItem_FHGameInstance* GI;
 
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TMap<int32, class UItemData*> QuickSlotItems;
+	UPROPERTY()
+	class UInventoryComponent* InventoryComp;
 
 // UI Delegate
 public:
@@ -54,9 +53,5 @@ protected:
 	bool IsItemExistInQuickSlot(class UItemData* TargetItemData, int32& OutIndex);
 
 	int32 GetEmptyQuickSlotSlotIndex();
-
-public:
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE TMap<int32, class UItemData*>& GetQuickSlotItems() { return QuickSlotItems; }
 
 };

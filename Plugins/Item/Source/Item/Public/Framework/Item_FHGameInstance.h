@@ -16,11 +16,11 @@ class ITEM_API UItem_FHGameInstance : public UGameInstance
 	
 public:
 	//test
-	//UFUNCTION(BlueprintCallable)
-	//void TESTss();
+	UFUNCTION(BlueprintCallable)
+	void TESTss();
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 CurrentDungeonID;
 
 public:
@@ -44,10 +44,10 @@ public:
 	TArray<class UItemData*> EquipmentItems;
 
 public:
-	FORCEINLINE TMap<class UItemData*, int32>& GetInventoryItems() { return InventoryItems; }
+	FORCEINLINE TMap<class UItemData*, int32>* GetInventoryItems() { return &InventoryItems; }
 
-	FORCEINLINE TMap<int32, class UItemData*>& GetQuickSlotItems() { return QuickSlotItems; }
+	FORCEINLINE TMap<int32, class UItemData*>* GetQuickSlotItems() { return &QuickSlotItems; }
 
-	FORCEINLINE TArray<class UItemData*>& GetEquipments() { return EquipmentItems; }
+	FORCEINLINE TArray<class UItemData*>* GetEquipments() { return &EquipmentItems; }
 
 };

@@ -17,12 +17,4 @@ class ITEM_API AItem_FHPlayerState : public APlayerState
 public:
 	AItem_FHPlayerState();
 	
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
-	class UEquipmentComponent* EquipmentComp;
-
-public:
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE class UEquipmentComponent* GetEquipmentComp() const { return EquipmentComp; }
-
 };

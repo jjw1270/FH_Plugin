@@ -11,6 +11,8 @@
 UQuickSlotComponent::UQuickSlotComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+	SetComponentTickEnabled(false);
 }
 
 void UQuickSlotComponent::BeginPlay()
@@ -22,13 +24,11 @@ void UQuickSlotComponent::BeginPlay()
 
 void UQuickSlotComponent::InitComponent()
 {
-	UItem_FHGameInstance* GI = Cast<UItem_FHGameInstance>(GetOwner()->GetGameInstance());
-	CHECK_VALID(GI);
-
 	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetOwner());
 	CHECK_VALID(PC);
 
-	QuickSlotItems = GI->GetQuickSlotItems();
+	GI = PC->GetGameInstance<UItem_FHGameInstance>();
+	CHECK_VALID(GI);
 
 	InventoryComp = PC->GetInventoryComp();
 	CHECK_VALID(InventoryComp);
@@ -77,7 +77,7 @@ void UQuickSlotComponent::SetItemToQuickSlot(const int32& NewQuickSlotIndex, cla
 	// if Item Exist in NewQuickSlotIndex, delete item
 	DeleteItemFromQuickSlot(NewQuickSlotIndex);
 
-	QuickSlotItems.Add(NewQuickSlotIndex, NewItemData);
+	GI->GetQuickSlotItems()->Add(NewQuickSlotIndex, NewItemData);
 
 	//BroadCast to Inventory Widget
 	if (InventoryComp->ItemRegisterDelegate.IsBound())
@@ -94,14 +94,14 @@ void UQuickSlotComponent::SetItemToQuickSlot(const int32& NewQuickSlotIndex, cla
 
 void UQuickSlotComponent::DeleteItemFromQuickSlot(const int32& NewQuickSlotIndex)
 {
-	if (!QuickSlotItems.Contains(NewQuickSlotIndex))
+	if (!GI->GetQuickSlotItems()->Contains(NewQuickSlotIndex))
 	{
 		return;
 	}
 
-	UItemData* DeleteItemData = QuickSlotItems[NewQuickSlotIndex];
+	UItemData* DeleteItemData = *GI->GetQuickSlotItems()->Find(NewQuickSlotIndex);
 
-	QuickSlotItems.Remove(NewQuickSlotIndex);
+	GI->GetQuickSlotItems()->Remove(NewQuickSlotIndex);
 
 	//BroadCast to Inventory Widget
 	if (InventoryComp->ItemRegisterDelegate.IsBound())
@@ -118,7 +118,7 @@ void UQuickSlotComponent::DeleteItemFromQuickSlot(const int32& NewQuickSlotIndex
 
 bool UQuickSlotComponent::IsItemExistInQuickSlot(UItemData* TargetItemData, int32& OutIndex)
 {
-	for (auto& MyQuickslot : QuickSlotItems)
+	for (auto& MyQuickslot : *GI->GetQuickSlotItems())
 	{
 		if (MyQuickslot.Value == TargetItemData)
 		{
@@ -138,7 +138,7 @@ int32 UQuickSlotComponent::GetEmptyQuickSlotSlotIndex()
 	// Max Slot Length is 6
 	for (int i = 0; i < 6; i++)
 	{
-		if (!QuickSlotItems.Contains(i))
+		if (!GI->GetQuickSlotItems()->Contains(i))
 		{
 			EmptyIndex = i;
 

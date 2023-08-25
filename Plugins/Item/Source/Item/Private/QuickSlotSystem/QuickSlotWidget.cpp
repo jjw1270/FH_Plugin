@@ -3,14 +3,13 @@
 
 #include "QuickSlotWidget.h"
 #include "Item.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Item_FHPlayerController.h"
 #include "QuickSlotComponent.h"
 #include "QuickSlotSlotWidget.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/Button.h"
-#include "Components/Border.h"
+#include "Item_FHHUD.h"
+#include "Item_HUDWidget.h"
 
 void UQuickSlotWidget::NativeConstruct()
 {
@@ -62,23 +61,20 @@ void UQuickSlotWidget::OnQuickSlotUpdated(const int32& QuickSlotIndex, UItemData
 
 void UQuickSlotWidget::OnDragBtnPressed()
 {
-	MousePosOnDragStart = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld())
-		- Cast<UCanvasPanelSlot>(QuickSlotUI->Slot)->GetPosition();
+	if (!HUDWidget)
+	{
+		AItem_FHHUD* HUD = Cast<AItem_FHHUD>(GetOwningPlayer()->GetHUD());
+		CHECK_VALID(HUD);
 
-	GetWorld()->GetTimerManager().SetTimer(DragTimerHandle, this, &UQuickSlotWidget::DragUI, 0.01f, true);
-}
+		HUDWidget = HUD->GetHUDWidget();
+	}
 
-void UQuickSlotWidget::DragUI()
-{
-	FVector2D UIPos = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()) - MousePosOnDragStart;
-
-	Cast<UCanvasPanelSlot>(QuickSlotUI->Slot)->SetPosition(UIPos);
+	HUDWidget->WidgetDragStart(this);
 }
 
 void UQuickSlotWidget::OnDragBtnReleased()
 {
-	if (DragTimerHandle.IsValid())
-	{
-		GetWorld()->GetTimerManager().ClearTimer(DragTimerHandle);
-	}
+	CHECK_VALID(HUDWidget);
+
+	HUDWidget->WidgetDragEnd();
 }

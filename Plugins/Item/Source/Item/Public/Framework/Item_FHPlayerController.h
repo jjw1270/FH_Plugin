@@ -48,6 +48,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component)
 	class UQuickSlotComponent* QuickSlotComp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	class UEquipmentComponent* EquipmentComp;
+
 // Component Getter
 public:
 	UFUNCTION(BlueprintCallable)
@@ -55,6 +58,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE class UQuickSlotComponent* GetQuickSlotComp() const { return QuickSlotComp; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE class UEquipmentComponent* GetEquipmentComp() const { return EquipmentComp; }
 
 // UI
 protected:

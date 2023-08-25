@@ -5,7 +5,6 @@
 #include "Item.h"
 #include "ItemData.h"
 #include "ItemDataManager.h"
-#include "Item_FHPlayerState.h"
 #include "InventoryComponent.h"
 #include "Item_FHGameInstance.h"
 #include "Item_FHPlayerController.h"
@@ -13,6 +12,8 @@
 UEquipmentComponent::UEquipmentComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+	SetComponentTickEnabled(false);
 }
 
 void UEquipmentComponent::BeginPlay()
@@ -24,16 +25,11 @@ void UEquipmentComponent::BeginPlay()
 
 void UEquipmentComponent::InitComponent()
 {
-	UItem_FHGameInstance* GI = Cast<UItem_FHGameInstance>(GetOwner()->GetGameInstance());
-	CHECK_VALID(GI);
-
-	AItem_FHPlayerState* PS = GetOwner<AItem_FHPlayerState>();
-	CHECK_VALID(PS);
-
-	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(PS->GetPlayerController());
+	AItem_FHPlayerController* PC = GetOwner<AItem_FHPlayerController>();
 	CHECK_VALID(PC);
 
-	EquipmentItems = GI->GetEquipments();
+	GI = PC->GetGameInstance<UItem_FHGameInstance>();
+	CHECK_VALID(GI);
 
 	InventoryComp = PC->GetInventoryComp();
 	CHECK_VALID(InventoryComp);
@@ -64,7 +60,7 @@ void UEquipmentComponent::Equip(class UItemData* NewItemData)
 
 	// Check Already Equipped at Same EquipType
 	// if True : UnEquip Equipped Item
-	for (auto& EquippedItemData : EquipmentItems)
+	for (auto& EquippedItemData : *GI->GetEquipments())
 	{
 		// Weapon ItemType
 		if (NewItemType == EItemType::Weapon && EquippedItemData->GetItemType() == NewItemType)
@@ -86,7 +82,7 @@ void UEquipmentComponent::Equip(class UItemData* NewItemData)
 	}
 
 	//Equip Item
-	EquipmentItems.Add(NewItemData);
+	GI->GetEquipments()->Add(NewItemData);
 
 	if (InventoryComp->ItemRegisterDelegate.IsBound())
 	{
@@ -146,12 +142,12 @@ void UEquipmentComponent::UnEquip(class UItemData* TargetItemData)
 		}
 	}
 
-	EquipmentItems.Remove(TargetItemData);
+	GI->GetEquipments()->Remove(TargetItemData);
 }
 
 bool UEquipmentComponent::IsItemExistInEquipmentSlot(UItemData* TargetItemData, EItemType& OutItemType, EArmorType& OutArmorType)
 {
-	for (auto& MyEquipItem : EquipmentItems)
+	for (auto& MyEquipItem : *GI->GetEquipments())
 	{
 		if (MyEquipItem != TargetItemData)
 		{

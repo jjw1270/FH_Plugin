@@ -2,20 +2,23 @@
 
 
 #include "InventoryComponent.h"
+#include "Math/UnrealMathUtility.h"
 #include "Item.h"
+#include "ItemData.h"
 #include "ItemDataManager.h"
+
 #include "Item_FHGameInstance.h"
 #include "Item_FHPlayerController.h"
-#include "Item_FHPlayerState.h"
+
 #include "QuickSlotComponent.h"
 #include "EquipmentComponent.h"
 
-#include "ItemData.h"
-#include "Math/UnrealMathUtility.h"
 
 UInventoryComponent::UInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+	SetComponentTickEnabled(false);
 }
 
 void UInventoryComponent::BeginPlay()
@@ -27,21 +30,16 @@ void UInventoryComponent::BeginPlay()
 
 void UInventoryComponent::InitComponent()
 {
-	UItem_FHGameInstance* GI = Cast<UItem_FHGameInstance>(GetOwner()->GetGameInstance());
-	CHECK_VALID(GI);
-
 	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(GetOwner());
 	CHECK_VALID(PC);
 
-	AItem_FHPlayerState* PS = PC->GetPlayerState<AItem_FHPlayerState>();
-	CHECK_VALID(PS);
-
-	InventoryItems = GI->GetInventoryItems();
+	GI = PC->GetGameInstance<UItem_FHGameInstance>();
+	CHECK_VALID(GI);
 
 	QuickSlotComp = PC->GetQuickSlotComp();
 	CHECK_VALID(QuickSlotComp);
 
-	EquipComp = PS->GetEquipmentComp();
+	EquipComp = PC->GetEquipmentComp();
 	CHECK_VALID(EquipComp);
 
 	if (ItemDataManagerClass)
@@ -64,7 +62,7 @@ void UInventoryComponent::AddItemToInventory(const int32& NewItemID, const int32
 		NewItem = GetWeaponItemData(NewItemID);
 		CHECK_VALID(NewItem);
 
-		InventoryItems.Add(NewItem, NewAmount);
+		GI->GetInventoryItems()->Add(NewItem, NewAmount);
 
 		if (ItemUpdateDelegate.IsBound())
 		{
@@ -76,7 +74,7 @@ void UInventoryComponent::AddItemToInventory(const int32& NewItemID, const int32
 		NewItem = GetArmorItemData(NewItemID);
 		CHECK_VALID(NewItem);
 
-		InventoryItems.Add(NewItem, NewAmount);
+		GI->GetInventoryItems()->Add(NewItem, NewAmount);
 
 		if (ItemUpdateDelegate.IsBound())
 		{
@@ -86,7 +84,7 @@ void UInventoryComponent::AddItemToInventory(const int32& NewItemID, const int32
 		return;
 	case EItemType::Consumable:
 		// Check Item is already in Inventory and add Amount if true
-		for (auto& MyItem : InventoryItems)
+		for (auto& MyItem : *GI->GetInventoryItems())
 		{
 			FBaseItemData BaseItemData = MyItem.Key->GetBaseData();
 
@@ -107,7 +105,7 @@ void UInventoryComponent::AddItemToInventory(const int32& NewItemID, const int32
 		NewItem = GetConsumableItemData(NewItemID);
 		CHECK_VALID(NewItem);
 
-		InventoryItems.Add(NewItem, NewAmount);
+		GI->GetInventoryItems()->Add(NewItem, NewAmount);
 
 		if (ItemUpdateDelegate.IsBound())
 		{
@@ -125,7 +123,7 @@ void UInventoryComponent::AddItemToInventory(const int32& NewItemID, const int32
 
 void UInventoryComponent::RemoveItemFromInventory(class UItemData* ItemData, const int32& Amount)
 {
-	for (auto& MyItem : InventoryItems)
+	for (auto& MyItem : *GI->GetInventoryItems())
 	{
 		if (MyItem.Key == ItemData)
 		{
@@ -139,7 +137,7 @@ void UInventoryComponent::RemoveItemFromInventory(class UItemData* ItemData, con
 
 			if (MyItem.Value <= 0)
 			{
-				InventoryItems.Remove(MyItem.Key);
+				GI->GetInventoryItems()->Remove(MyItem.Key);
 			}
 
 			return;
@@ -154,7 +152,7 @@ int32 UInventoryComponent::MakeUniqueID()
 		bool bSuccess = true;
 		int32 TempID = FMath::RandRange(1001, 9999);
 
-		for (auto& Item : InventoryItems)
+		for (auto& Item : *GI->GetInventoryItems())
 		{
 			if (Item.Key->GetUniqueID() == TempID)
 			{

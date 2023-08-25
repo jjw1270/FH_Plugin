@@ -4,14 +4,15 @@
 #include "RemoveConfirmWidget.h"
 #include "Item.h"
 #include "ItemData.h"
+//Widget Comp
 #include "Components/Image.h"
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
+
 #include "ItemDragDropOperation.h"
 #include "Item_FHPlayerController.h"
 #include "InventoryComponent.h"
-#include "InventorySlotWidget.h"
 
 void URemoveConfirmWidget::NativeConstruct()
 {
