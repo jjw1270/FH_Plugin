@@ -23,6 +23,7 @@ void UEquipmentComponent::BeginPlay()
 	InitComponent();
 }
 
+
 void UEquipmentComponent::InitComponent()
 {
 	AItem_FHPlayerController* PC = GetOwner<AItem_FHPlayerController>();

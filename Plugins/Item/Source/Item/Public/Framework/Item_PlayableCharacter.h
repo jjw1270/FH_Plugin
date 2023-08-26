@@ -10,7 +10,7 @@
 class UModularSkeletalMeshComponent;
 
 // Delegate called when Cloak Visibility button Pressed
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDele_Multi_CloakUpdate, bool, bVisibility);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDele_Multi_EquipVisibilityUpdate, EArmorType, UpdateArmorType, bool, bVisibility);
 
 UCLASS()
 class ITEM_API AItem_PlayableCharacter : public ACharacter
@@ -100,7 +100,7 @@ protected:
 	TArray<UModularSkeletalMeshComponent*> ArmorMSMCompArray;
 
 protected:
-	void InitModularMeshComp(UModularSkeletalMeshComponent* ModularMeshComp, const EArmorType& NewArmorType, const bool& bSetLeaderPoseComp);
+	void InitModularMeshComp();
 
 // Components
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
@@ -149,7 +149,7 @@ protected:
 	void OnArmorUpdate(const EArmorType& UpdateArmorType, class UItemData* UpdateEquipItem, const bool& bIsEquip);
 
 	UFUNCTION()
-	void OnCloakUpdate(bool bVisibility);
+	void OnEquipVisibilityUpdate(EArmorType UpdateArmorType, bool bVisibility);
 
 protected:
 	UPROPERTY()
@@ -166,6 +166,6 @@ public:
 	AActor* LootingEffect;
 
 	UPROPERTY(BlueprintAssignable)
-	FDele_Multi_CloakUpdate CloakUpdateDelegate;
+	FDele_Multi_EquipVisibilityUpdate EquipVisibilityUpdateDelegate;
 
 };

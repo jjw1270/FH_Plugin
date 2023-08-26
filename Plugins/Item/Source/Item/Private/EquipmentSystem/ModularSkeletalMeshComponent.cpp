@@ -18,8 +18,6 @@ void UModularSkeletalMeshComponent::InitDefaultSkeletalMesh()
 
 void UModularSkeletalMeshComponent::SetEquipMesh(USkeletalMesh* NewArmorMesh, const bool& bIsEquip)
 {
-	CHECK_VALID(NewArmorMesh);
-
 	// if UnEquip, Set default Mesh
 	if (!bIsEquip)
 	{
@@ -28,5 +26,6 @@ void UModularSkeletalMeshComponent::SetEquipMesh(USkeletalMesh* NewArmorMesh, co
 		return;
 	}
 
+	CHECK_VALID(NewArmorMesh);
 	SetSkeletalMeshAsset(NewArmorMesh);
 }

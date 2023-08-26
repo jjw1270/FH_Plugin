@@ -18,6 +18,11 @@ protected:
 	virtual void NativeConstruct() override;
 
 protected:
+	void BindEquipmentCompEvents();
+
+protected:
+	FTimerHandle InitTimerHandle;
+
 	UPROPERTY(BlueprintReadOnly)
 	class UItem_HUDWidget* HUDWidget;
 
@@ -29,6 +34,12 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* UIDragBtn;
 
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_ShowHelmet;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_ShowCloak;
+
 //Drag Func
 protected:
 	UFUNCTION()
@@ -36,4 +47,20 @@ protected:
 
 	UFUNCTION()
 	void OnDragBtnReleased();
+
+protected:
+	UFUNCTION()
+	void OnArmorUpdate(const EArmorType& UpdateArmorType, UItemData* UpdateItemData, const bool& bEquip);
+
+protected:
+	UFUNCTION()
+	void OnBtn_ShowHelmetClicked();
+
+	UFUNCTION()
+	void OnBtn_ShowCloakClicked();
+
+protected:
+	bool bIsHelmetShowed;
+
+	bool bIsCloakShowed;
 };
