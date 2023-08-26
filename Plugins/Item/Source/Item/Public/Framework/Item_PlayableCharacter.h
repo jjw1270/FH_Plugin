@@ -18,12 +18,10 @@ class ITEM_API AItem_PlayableCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	AItem_PlayableCharacter();
+	AItem_PlayableCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void BeginPlay() override;
-	
-	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -57,7 +55,7 @@ protected:
 
 /*
 Modular Mesh Components
-<LowerBody>
+<LowerBody(Mesh)>
 	<Shoes>
 	<UpperBody>
 		<Cloak>
@@ -71,34 +69,31 @@ Modular Mesh Components
 */ 
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
-	UModularSkeletalMeshComponent* LowerBody;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Shoes;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* UpperBody;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Cloak;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Glove_L;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Glove_R;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Head;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Hair;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Helmet;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Weapon;
 
 	UPROPERTY()

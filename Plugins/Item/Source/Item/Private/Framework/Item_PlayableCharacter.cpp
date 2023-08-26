@@ -20,10 +20,11 @@
 #include "ModularSkeletalMeshComponent.h"
 
 // Sets default values
-AItem_PlayableCharacter::AItem_PlayableCharacter()
+AItem_PlayableCharacter::AItem_PlayableCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass(ACharacter::MeshComponentName, UModularSkeletalMeshComponent::StaticClass()))
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -45,9 +46,11 @@ AItem_PlayableCharacter::AItem_PlayableCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	// Set Modular Meshes
-	LowerBody = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("LowerBody"));
-	LowerBody->SetupAttachment(GetMesh());
-	InitModularMeshComp(LowerBody, EArmorType::Lower, false);
+	if (UModularSkeletalMeshComponent* LowerBody = Cast<UModularSkeletalMeshComponent>(GetMesh()))
+	{
+		LowerBody->SetArmorType(EArmorType::Lower);
+		ArmorMSMCompArray.Add(LowerBody);
+	}
 
 	Shoes = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Shoes"));
 	InitModularMeshComp(Shoes, EArmorType::Shoes, true);
@@ -84,10 +87,7 @@ AItem_PlayableCharacter::AItem_PlayableCharacter()
 
 void AItem_PlayableCharacter::InitModularMeshComp(UModularSkeletalMeshComponent* ModularMeshComp, const EArmorType& NewArmorType, const bool& bSetLeaderPoseComp)
 {
-	if (ModularMeshComp != LowerBody)
-	{
-		ModularMeshComp->SetupAttachment(LowerBody);
-	}
+	ModularMeshComp->SetupAttachment(GetMesh());
 	ModularMeshComp->SetArmorType(NewArmorType);
 
 	if (NewArmorType != EArmorType::None)
@@ -97,7 +97,7 @@ void AItem_PlayableCharacter::InitModularMeshComp(UModularSkeletalMeshComponent*
 
 	if (bSetLeaderPoseComp)
 	{
-		ModularMeshComp->SetLeaderPoseComponent(LowerBody);
+		ModularMeshComp->SetLeaderPoseComponent(GetMesh());
 	}
 }
 
@@ -115,13 +115,6 @@ void AItem_PlayableCharacter::BeginPlay()
 		}
 	}
 
-	TArray<UModularSkeletalMeshComponent*> MSMCArray;
-	GetComponents<UModularSkeletalMeshComponent*>(MSMCArray);
-	for (auto MSMC : MSMCArray)
-	{
-		MSMC->InitDefaultSkeletalMesh();
-	}
-
 	PC = Cast<AItem_FHPlayerController>(GetController());
 	CHECK_VALID(PC);
 
@@ -136,13 +129,6 @@ void AItem_PlayableCharacter::BeginPlay()
 	EquipmentComp->ArmorUpdateDelegate.AddUObject(this, &AItem_PlayableCharacter::OnArmorUpdate);
 
 	CloakUpdateDelegate.AddDynamic(this, &AItem_PlayableCharacter::OnCloakUpdate);
-}
-
-// Called every frame
-void AItem_PlayableCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input

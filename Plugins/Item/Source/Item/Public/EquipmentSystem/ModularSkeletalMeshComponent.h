@@ -15,13 +15,14 @@ class ITEM_API UModularSkeletalMeshComponent : public USkeletalMeshComponent
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void BeginPlay() override;
+
 public:
 	void InitDefaultSkeletalMesh();
 
 	UFUNCTION(BlueprintCallable)
 	void SetEquipMesh(USkeletalMesh* NewArmorMesh, const bool& bIsEquip);
-
-	void SwitchMesh();
 
 protected:
 	EArmorType ArmorType;

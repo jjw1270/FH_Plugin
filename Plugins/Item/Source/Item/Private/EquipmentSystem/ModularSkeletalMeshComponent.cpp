@@ -4,20 +4,16 @@
 #include "ModularSkeletalMeshComponent.h"
 #include "Item.h"
 
+void UModularSkeletalMeshComponent::BeginPlay()
+{
+	InitDefaultSkeletalMesh();
+}
+
 void UModularSkeletalMeshComponent::InitDefaultSkeletalMesh()
 {
-	if (ArmorType == EArmorType::Helmet || ArmorType == EArmorType::None)
-	{
-		DefaultSkeletalMeshAsset = nullptr;
-
-		return;
-	}
-
 	DefaultSkeletalMeshAsset = GetSkeletalMeshAsset();
-	if (!DefaultSkeletalMeshAsset)
-	{
-		UE_LOG(LogTemp, Error, TEXT("YOU SHOULD SET SKELETAL MESH ASSET! : %d"), *GetName());
-	}
+
+	// UE_LOG(LogTemp, Error, TEXT("YOU SHOULD SET SKELETAL MESH ASSET! : %d"), *GetName());
 }
 
 void UModularSkeletalMeshComponent::SetEquipMesh(USkeletalMesh* NewArmorMesh, const bool& bIsEquip)
