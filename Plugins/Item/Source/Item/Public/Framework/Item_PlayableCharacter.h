@@ -10,7 +10,7 @@
 class UModularSkeletalMeshComponent;
 
 // Delegate called when Cloak Visibility button Pressed
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDele_Multi_EquipVisibilityUpdate, EArmorType, UpdateArmorType, bool, bVisibility);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDele_Multi_EquipVisibilityUpdate, EArmorType, UpdateArmorType);
 
 UCLASS()
 class ITEM_API AItem_PlayableCharacter : public ACharacter
@@ -149,7 +149,7 @@ protected:
 	void OnArmorUpdate(const EArmorType& UpdateArmorType, class UItemData* UpdateEquipItem, const bool& bIsEquip);
 
 	UFUNCTION()
-	void OnEquipVisibilityUpdate(EArmorType UpdateArmorType, bool bVisibility);
+	void OnEquipVisibilityUpdate(EArmorType UpdateArmorType);
 
 protected:
 	UPROPERTY()

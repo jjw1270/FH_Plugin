@@ -286,6 +286,7 @@ void AItem_PlayableCharacter::OnArmorUpdate(const EArmorType& UpdateArmorType, U
 		}
 
 		// if Helmet
+		Helmet->SetVisibility(true);
 		if (UpdateArmorType == EArmorType::Helmet && UpdateArmorItemData.bHideHairWhenVisible)
 		{
 			Helmet->SetbHideHairWhenVisible(bIsEquip);
@@ -294,20 +295,20 @@ void AItem_PlayableCharacter::OnArmorUpdate(const EArmorType& UpdateArmorType, U
 	}
 }
 
-void AItem_PlayableCharacter::OnEquipVisibilityUpdate(EArmorType UpdateArmorType, bool bVisibility)
+void AItem_PlayableCharacter::OnEquipVisibilityUpdate(EArmorType UpdateArmorType)
 {
 	switch (UpdateArmorType)
 	{
 		case EArmorType::Helmet:
-			Helmet->SetVisibility(bVisibility);
+			Helmet->ToggleVisibility();
 
 			if (Helmet->GetbHideHairWhenVisible())
 			{
-				Hair->SetVisibility(!bVisibility);
+				Hair->ToggleVisibility();
 			}
 			return;
 		case EArmorType::Upper:
-			Cloak->SetVisibility(bVisibility);
+			Cloak->ToggleVisibility();
 			return;
 		default:
 			break;
