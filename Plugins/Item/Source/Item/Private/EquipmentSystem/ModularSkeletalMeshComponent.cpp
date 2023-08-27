@@ -6,6 +6,8 @@
 
 void UModularSkeletalMeshComponent::BeginPlay()
 {
+	Super::BeginPlay();
+
 	InitDefaultSkeletalMesh();
 }
 

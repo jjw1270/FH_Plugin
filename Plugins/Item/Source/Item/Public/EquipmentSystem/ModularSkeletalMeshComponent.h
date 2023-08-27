@@ -30,9 +30,12 @@ protected:
 	UPROPERTY()
 	USkeletalMesh* DefaultSkeletalMeshAsset;
 
+	bool bHideHairWhenVisible;
+
 public:
 	FORCEINLINE void SetArmorType(EArmorType NewArmorType) { ArmorType = NewArmorType; }
-
 	FORCEINLINE const EArmorType& GetArmorType() { return ArmorType; }
 
+	FORCEINLINE void SetbHideHairWhenVisible(bool bValue) { bHideHairWhenVisible = bValue; }
+	FORCEINLINE const bool& GetbHideHairWhenVisible() { return bHideHairWhenVisible; }
 };

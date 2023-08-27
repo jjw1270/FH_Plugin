@@ -84,8 +84,8 @@ void UEquipmentWidget::OnBtn_ShowHelmetClicked()
 	AItem_PlayableCharacter* PlayerChar = GetOwningPlayerPawn<AItem_PlayableCharacter>();
 	CHECK_VALID(PlayerChar);
 	
-	bIsHelmetShowed = !bIsHelmetShowed;
 	PlayerChar->EquipVisibilityUpdateDelegate.Broadcast(EArmorType::Helmet, bIsHelmetShowed);
+	bIsHelmetShowed = !bIsHelmetShowed;
 }
 
 void UEquipmentWidget::OnBtn_ShowCloakClicked()

@@ -12,6 +12,12 @@ USTRUCT(BlueprintType)
 struct FItemDropData : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
+	
+public:
+	FItemDropData()
+		: DungeonID(0), DungeonName(TEXT("")), ItemDropWeightsMap()
+	{
+	}
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -40,6 +46,12 @@ struct FBaseItemData
 	GENERATED_USTRUCT_BODY()
 
 public:
+	FBaseItemData()
+		: ID(0), Name(TEXT("")), Type(EItemType::None), BasePrice(0), UpgradeValue(0), TextInfo(TEXT("")), Icon2D(nullptr)
+	{
+	}
+	
+public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 ID;
 
@@ -53,7 +65,7 @@ public:
     int32 BasePrice;
 
 	UPROPERTY(BlueprintReadOnly)
-	int32 UpgradeValue = 1;
+	int32 UpgradeValue;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString TextInfo;
@@ -64,9 +76,7 @@ public:
 public:
 	bool IsValid() const
 	{
-		FBaseItemData NullData = FBaseItemData();
-
-		return !(ID == NullData.ID);
+		return ID != 0;
 	}
 };
 
@@ -86,6 +96,12 @@ USTRUCT(BlueprintType)
 struct FConsumableItemData : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
+	
+public:
+	FConsumableItemData()
+		: BaseData(), bIsEffectSelf(false), Duration(0.0f), EffectTarget(EEffectTarget::None), EffectValue(0.0f)
+	{
+	}
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -115,6 +131,12 @@ struct FWeaponItemData : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
+public:
+	FWeaponItemData()
+		: BaseData(), StaminaUsage(0), BaseAttackPower(0), BaseAttackSpeed(1.0f), BaseCriticalChance(0.0f), WeaponMesh(nullptr)
+	{
+	}
+	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBaseItemData BaseData;
@@ -161,6 +183,14 @@ struct FArmorItemData : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 	
 public:
+	FArmorItemData()
+		: BaseData(), ArmorType(EArmorType::None), Health(0), Stamina(0), AttackPower(0),
+		AttackSpeed(0.0f), CriticalChance(0.0f), DefensivePower(0),
+		ArmorMesh(nullptr), bHideHairWhenVisible(false), bShouldSwitchBetweenAdditionalMesh(false), AdditionalArmorMesh(nullptr)
+	{
+	}
+	
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBaseItemData BaseData;
 
@@ -189,6 +219,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class USkeletalMesh* ArmorMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bHideHairWhenVisible;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bShouldSwitchBetweenAdditionalMesh;

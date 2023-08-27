@@ -114,17 +114,14 @@ void AItem_PlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
-
 	PC = Cast<AItem_FHPlayerController>(GetController());
 	CHECK_VALID(PC);
+
+	//Add Input Mapping Context
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+	{
+		Subsystem->AddMappingContext(DefaultMappingContext, 0);
+	}
 
 	QuickSlotComp = PC->GetQuickSlotComp();
 	CHECK_VALID(QuickSlotComp);
@@ -285,7 +282,14 @@ void AItem_PlayableCharacter::OnArmorUpdate(const EArmorType& UpdateArmorType, U
 		{
 			Cloak->SetEquipMesh(UpdateArmorItemData.AdditionalArmorMesh, bIsEquip);
 
-			Cloak->SetVisibility(!UpdateArmorItemData.bShouldSwitchBetweenAdditionalMesh);
+			Cloak->SetVisibility(false);
+		}
+
+		// if Helmet
+		if (UpdateArmorType == EArmorType::Helmet && UpdateArmorItemData.bHideHairWhenVisible)
+		{
+			Helmet->SetbHideHairWhenVisible(bIsEquip);
+			Hair->SetVisibility(!bIsEquip);
 		}
 	}
 }
@@ -296,6 +300,11 @@ void AItem_PlayableCharacter::OnEquipVisibilityUpdate(EArmorType UpdateArmorType
 	{
 		case EArmorType::Helmet:
 			Helmet->SetVisibility(bVisibility);
+
+			if (Helmet->GetbHideHairWhenVisible())
+			{
+				Hair->SetVisibility(!bVisibility);
+			}
 			return;
 		case EArmorType::Upper:
 			Cloak->SetVisibility(bVisibility);
