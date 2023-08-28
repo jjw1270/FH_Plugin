@@ -3,6 +3,7 @@
 
 #include "AnimNotify_Looting.h"
 #include "Item.h"
+#include "Kismet/GameplayStatics.h"
 #include "ItemDataManager.h"
 #include "Item_FHGameInstance.h"
 #include "Item_PlayableCharacter.h"
@@ -19,7 +20,13 @@ void UAnimNotify_Looting::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
 {
 	AItem_FHPlayerController* PC = Cast<AItem_FHPlayerController>(MeshComp->GetOwner()->GetInstigatorController());
 	CHECK_VALID(PC);
-
+	
+	// Only Run in Local Client
+	if (PC != UGameplayStatics::GetPlayerController(MeshComp->GetWorld(), 0))
+	{
+		return;
+	}
+	
 	UItem_FHGameInstance* GI = PC->GetGameInstance<UItem_FHGameInstance>();
 	CHECK_VALID(GI);
 

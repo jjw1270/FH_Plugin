@@ -69,31 +69,34 @@ Modular Mesh Components
 */ 
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(Replicated)
+	UModularSkeletalMeshComponent* LowerBody;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Shoes;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
 	UModularSkeletalMeshComponent* UpperBody;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Cloak;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Glove_L;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Glove_R;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Head;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Hair;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Helmet;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Weapon;
 
 	UPROPERTY()
@@ -150,6 +153,17 @@ protected:
 
 	UFUNCTION()
 	void OnEquipVisibilityUpdate(EArmorType UpdateArmorType);
+
+public:
+	UFUNCTION(Server, Reliable)
+	void ReqPickUp(FRotator LookAtRot);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ResPickUp(FRotator LookAtRot);
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, Meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UAnimMontage> LootingMontage;
 
 protected:
 	UPROPERTY()

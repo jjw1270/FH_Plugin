@@ -36,9 +36,6 @@ protected:
 private:
 	APlayerController* PlayerController;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, Meta = (AllowPrivateAccess = true))
-	TObjectPtr<class UAnimMontage> LootingMontage;
-
 	UPROPERTY(EditDefaultsOnly, Category = Particle, Meta = (AllowPrivateAccess = true))
 	TSubclassOf<UParticleSystemComponent> ItemParticleClass;
 

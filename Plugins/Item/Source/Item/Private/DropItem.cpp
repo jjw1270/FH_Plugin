@@ -2,10 +2,11 @@
 
 
 #include "DropItem.h"
+#include "Item.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "GameFramework/Character.h"
+#include "Item_PlayableCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -95,12 +96,11 @@ void ADropItem::EventInteraction_Implementation(ACharacter* OwnCharacter)
 	// Hide UI Widget
 	LootWidgetComp->SetHiddenInGame(true);
 
-	// Set Onwer Character Rotation to Look at this Item
-	FVector TargetDir = (GetActorLocation() - OwnCharacter->GetActorLocation()).GetSafeNormal();
-	FRotator LookAtRot = FVector(TargetDir.X, TargetDir.Y, 0).Rotation();
-	OwnCharacter->SetActorRotation(LookAtRot);
+	AItem_PlayableCharacter* OwnPlayerCharacter = Cast<AItem_PlayableCharacter>(OwnCharacter);
+	CHECK_VALID(OwnPlayerCharacter);
 
-	// Play Interaction Montage
-	ensureMsgf(IsValid(LootingMontage), TEXT("LootingMontage is not valid"));
-	OwnCharacter->PlayAnimMontage(LootingMontage);
+	FVector TargetDir = (GetActorLocation() - OwnPlayerCharacter->GetActorLocation()).GetSafeNormal();
+	FRotator LookAtRot = FVector(TargetDir.X, TargetDir.Y, 0).Rotation();
+
+	OwnPlayerCharacter->ReqPickUp(LookAtRot);
 }

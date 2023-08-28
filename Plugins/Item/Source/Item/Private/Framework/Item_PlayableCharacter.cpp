@@ -2,6 +2,7 @@
 
 
 #include "Item_PlayableCharacter.h"
+#include "Net/UnrealNetwork.h"
 #include "Item.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -19,7 +20,8 @@
 #include "ItemData.h"
 #include "ModularSkeletalMeshComponent.h"
 
-// Sets default values
+#include "Kismet/GameplayStatics.h"
+
 AItem_PlayableCharacter::AItem_PlayableCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UModularSkeletalMeshComponent>(ACharacter::MeshComponentName = TEXT("LowerBody")))
 {
@@ -55,7 +57,8 @@ AItem_PlayableCharacter::AItem_PlayableCharacter(const FObjectInitializer& Objec
 
 void AItem_PlayableCharacter::InitModularMeshComp()
 {
-	if (UModularSkeletalMeshComponent* LowerBody = Cast<UModularSkeletalMeshComponent>(GetMesh()))
+	LowerBody = Cast<UModularSkeletalMeshComponent>(GetMesh());
+	if (LowerBody)
 	{
 		LowerBody->SetArmorType(EArmorType::Lower);
 		ArmorMSMCompArray.Add(LowerBody);
@@ -109,7 +112,22 @@ void AItem_PlayableCharacter::InitModularMeshComp()
 	Weapon->SetArmorType(EArmorType::None);
 }
 
-// Called when the game starts or when spawned
+void AItem_PlayableCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AItem_PlayableCharacter, LowerBody);
+	DOREPLIFETIME(AItem_PlayableCharacter, Shoes);
+	DOREPLIFETIME(AItem_PlayableCharacter, UpperBody);
+	DOREPLIFETIME(AItem_PlayableCharacter, Cloak);
+	DOREPLIFETIME(AItem_PlayableCharacter, Glove_L);
+	DOREPLIFETIME(AItem_PlayableCharacter, Glove_R);
+	DOREPLIFETIME(AItem_PlayableCharacter, Head);
+	DOREPLIFETIME(AItem_PlayableCharacter, Hair);
+	DOREPLIFETIME(AItem_PlayableCharacter, Helmet);
+	DOREPLIFETIME(AItem_PlayableCharacter, Weapon);
+}
+
 void AItem_PlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -136,7 +154,6 @@ void AItem_PlayableCharacter::BeginPlay()
 	EquipVisibilityUpdateDelegate.AddDynamic(this, &AItem_PlayableCharacter::OnEquipVisibilityUpdate);
 }
 
-// Called to bind functionality to input
 void AItem_PlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -201,6 +218,12 @@ void AItem_PlayableCharacter::Look(const FInputActionValue& Value)
 
 void AItem_PlayableCharacter::Interaction(const FInputActionValue& Value)
 {
+	// Only run in Local Client
+	if (!HasAuthority() && GetLocalRole() != ROLE_AutonomousProxy)
+	{
+		return;
+	}
+
 	// return if interacting is executing
 	if (InteractingActor)
 	{
@@ -233,8 +256,21 @@ void AItem_PlayableCharacter::Interaction(const FInputActionValue& Value)
 	{
 		NearestItemInterfaceObj->Execute_EventInteraction(InteractingActor, this);
 	}
+}
 
-	return;
+void AItem_PlayableCharacter::ReqPickUp_Implementation(FRotator LookAtRot)
+{
+	ResPickUp(LookAtRot);
+}
+
+void AItem_PlayableCharacter::ResPickUp_Implementation(FRotator LookAtRot)
+{
+	// Set Onwer Character Rotation to Look at this Item
+	SetActorRotation(LookAtRot);
+
+	// Play Interaction Montage
+	CHECK_VALID(LootingMontage);
+	PlayAnimMontage(LootingMontage);
 }
 
 void AItem_PlayableCharacter::UseQuickSlot(int32 SlotNum)
