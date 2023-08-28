@@ -69,34 +69,34 @@ Modular Mesh Components
 */ 
 
 protected:
-	UPROPERTY(Replicated)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* LowerBody;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Shoes;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* UpperBody;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Cloak;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Glove_L;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Glove_R;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Head;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Hair;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Helmet;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = MeshComponent)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Weapon;
 
 	UPROPERTY()
@@ -156,10 +156,16 @@ protected:
 
 public:
 	UFUNCTION(Server, Reliable)
-	void ReqPickUp(FRotator LookAtRot);
+	void Req_PickUp(FRotator LookAtRot);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void ResPickUp(FRotator LookAtRot);
+	void Res_PickUp(FRotator LookAtRot);
+
+	UFUNCTION(Server, Reliable)
+	void Req_OnArmorUpdate(const EArmorType UpdateArmorType, UItemData* UpdateEquipItem, const bool bIsEquip);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Res_OnArmorUpdate(const EArmorType UpdateArmorType, UItemData* UpdateEquipItem, const bool bIsEquip);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, Meta = (AllowPrivateAccess = true))

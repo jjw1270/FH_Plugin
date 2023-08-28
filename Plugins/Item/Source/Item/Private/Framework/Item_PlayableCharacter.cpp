@@ -2,8 +2,8 @@
 
 
 #include "Item_PlayableCharacter.h"
-#include "Net/UnrealNetwork.h"
 #include "Item.h"
+#include "Net/UnrealNetwork.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -23,7 +23,7 @@
 #include "Kismet/GameplayStatics.h"
 
 AItem_PlayableCharacter::AItem_PlayableCharacter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer.SetDefaultSubobjectClass<UModularSkeletalMeshComponent>(ACharacter::MeshComponentName = TEXT("LowerBody")))
+	: Super(ObjectInitializer.DoNotCreateDefaultSubobject(ACharacter::MeshComponentName))
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -57,50 +57,48 @@ AItem_PlayableCharacter::AItem_PlayableCharacter(const FObjectInitializer& Objec
 
 void AItem_PlayableCharacter::InitModularMeshComp()
 {
-	LowerBody = Cast<UModularSkeletalMeshComponent>(GetMesh());
-	if (LowerBody)
-	{
-		LowerBody->SetArmorType(EArmorType::Lower);
-		ArmorMSMCompArray.Add(LowerBody);
-	}
+	LowerBody = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("LowerBody"));
+	LowerBody->SetupAttachment(RootComponent);
+	LowerBody->SetArmorType(EArmorType::Lower);
+	ArmorMSMCompArray.Add(LowerBody);
 
 	Shoes = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Shoes"));
-	Shoes->SetupAttachment(GetMesh());
+	Shoes->SetupAttachment(LowerBody);
 	Shoes->SetArmorType(EArmorType::Shoes);
-	Shoes->SetLeaderPoseComponent(GetMesh());
+	Shoes->SetLeaderPoseComponent(LowerBody);
 	ArmorMSMCompArray.Add(Shoes);
 
 	UpperBody = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("UpperBody"));
-	UpperBody->SetupAttachment(GetMesh());
+	UpperBody->SetupAttachment(LowerBody);
 	UpperBody->SetArmorType(EArmorType::Upper);
-	UpperBody->SetLeaderPoseComponent(GetMesh());
+	UpperBody->SetLeaderPoseComponent(LowerBody);
 	ArmorMSMCompArray.Add(UpperBody);
 
 	Cloak = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Cloak"));
 	Cloak->SetupAttachment(UpperBody);
 	Cloak->SetArmorType(EArmorType::None);
-	Cloak->SetLeaderPoseComponent(GetMesh());
+	Cloak->SetLeaderPoseComponent(LowerBody);
 
 	Glove_L = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Glove_L"));
 	Glove_L->SetupAttachment(UpperBody);
 	Glove_L->SetArmorType(EArmorType::Gloves);
-	Glove_L->SetLeaderPoseComponent(GetMesh());
+	Glove_L->SetLeaderPoseComponent(LowerBody);
 	ArmorMSMCompArray.Add(Glove_L);
 
 	Glove_R = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Glove_R"));
 	Glove_R->SetupAttachment(UpperBody);
 	Glove_R->SetArmorType(EArmorType::None);
-	Glove_R->SetLeaderPoseComponent(GetMesh());
+	Glove_R->SetLeaderPoseComponent(LowerBody);
 
 	Head = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Head"));
 	Head->SetupAttachment(UpperBody);
 	Head->SetArmorType(EArmorType::None);
-	Head->SetLeaderPoseComponent(GetMesh());
+	Head->SetLeaderPoseComponent(LowerBody);
 
 	Hair = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Hair"));
 	Hair->SetupAttachment(Head);
 	Hair->SetArmorType(EArmorType::None);
-	Hair->SetLeaderPoseComponent(GetMesh());
+	Hair->SetLeaderPoseComponent(LowerBody);
 
 	Helmet = CreateDefaultSubobject<UModularSkeletalMeshComponent>(TEXT("Helmet"));
 	Helmet->SetupAttachment(Head, TEXT("HAIR"));
@@ -112,29 +110,13 @@ void AItem_PlayableCharacter::InitModularMeshComp()
 	Weapon->SetArmorType(EArmorType::None);
 }
 
-void AItem_PlayableCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AItem_PlayableCharacter, LowerBody);
-	DOREPLIFETIME(AItem_PlayableCharacter, Shoes);
-	DOREPLIFETIME(AItem_PlayableCharacter, UpperBody);
-	DOREPLIFETIME(AItem_PlayableCharacter, Cloak);
-	DOREPLIFETIME(AItem_PlayableCharacter, Glove_L);
-	DOREPLIFETIME(AItem_PlayableCharacter, Glove_R);
-	DOREPLIFETIME(AItem_PlayableCharacter, Head);
-	DOREPLIFETIME(AItem_PlayableCharacter, Hair);
-	DOREPLIFETIME(AItem_PlayableCharacter, Helmet);
-	DOREPLIFETIME(AItem_PlayableCharacter, Weapon);
-}
-
 void AItem_PlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
 	PC = Cast<AItem_FHPlayerController>(GetController());
 	CHECK_VALID(PC);
-
+	
 	//Add Input Mapping Context
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 	{
@@ -258,12 +240,12 @@ void AItem_PlayableCharacter::Interaction(const FInputActionValue& Value)
 	}
 }
 
-void AItem_PlayableCharacter::ReqPickUp_Implementation(FRotator LookAtRot)
+void AItem_PlayableCharacter::Req_PickUp_Implementation(FRotator LookAtRot)
 {
-	ResPickUp(LookAtRot);
+	Res_PickUp(LookAtRot);
 }
 
-void AItem_PlayableCharacter::ResPickUp_Implementation(FRotator LookAtRot)
+void AItem_PlayableCharacter::Res_PickUp_Implementation(FRotator LookAtRot)
 {
 	// Set Onwer Character Rotation to Look at this Item
 	SetActorRotation(LookAtRot);
@@ -291,6 +273,22 @@ void AItem_PlayableCharacter::OnWeaponUpdate(UItemData* UpdateEquipItem, const b
 
 void AItem_PlayableCharacter::OnArmorUpdate(const EArmorType& UpdateArmorType, UItemData* UpdateEquipItem, const bool& bIsEquip)
 {
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("OnArmorUpdate")));
+
+	Req_OnArmorUpdate(UpdateArmorType, UpdateEquipItem, bIsEquip);
+}
+
+void AItem_PlayableCharacter::Req_OnArmorUpdate_Implementation(const EArmorType UpdateArmorType, UItemData* UpdateEquipItem, const bool bIsEquip)
+{
+	Res_OnArmorUpdate(UpdateArmorType, UpdateEquipItem, bIsEquip);
+}
+
+void AItem_PlayableCharacter::Res_OnArmorUpdate_Implementation(const EArmorType UpdateArmorType, UItemData* UpdateEquipItem, const bool bIsEquip)
+{
+	CHECK_VALID(UpdateEquipItem);
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("OnArmorUpdate")));
+
 	FArmorItemData UpdateArmorItemData;
 	if (!UpdateEquipItem->GetArmorData(UpdateArmorItemData))
 	{
@@ -330,6 +328,7 @@ void AItem_PlayableCharacter::OnArmorUpdate(const EArmorType& UpdateArmorType, U
 		}
 	}
 }
+
 
 void AItem_PlayableCharacter::OnEquipVisibilityUpdate(EArmorType UpdateArmorType)
 {
