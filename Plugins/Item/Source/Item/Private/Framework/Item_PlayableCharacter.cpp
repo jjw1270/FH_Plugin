@@ -268,6 +268,16 @@ void AItem_PlayableCharacter::OnWeaponUpdate(UItemData* UpdateEquipItem, const b
 		return;
 	}
 
+	Req_OnWeaponUpdate(UpdateWeaponItemData, bIsEquip);
+}
+
+void AItem_PlayableCharacter::Req_OnWeaponUpdate_Implementation(const FWeaponItemData UpdateWeaponItemData, const bool bIsEquip)
+{
+	Res_OnWeaponUpdate(UpdateWeaponItemData, bIsEquip);
+}
+
+void AItem_PlayableCharacter::Res_OnWeaponUpdate_Implementation(const FWeaponItemData UpdateWeaponItemData, const bool bIsEquip)
+{
 	Weapon->SetEquipMesh(UpdateWeaponItemData.WeaponMesh, bIsEquip);
 }
 
@@ -322,7 +332,6 @@ void AItem_PlayableCharacter::Res_OnArmorUpdate_Implementation(const EArmorType 
 		}
 	}
 }
-
 
 void AItem_PlayableCharacter::OnEquipVisibilityUpdate(const EArmorType& UpdateArmorType)
 {

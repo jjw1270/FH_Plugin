@@ -162,6 +162,12 @@ public:
 	void Res_PickUp(FRotator LookAtRot);
 
 	UFUNCTION(Server, Reliable)
+	void Req_OnWeaponUpdate(const FWeaponItemData UpdateWeaponItemData, const bool bIsEquip);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Res_OnWeaponUpdate(const FWeaponItemData UpdateWeaponItemData, const bool bIsEquip);
+
+	UFUNCTION(Server, Reliable)
 	void Req_OnArmorUpdate(const EArmorType UpdateArmorType, const FArmorItemData UpdateArmorItemData, const bool bIsEquip);
 
 	UFUNCTION(NetMulticast, Reliable)

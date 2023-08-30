@@ -133,7 +133,7 @@ struct FWeaponItemData : public FTableRowBase
 
 public:
 	FWeaponItemData()
-		: BaseData(), StaminaUsage(0), BaseAttackPower(0), BaseAttackSpeed(1.0f), BaseCriticalChance(0.0f), WeaponMesh(nullptr)
+		: BaseData(), StaminaUsage(0), AttackPower(0), AttackSpeed(0.0f), CriticalChance(0.0f), WeaponMesh(nullptr)
 	{
 	}
 	
@@ -145,15 +145,15 @@ public:
 	int32 StaminaUsage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 BaseAttackPower;
+	int32 AttackPower;
 
 	// Default : 1.0f, Max : 2.5f
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BaseAttackSpeed;
+	float AttackSpeed;
 
 	// Max : 1.0f
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BaseCriticalChance;
+	float CriticalChance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class USkeletalMesh* WeaponMesh;
@@ -185,8 +185,8 @@ struct FArmorItemData : public FTableRowBase
 public:
 	FArmorItemData()
 		: BaseData(), ArmorType(EArmorType::None), Health(0), Stamina(0), AttackPower(0),
-		AttackSpeed(0.0f), CriticalChance(0.0f), DefensivePower(0),
-		ArmorMesh(nullptr), bHideHairWhenVisible(false), bShouldSwitchBetweenAdditionalMesh(false), AdditionalArmorMesh(nullptr)
+		  AttackSpeed(0.0f), CriticalChance(0.0f), DefensivePower(0),
+		  ArmorMesh(nullptr), bHideHairWhenVisible(false), bShouldSwitchBetweenAdditionalMesh(false), AdditionalArmorMesh(nullptr)
 	{
 	}
 	
@@ -264,4 +264,36 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	EItemType GetItemType(const int32& ItemID);
+};
+
+USTRUCT(BlueprintType)
+struct FDefaultPlayerStats
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	FDefaultPlayerStats()
+		: DefaultHealth(1000), DefaultStamina(1000), DefaultAttack(0),
+		DefaultAttackSpeed(1.0f), DefaultCritcal(0.f), DefaultDefence(0)
+	{
+	}
+
+public:
+	UPROPERTY(BlueprintReadOnly)
+	int32 DefaultHealth;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 DefaultStamina;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 DefaultAttack;
+
+	UPROPERTY(BlueprintReadOnly)
+	float DefaultAttackSpeed;
+
+	UPROPERTY(BlueprintReadOnly)
+	float DefaultCritcal;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 DefaultDefence;
 };

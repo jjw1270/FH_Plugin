@@ -4,6 +4,20 @@
 #include "Item_FHGameInstance.h"
 #include "ItemData.h"
 
+// If Save Data is Valid, Load Save Data
+void UItem_FHGameInstance::Init()
+{
+	Super::Init();
+
+}
+
+// Save Data when End Game
+void UItem_FHGameInstance::Shutdown()
+{
+	Super::Shutdown();
+
+}
+
 void UItem_FHGameInstance::TESTss()
 {
 	UE_LOG(LogTemp, Warning, TEXT("<<<<Inventory Items>>>>"));
@@ -26,5 +40,4 @@ void UItem_FHGameInstance::TESTss()
 		UE_LOG(LogTemp, Warning, TEXT("%s [%d]"), *Item->GetBaseData().Name, Item->GetUniqueID());
 	}
 	UE_LOG(LogTemp, Warning, TEXT("--------------------------------------------"));
-
 }

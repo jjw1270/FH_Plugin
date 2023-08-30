@@ -20,6 +20,11 @@ public:
 	void TESTss();
 
 protected:
+	virtual void Init() override;
+
+	virtual void Shutdown() override;
+
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 CurrentDungeonID;
 
@@ -30,7 +35,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE int32 GetCurrentDungeonID() const { return CurrentDungeonID; }
 
-public:
+protected:
 	// TMap<ItemData, ItemAmount>
 	UPROPERTY()
 	TMap<class UItemData*, int32> InventoryItems;
@@ -50,4 +55,11 @@ public:
 
 	FORCEINLINE TArray<class UItemData*>* GetEquipments() { return &EquipmentItems; }
 
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FDefaultPlayerStats DefaultPlayerStats;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE FDefaultPlayerStats& GetDefaultPlayerStats() { return DefaultPlayerStats; }
 };
