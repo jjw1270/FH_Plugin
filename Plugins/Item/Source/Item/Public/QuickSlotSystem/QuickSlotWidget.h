@@ -38,9 +38,6 @@ protected:
 
 protected:
 	UPROPERTY(meta = (BindWidget))
-	class UBorder* QuickSlotUI;
-
-	UPROPERTY(meta = (BindWidget))
 	class UButton* UIDragBtn;
 
 	UPROPERTY(meta = (BindWidget))

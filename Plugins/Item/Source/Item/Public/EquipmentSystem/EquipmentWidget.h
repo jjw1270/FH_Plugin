@@ -29,9 +29,6 @@ protected:
 	// Blueprint Bind Widgets
 protected:
 	UPROPERTY(meta = (BindWidget))
-	class UBorder* EquipmentUI;
-
-	UPROPERTY(meta = (BindWidget))
 	class UButton* UIDragBtn;
 
 	UPROPERTY(meta = (BindWidget))

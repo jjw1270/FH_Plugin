@@ -27,12 +27,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetEquipMesh(USkeletalMesh* NewArmorMesh, const bool& bIsEquip);
 
-	UFUNCTION(Server, Reliable)
-	void Req_SetEquipMesh(USkeletalMesh* NewArmorMesh, const bool bIsEquip);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Res_SetEquipMesh(USkeletalMesh* NewArmorMesh, const bool bIsEquip);
-
 protected:
 	EArmorType ArmorType;
 

@@ -116,7 +116,7 @@ void AItem_PlayableCharacter::BeginPlay()
 
 	PC = Cast<AItem_FHPlayerController>(GetController());
 	CHECK_VALID(PC);
-	
+
 	//Add Input Mapping Context
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 	{
@@ -273,28 +273,22 @@ void AItem_PlayableCharacter::OnWeaponUpdate(UItemData* UpdateEquipItem, const b
 
 void AItem_PlayableCharacter::OnArmorUpdate(const EArmorType& UpdateArmorType, UItemData* UpdateEquipItem, const bool& bIsEquip)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("OnArmorUpdate")));
-
-	Req_OnArmorUpdate(UpdateArmorType, UpdateEquipItem, bIsEquip);
-}
-
-void AItem_PlayableCharacter::Req_OnArmorUpdate_Implementation(const EArmorType UpdateArmorType, UItemData* UpdateEquipItem, const bool bIsEquip)
-{
-	Res_OnArmorUpdate(UpdateArmorType, UpdateEquipItem, bIsEquip);
-}
-
-void AItem_PlayableCharacter::Res_OnArmorUpdate_Implementation(const EArmorType UpdateArmorType, UItemData* UpdateEquipItem, const bool bIsEquip)
-{
-	CHECK_VALID(UpdateEquipItem);
-
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("OnArmorUpdate")));
-
 	FArmorItemData UpdateArmorItemData;
 	if (!UpdateEquipItem->GetArmorData(UpdateArmorItemData))
 	{
 		return;
 	}
 
+	Req_OnArmorUpdate(UpdateArmorType, UpdateArmorItemData, bIsEquip);
+}
+
+void AItem_PlayableCharacter::Req_OnArmorUpdate_Implementation(const EArmorType UpdateArmorType, const FArmorItemData UpdateArmorItemData, const bool bIsEquip)
+{
+	Res_OnArmorUpdate(UpdateArmorType, UpdateArmorItemData, bIsEquip);
+}
+
+void AItem_PlayableCharacter::Res_OnArmorUpdate_Implementation(const EArmorType UpdateArmorType, const FArmorItemData UpdateArmorItemData, const bool bIsEquip)
+{
 	for (auto ArmorMSMComp : ArmorMSMCompArray)
 	{
 		if (ArmorMSMComp->GetArmorType() != UpdateArmorType)
@@ -330,22 +324,32 @@ void AItem_PlayableCharacter::Res_OnArmorUpdate_Implementation(const EArmorType 
 }
 
 
-void AItem_PlayableCharacter::OnEquipVisibilityUpdate(EArmorType UpdateArmorType)
+void AItem_PlayableCharacter::OnEquipVisibilityUpdate(const EArmorType& UpdateArmorType)
+{
+	Req_OnEquipVisibilityUpdate(UpdateArmorType);
+}
+
+void AItem_PlayableCharacter::Req_OnEquipVisibilityUpdate_Implementation(const EArmorType UpdateArmorType)
+{
+	Res_OnEquipVisibilityUpdate(UpdateArmorType);
+}
+
+void AItem_PlayableCharacter::Res_OnEquipVisibilityUpdate_Implementation(const EArmorType UpdateArmorType)
 {
 	switch (UpdateArmorType)
 	{
-		case EArmorType::Helmet:
-			Helmet->ToggleVisibility();
+	case EArmorType::Helmet:
+		Helmet->ToggleVisibility();
 
-			if (Helmet->GetbHideHairWhenVisible())
-			{
-				Hair->ToggleVisibility();
-			}
-			return;
-		case EArmorType::Upper:
-			Cloak->ToggleVisibility();
-			return;
-		default:
-			break;
+		if (Helmet->GetbHideHairWhenVisible())
+		{
+			Hair->ToggleVisibility();
+		}
+		return;
+	case EArmorType::Upper:
+		Cloak->ToggleVisibility();
+		return;
+	default:
+		break;
 	}
 }

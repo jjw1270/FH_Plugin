@@ -36,9 +36,6 @@ protected:
 
 protected:
 	UPROPERTY(meta = (BindWidget))
-	class UHorizontalBox* InventoryUI;
-
-	UPROPERTY(meta = (BindWidget))
 	class UButton* UIDragBtn;
 
 	UPROPERTY(meta = (BindWidget))

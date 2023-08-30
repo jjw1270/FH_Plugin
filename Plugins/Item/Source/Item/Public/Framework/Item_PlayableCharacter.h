@@ -10,7 +10,7 @@
 class UModularSkeletalMeshComponent;
 
 // Delegate called when Cloak Visibility button Pressed
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDele_Multi_EquipVisibilityUpdate, EArmorType, UpdateArmorType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDele_Multi_EquipVisibilityUpdate, const EArmorType&, UpdateArmorType);
 
 UCLASS()
 class ITEM_API AItem_PlayableCharacter : public ACharacter
@@ -152,7 +152,7 @@ protected:
 	void OnArmorUpdate(const EArmorType& UpdateArmorType, class UItemData* UpdateEquipItem, const bool& bIsEquip);
 
 	UFUNCTION()
-	void OnEquipVisibilityUpdate(EArmorType UpdateArmorType);
+	void OnEquipVisibilityUpdate(const EArmorType& UpdateArmorType);
 
 public:
 	UFUNCTION(Server, Reliable)
@@ -162,10 +162,16 @@ public:
 	void Res_PickUp(FRotator LookAtRot);
 
 	UFUNCTION(Server, Reliable)
-	void Req_OnArmorUpdate(const EArmorType UpdateArmorType, UItemData* UpdateEquipItem, const bool bIsEquip);
+	void Req_OnArmorUpdate(const EArmorType UpdateArmorType, const FArmorItemData UpdateArmorItemData, const bool bIsEquip);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Res_OnArmorUpdate(const EArmorType UpdateArmorType, UItemData* UpdateEquipItem, const bool bIsEquip);
+	void Res_OnArmorUpdate(const EArmorType UpdateArmorType, const FArmorItemData UpdateArmorItemData, const bool bIsEquip);
+
+	UFUNCTION(Server, Reliable)
+	void Req_OnEquipVisibilityUpdate(const EArmorType UpdateArmorType);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Res_OnEquipVisibilityUpdate(const EArmorType UpdateArmorType);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, Meta = (AllowPrivateAccess = true))

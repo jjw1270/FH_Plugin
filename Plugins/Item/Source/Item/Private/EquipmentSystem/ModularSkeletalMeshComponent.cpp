@@ -7,7 +7,6 @@
 
 UModularSkeletalMeshComponent::UModularSkeletalMeshComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	// SetIsReplicatedByDefault(true);
 }
 
 void UModularSkeletalMeshComponent::BeginPlay()
@@ -26,33 +25,6 @@ void UModularSkeletalMeshComponent::InitDefaultSkeletalMesh()
 
 void UModularSkeletalMeshComponent::SetEquipMesh(USkeletalMesh* NewArmorMesh, const bool& bIsEquip)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("SetEquipMesh")));
-
-	// if UnEquip, Set default Mesh
-	if (!bIsEquip)
-	{
-		SetSkeletalMeshAsset(DefaultSkeletalMeshAsset);
-
-		return;
-	}
-
-	CHECK_VALID(NewArmorMesh);
-	SetSkeletalMeshAsset(NewArmorMesh);
-
-	// Req_SetEquipMesh(NewArmorMesh, bIsEquip);
-}
-
-void UModularSkeletalMeshComponent::Req_SetEquipMesh_Implementation(USkeletalMesh* NewArmorMesh, const bool bIsEquip)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("Req : SetEquipMesh")));
-
-	Res_SetEquipMesh(NewArmorMesh, bIsEquip);
-}
-
-void UModularSkeletalMeshComponent::Res_SetEquipMesh_Implementation(USkeletalMesh* NewArmorMesh, const bool bIsEquip)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Res : SetEquipMesh")));
-	
 	// if UnEquip, Set default Mesh
 	if (!bIsEquip)
 	{
@@ -64,3 +36,4 @@ void UModularSkeletalMeshComponent::Res_SetEquipMesh_Implementation(USkeletalMes
 	CHECK_VALID(NewArmorMesh);
 	SetSkeletalMeshAsset(NewArmorMesh);
 }
+
