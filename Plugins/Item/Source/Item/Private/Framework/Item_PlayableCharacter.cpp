@@ -20,8 +20,6 @@
 #include "ItemData.h"
 #include "ModularSkeletalMeshComponent.h"
 
-#include "Kismet/GameplayStatics.h"
-
 AItem_PlayableCharacter::AItem_PlayableCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.DoNotCreateDefaultSubobject(ACharacter::MeshComponentName))
 {
@@ -114,6 +112,14 @@ void AItem_PlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Only run in Local Client
+	//if (!HasAuthority() && GetLocalRole() != ROLE_AutonomousProxy)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Not local"));
+
+	//	return;
+	//}
+
 	PC = Cast<AItem_FHPlayerController>(GetController());
 	CHECK_VALID(PC);
 
@@ -200,11 +206,7 @@ void AItem_PlayableCharacter::Look(const FInputActionValue& Value)
 
 void AItem_PlayableCharacter::Interaction(const FInputActionValue& Value)
 {
-	// Only run in Local Client
-	if (!HasAuthority() && GetLocalRole() != ROLE_AutonomousProxy)
-	{
-		return;
-	}
+	UE_LOG(LogTemp, Warning, TEXT("Interaction"));
 
 	// return if interacting is executing
 	if (InteractingActor)

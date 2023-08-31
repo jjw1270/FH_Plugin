@@ -265,35 +265,3 @@ public:
 	UFUNCTION(BlueprintCallable)
 	EItemType GetItemType(const int32& ItemID);
 };
-
-USTRUCT(BlueprintType)
-struct FDefaultPlayerStats
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	FDefaultPlayerStats()
-		: DefaultHealth(1000), DefaultStamina(1000), DefaultAttack(0),
-		DefaultAttackSpeed(1.0f), DefaultCritcal(0.f), DefaultDefence(0)
-	{
-	}
-
-public:
-	UPROPERTY(BlueprintReadOnly)
-	int32 DefaultHealth;
-
-	UPROPERTY(BlueprintReadOnly)
-	int32 DefaultStamina;
-
-	UPROPERTY(BlueprintReadOnly)
-	int32 DefaultAttack;
-
-	UPROPERTY(BlueprintReadOnly)
-	float DefaultAttackSpeed;
-
-	UPROPERTY(BlueprintReadOnly)
-	float DefaultCritcal;
-
-	UPROPERTY(BlueprintReadOnly)
-	int32 DefaultDefence;
-};

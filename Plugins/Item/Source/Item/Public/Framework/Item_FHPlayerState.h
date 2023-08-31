@@ -17,6 +17,10 @@ class ITEM_API AItem_FHPlayerState : public APlayerState
 	
 public:
 	AItem_FHPlayerState();
+
+protected:
+	UPROPERTY()
+	class UItem_FHGameInstance* GI;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -32,7 +36,9 @@ protected:
 
 protected:
 	UFUNCTION()
-	void UpdateDefaultPlayerStats(int32 AddHealth, int32 AddStamina, int32 AddAttack, float AddAttackSpeed, float AddCritcal, int32 AddDefence);
+	void UpdateDefaultPlayerStats(const bool& bIsEquip, const int32& AddHealth, const int32& AddStamina, const int32& AddAttack, const float& AddAttackSpeed, const float& AddCritcal, const int32& AddDefence);
+
+	void InitCurrentPlayerStats();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CurrentHealth)

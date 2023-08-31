@@ -40,4 +40,14 @@ void UItem_FHGameInstance::TESTss()
 		UE_LOG(LogTemp, Warning, TEXT("%s [%d]"), *Item->GetBaseData().Name, Item->GetUniqueID());
 	}
 	UE_LOG(LogTemp, Warning, TEXT("--------------------------------------------"));
+
+	UE_LOG(LogTemp, Warning, TEXT("<<<<Default Player Stats>>>>"));
+	UE_LOG(LogTemp, Warning, TEXT("Health : [%d]"), DefaultPlayerStats.DefaultHealth);
+	UE_LOG(LogTemp, Warning, TEXT("Stamina : [%d]"), DefaultPlayerStats.DefaultStamina);
+	UE_LOG(LogTemp, Warning, TEXT("Attack : [%d]"), DefaultPlayerStats.DefaultAttack);
+	UE_LOG(LogTemp, Warning, TEXT("AttackSpeed : [%f]"), DefaultPlayerStats.DefaultAttackSpeed);
+	UE_LOG(LogTemp, Warning, TEXT("Critical : [%f]"), DefaultPlayerStats.DefaultCritcal);
+	UE_LOG(LogTemp, Warning, TEXT("Defence : [%d]"), DefaultPlayerStats.DefaultDefence);
+	UE_LOG(LogTemp, Warning, TEXT("--------------------------------------------"));
+	
 }
