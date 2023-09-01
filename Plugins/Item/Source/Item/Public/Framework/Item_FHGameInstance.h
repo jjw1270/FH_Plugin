@@ -18,7 +18,7 @@ struct FDefaultPlayerStats
 	public:
 	FDefaultPlayerStats()
 		: DefaultHealth(1000), DefaultStamina(1000), DefaultAttack(0),
-		DefaultAttackSpeed(1.0f), DefaultCritcal(0.f), DefaultDefence(0)
+		DefaultAttackSpeed(0.f), DefaultCritcal(0.f), DefaultDefence(0)
 	{
 	}
 

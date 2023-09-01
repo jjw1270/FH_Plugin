@@ -48,7 +48,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component)
 	class UQuickSlotComponent* QuickSlotComp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component)
 	class UEquipmentComponent* EquipmentComp;
 
 // Component Getter

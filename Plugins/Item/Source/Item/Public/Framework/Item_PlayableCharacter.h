@@ -109,6 +109,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Component)
 	TObjectPtr<UCapsuleComponent> InteractCollision;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component)
+	class UPlayerStatusComponent* PlayerStatusComp;
+
 protected:
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)

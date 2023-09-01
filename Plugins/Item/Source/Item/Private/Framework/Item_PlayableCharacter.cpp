@@ -20,6 +20,8 @@
 #include "ItemData.h"
 #include "ModularSkeletalMeshComponent.h"
 
+#include "PlayerStatusComponent.h"
+
 AItem_PlayableCharacter::AItem_PlayableCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.DoNotCreateDefaultSubobject(ACharacter::MeshComponentName))
 {
@@ -51,6 +53,8 @@ AItem_PlayableCharacter::AItem_PlayableCharacter(const FObjectInitializer& Objec
 	InteractCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("InteractCollision"));
 	InteractCollision->SetupAttachment(RootComponent);
 	InteractCollision->SetCapsuleSize(60.f, 120.f);
+
+	PlayerStatusComp = CreateDefaultSubobject<UPlayerStatusComponent>(TEXT("PlayerStatus"));
 }
 
 void AItem_PlayableCharacter::InitModularMeshComp()
