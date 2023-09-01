@@ -89,10 +89,16 @@ public:
 	FORCEINLINE TArray<class UItemData*>* GetEquipments() { return &EquipmentItems; }
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FText PlayerName;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FDefaultPlayerStats DefaultPlayerStats;
 
 public:
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE FText& GetPlayerName() { return PlayerName; }
+
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE FDefaultPlayerStats& GetDefaultPlayerStats() { return DefaultPlayerStats; }
 };

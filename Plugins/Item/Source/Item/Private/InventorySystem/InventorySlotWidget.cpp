@@ -65,7 +65,10 @@ void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, con
 	ClearSlot();
 
 	InventoryWidget->GetItemInfoBox()->SetVisibility(ESlateVisibility::Collapsed);
-	InventoryWidget->GetItemTrash()->SetVisibility(ESlateVisibility::Visible);
+	if (!DDOperation->bIsRegist)
+	{
+		InventoryWidget->GetItemTrash()->SetVisibility(ESlateVisibility::Visible);
+	}
 
 	OutOperation = DDOperation;
 }

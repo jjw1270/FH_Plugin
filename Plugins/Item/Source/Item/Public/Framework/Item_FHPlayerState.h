@@ -18,18 +18,21 @@ class ITEM_API AItem_FHPlayerState : public APlayerState
 public:
 	AItem_FHPlayerState();
 
-//protected:
-//	UPROPERTY(ReplicatedUsing = OnRep_UserName)
-//	FString UserName;
-//
-//public:
-//	UFUNCTION(BlueprintCallable)
-//	void SetUserName(const FString& NewName);
-//
-//	UFUNCTION(BlueprintPure)
-//	FORCEINLINE FString& GetUserName() { return UserName; };
-//
-//	UFUNCTION()
-//	void OnRep_UserName();
+protected:
+	virtual void BeginPlay() override;
+
+protected:
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_UserName)
+	FText UserName;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void SetUserName(const FText& NewName);
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE FText& GetUserName() { return UserName; };
+
+	UFUNCTION()
+	void OnRep_UserName();
 
 };

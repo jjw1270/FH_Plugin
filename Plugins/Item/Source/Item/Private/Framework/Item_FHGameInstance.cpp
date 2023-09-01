@@ -3,6 +3,7 @@
 
 #include "Item_FHGameInstance.h"
 #include "ItemData.h"
+#include "Math/UnrealMathUtility.h"
 
 // If Save Data is Valid, Load Save Data
 void UItem_FHGameInstance::Init()
