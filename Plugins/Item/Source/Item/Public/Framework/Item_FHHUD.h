@@ -18,14 +18,14 @@ protected:
 	virtual void BeginPlay() override;
 	
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
 	TSubclassOf<class UItem_HUDWidget> HUDWidgetClass;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Widget)
 	class UItem_HUDWidget* HUDWidget;
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	class UItem_HUDWidget* GetHUDWidget();
 
 };

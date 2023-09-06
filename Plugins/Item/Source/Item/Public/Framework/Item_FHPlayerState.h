@@ -22,14 +22,14 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
-	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_UserName)
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_UserName, Category = State)
 	FText UserName;
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = State)
 	void SetUserName(const FText& NewName);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = State)
 	FORCEINLINE FText& GetUserName() { return UserName; };
 
 	UFUNCTION()

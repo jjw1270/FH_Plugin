@@ -23,10 +23,10 @@ protected:
 	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Quick Slot")
 	void SetSlot(class UItemData* NewItemData, const int32& NewItemAmount);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Quick Slot")
 	void ClearSlot();
 
 protected:
@@ -34,13 +34,13 @@ protected:
 	void OnUpdateItem(class UItemData* UpdateItemData, const int32& UpdateAmount);
 
 protected:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Component)
 	class UInventoryComponent* InventoryComp;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Component)
 	class UQuickSlotComponent* QuickSlotComp;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Widget)
 	class UQuickSlotWidget* QuickSlotWidget;
 
 // Variables to Bind UMG Components
@@ -49,25 +49,25 @@ protected:
 	class UImage* ItemImageWidget;
 
 protected:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Widget)
 	int32 Index;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Data)
 	class UItemData* SlotItemData;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Inventory)
 	int32 SlotItemAmount;
 
 public:
 	FORCEINLINE void SetIndex(const int32& NewIndex) { Index = NewIndex; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	bool IsEmpty();
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Data)
 	FORCEINLINE class UItemData* GetSlotItemData() const { return SlotItemData; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Inventory)
 	FORCEINLINE int32 GetSlotItemAmount() const { return SlotItemAmount; }
 
 };

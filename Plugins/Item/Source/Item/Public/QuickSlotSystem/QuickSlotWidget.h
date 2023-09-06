@@ -25,12 +25,12 @@ protected:
 
 	FTimerHandle InitTimerHandle;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Widget)
 	class UItem_HUDWidget* HUDWidget;
 
 // Blueprint Bind Widgets
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
 	TSubclassOf<class UQuickSlotSlotWidget> QuickSlotSlotClass;
 
 	UPROPERTY()

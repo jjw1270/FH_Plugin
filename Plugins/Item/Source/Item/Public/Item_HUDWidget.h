@@ -15,10 +15,10 @@ class ITEM_API UItem_HUDWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	void SwichWidgetVisibility(class APlayerController* TargetPlayerController, const FName& WidgetName);
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	void SetWidgetZOrderToTop(UUserWidget* TargetWidget);
 
 	void WidgetDragStart(UUserWidget* TargetWidget);
@@ -39,26 +39,26 @@ protected:
 	FTimerHandle DragTimerHandle;
 
 protected:
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = Widget)
 	class UQuickSlotWidget* QuickSlotWidget;
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = Widget)
 	class UInventoryWidget* InventoryWidget;
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = Widget)
 	class UEquipmentWidget* EquipmentWidget;
 
 protected:
 	UUserWidget* GetUserwidgetFromFName(const FName& WidgetName);
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	FORCEINLINE class UQuickSlotWidget* GetQuickSlotWidget() const { return QuickSlotWidget; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	FORCEINLINE class UInventoryWidget* GetInventoryWidget() const { return InventoryWidget; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	FORCEINLINE class UEquipmentWidget* GetEquipmentWidget() const { return EquipmentWidget; }
 
 };

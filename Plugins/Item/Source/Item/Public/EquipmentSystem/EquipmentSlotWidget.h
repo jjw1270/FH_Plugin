@@ -34,13 +34,13 @@ protected:
 
 //Need Edit Vars
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Widget)
 	UTexture2D* BackIconTexture;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Widget)
 	EItemType ItemType;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Widget)
 	EArmorType ArmorType;
 
 protected:
@@ -63,12 +63,12 @@ protected:
 	void OnArmorUpdate(const EArmorType& UpdateArmorType, UItemData* UpdateItemData, const bool& bEquip);
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	void SetSlot(class UItemData* UpdateItemData);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	void ClearSlot();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	bool IsEmpty();
 };

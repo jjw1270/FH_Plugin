@@ -15,13 +15,13 @@ class ITEM_API UItemDragDropOperation : public UDragDropOperation
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Drag Drop Operation")
 	class UItemData* DraggingItemData;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Drag Drop Operation")
 	int32 DraggingItemAmount;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Drag Drop Operation")
 	bool bIsRegist;
 
 };

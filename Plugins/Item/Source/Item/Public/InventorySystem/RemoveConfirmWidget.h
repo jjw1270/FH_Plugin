@@ -22,10 +22,10 @@ protected:
 	class UInventoryComponent* InventoryComp;
 
 protected:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Data)
 	class UItemData* ItemData;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Widget)
 	int32 MaxAmount;
 
 protected:
@@ -38,18 +38,18 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	class UVerticalBox* SetAmountBox;
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget), Category = Widget)
 	class UTextBlock* Text_Amount;
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	void ShowRemoveConfirm(class UItemDragDropOperation* NewDragDropOperation);
 
 protected:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Inventory)
 	void RemoveItem();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	void OnCancel();
 
 	void ClearWidget();

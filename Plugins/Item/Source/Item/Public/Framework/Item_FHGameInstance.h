@@ -23,22 +23,22 @@ struct FDefaultPlayerStats
 	}
 
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Status)
 	int32 DefaultHealth;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Status)
 	int32 DefaultStamina;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Status)
 	int32 DefaultAttack;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Status)
 	float DefaultAttackSpeed;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Status)
 	float DefaultCritcal;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Status)
 	int32 DefaultDefence;
 };
 
@@ -49,7 +49,7 @@ class ITEM_API UItem_FHGameInstance : public UGameInstance
 	
 public:
 	//test
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Test)
 	void TESTss();
 
 protected:
@@ -58,14 +58,14 @@ protected:
 	virtual void Shutdown() override;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Data)
 	int32 CurrentDungeonID;
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Data)
 	FORCEINLINE void SetCurrentDungeonID(const int32& NewDungeonID) { CurrentDungeonID = NewDungeonID; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Data)
 	FORCEINLINE int32 GetCurrentDungeonID() const { return CurrentDungeonID; }
 
 protected:
@@ -89,16 +89,16 @@ public:
 	FORCEINLINE TArray<class UItemData*>* GetEquipments() { return &EquipmentItems; }
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Data)
 	FText PlayerName;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Status)
 	FDefaultPlayerStats DefaultPlayerStats;
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Data)
 	FORCEINLINE FText& GetPlayerName() { return PlayerName; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Status)
 	FORCEINLINE FDefaultPlayerStats& GetDefaultPlayerStats() { return DefaultPlayerStats; }
 };

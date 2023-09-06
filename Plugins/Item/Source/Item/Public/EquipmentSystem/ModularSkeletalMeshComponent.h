@@ -24,7 +24,7 @@ protected:
 public:
 	void InitDefaultSkeletalMesh();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Mesh)
 	void SetEquipMesh(USkeletalMesh* NewArmorMesh, const bool& bIsEquip);
 
 protected:

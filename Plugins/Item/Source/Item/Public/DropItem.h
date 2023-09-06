@@ -52,7 +52,7 @@ protected:
 	bool IsCanSeePlayer();
 
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Interface)
 	void EventInteraction(ACharacter* OwnCharacter);
 
 	virtual void EventInteraction_Implementation(ACharacter* OwnCharacter) override;

@@ -23,15 +23,15 @@ protected:
 
 	FTimerHandle InitTimerHandle;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Widget)
 	class UItem_HUDWidget* HUDWidget;
 
 // Blueprint Bind Widgets
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
 	TSubclassOf<class UInventorySlotWidget> InventorySlotClass;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Widget)
 	TArray<class UInventorySlotWidget*> InventorySlotArray;
 
 protected:
@@ -51,7 +51,7 @@ protected:
 	class URemoveConfirmWidget* RemoveConfirmWidget;
 	
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Widget)
 	int32 DefaultSlotGridRowRange;
 
 	int32 SlotGridColRange{ 5 };
@@ -70,7 +70,7 @@ protected:
 	UFUNCTION()
 	void OnItemRegister(class UItemData* UpdateItemData, const bool& bIsRegist);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	void SortItemSlot();
 
 //Drag Func
@@ -81,12 +81,12 @@ protected:
 	void OnDragBtnReleased();
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	FORCEINLINE UUserWidget* GetItemInfoBox() const { return ItemInfoBox; }
 
 	FORCEINLINE UUserWidget* GetItemTrash() const { return ItemTrash; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	FORCEINLINE class URemoveConfirmWidget* GetRemoveConfirmWidget() const { return RemoveConfirmWidget; }
 
 };

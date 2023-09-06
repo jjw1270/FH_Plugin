@@ -194,13 +194,13 @@ protected:
 	class UQuickSlotComponent* QuickSlotComp;
 
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Interaction)
 	AActor* InteractingActor;  // For AnimNotify on Interaction Montage Playing, Delete when Notify End Execution.
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category = Interaction)
 	AActor* LootingEffect;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = Event)
 	FDele_Multi_EquipVisibilityUpdate EquipVisibilityUpdateDelegate;
 
 };

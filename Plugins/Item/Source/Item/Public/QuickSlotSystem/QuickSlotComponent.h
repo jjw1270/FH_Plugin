@@ -37,16 +37,16 @@ public:
 	FDele_Multi_QuickSlotUpdate QuickSlotUpdateDelegate;
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Quick Slot")
 	void ManageQuickSlot(UItemData* TargetItemData, const int32& TargetItemAmount);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Quick Slot")
 	void UseQuickSlotItem(const int32& TargetQuickSlotIndex);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Quick Slot")
 	void SetItemToQuickSlot(const int32& NewQuickSlotIndex, class UItemData* NewItemData, const int32& NewItemAmount);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Quick Slot")
 	void DeleteItemFromQuickSlot(const int32& NewQuickSlotIndex);
 
 protected:

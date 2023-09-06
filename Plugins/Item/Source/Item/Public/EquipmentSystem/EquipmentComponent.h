@@ -55,7 +55,7 @@ public:
 	FDele_Multi_ArmorUpdate ArmorUpdateDelegate;
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Equipment)
 	void ManageEquipment(class UItemData* TargetItemData);
 
 protected:

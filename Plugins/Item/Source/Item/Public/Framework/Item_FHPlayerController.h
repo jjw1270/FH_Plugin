@@ -37,7 +37,7 @@ protected:
 
 // Input Func
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	void WidgetOnOff(FName WidgetName);
 
 // Components
@@ -53,13 +53,13 @@ protected:
 
 // Component Getter
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Component)
 	FORCEINLINE class UInventoryComponent* GetInventoryComp() const { return InventoryComp; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Component)
 	FORCEINLINE class UQuickSlotComponent* GetQuickSlotComp() const { return QuickSlotComp; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Component)
 	FORCEINLINE class UEquipmentComponent* GetEquipmentComp() const { return EquipmentComp; }
 
 // UI

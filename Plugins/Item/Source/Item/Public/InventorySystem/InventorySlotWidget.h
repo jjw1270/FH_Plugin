@@ -29,7 +29,7 @@ protected:
 	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
 	TSubclassOf<class UOnDragWidget> DragWidgetClass;
 
 public:
@@ -38,20 +38,20 @@ public:
 	FORCEINLINE UInventoryWidget* GetOwningInventoryWidget() const { return InventoryWidget; }
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	void SetSlot(class UItemData* NewItemData, const int32& NewAmount);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	void ClearSlot();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	void SetOnRegistImageVisibility(const bool& bIsRegist);
 
 protected:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Component)
 	class UInventoryComponent* InventoryComp;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = Widget)
 	class UInventoryWidget* InventoryWidget;
 
 // Variables to Bind UMG Components
@@ -70,13 +70,13 @@ protected:
 	int32 SlotItemAmount;
 
 public:	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	bool IsEmpty();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	FORCEINLINE class UItemData* GetSlotItemData() const { return SlotItemData; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Widget)
 	FORCEINLINE int32 GetSlotItemAmount() const { return SlotItemAmount; }
 
 };
