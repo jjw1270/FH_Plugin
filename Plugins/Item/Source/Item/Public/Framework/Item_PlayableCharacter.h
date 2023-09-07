@@ -69,8 +69,8 @@ Modular Mesh Components
 */ 
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
-	UModularSkeletalMeshComponent* LowerBody;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
+	//UModularSkeletalMeshComponent* LowerBody;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MeshComponent)
 	UModularSkeletalMeshComponent* Shoes;
